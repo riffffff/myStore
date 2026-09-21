@@ -13,17 +13,26 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        if (User::where('email', 'agusgerobakweb@gmail.com')->doesntExist()) {
+        if (User::where('email', 'admin@paitech.id')->doesntExist()) {
             User::create([
-                'name'     => 'Admin Agus Mebel',
-                'email'    => 'agusgerobakweb@gmail.com',
+                'name'     => 'PaiTech Admin',
+                'email'    => 'admin@paitech.id',
                 'password' => Hash::make('password123'),
                 'is_admin' => true,
             ]);
         } else {
             // Pastikan user admin yang sudah ada punya flag is_admin = true
-            User::where('email', 'agusgerobakweb@gmail.com')
+            User::where('email', 'admin@paitech.id')
                 ->update(['is_admin' => true]);
+        }
+        
+        // Keep legacy admin for backward compatibility
+        if (User::where('email', 'agusgerobakweb@gmail.com')->exists()) {
+            User::where('email', 'agusgerobakweb@gmail.com')
+                ->update([
+                    'name' => 'PaiTech Admin (Legacy)',
+                    'is_admin' => true
+                ]);
         }
     }
 }

@@ -14,16 +14,16 @@ class ShopSettingSeeder extends Seeder
     {
         if (ShopSetting::count() === 0) {
             ShopSetting::create([
-                'shop_name' => 'Agus Mebel Jepara',
-                'description' => 'Kami memproduksi furniture kayu jati kualitas terbaik langsung dari pengrajin Jepara. Melayani pemesanan retail maupun custom order.',
-                'address' => 'Jl. Tahunan - Batealit, Jepara, Jawa Tengah 59427',
+                'shop_name' => 'PaiTech',
+                'description' => 'Solusi teknologi terpadu untuk transformasi digital bisnis Anda. Kami menyediakan layanan web development, mobile app, cloud infrastructure, AI/ML integration, dan konsultasi IT profesional.',
+                'address' => 'Gedung Cyber 2 Tower, Jl. HR Rasuna Said Blok X-5 Kav. 13, Jakarta Selatan 12950',
                 'whatsapp_number' => '6281234567890',
-                'whatsapp_template' => "Halo, saya tertarik dengan produk *{product_name}* seharga {product_price}. Apakah masih tersedia?",
-                'operating_hours' => 'Senin - Sabtu: 08.00 - 17.00 WIB',
-                'hero_banner_text_1' => 'Furniture Kayu Jati Premium Jepara',
-                'hero_banner_text_2' => 'Sentuhan Kemewahan Alami Langsung dari Pengrajin Asli Jepara',
-                'shipping_areas' => ['Seluruh Indonesia', 'Jawa Tengah', 'Jabodetabek', 'Luar Jawa'],
-                'shipping_estimate_days' => '5 - 14 Hari Kerja',
+                'whatsapp_template' => "Halo PaiTech, saya tertarik dengan layanan *{product_name}* seharga {product_price}. Bisakah kita diskusi lebih lanjut?",
+                'operating_hours' => 'Senin - Jumat: 09.00 - 18.00 WIB',
+                'hero_banner_text_1' => 'Transformasi Digital untuk Bisnis Modern',
+                'hero_banner_text_2' => 'Solusi teknologi inovatif yang mengakselerasi pertumbuhan bisnis Anda',
+                'shipping_areas' => ['Konsultasi Online', 'On-site Jakarta & Sekitarnya', 'Remote Implementation', 'Nationwide Support'],
+                'shipping_estimate_days' => '2 - 12 Minggu (tergantung scope project)',
             ]);
         }
     }
