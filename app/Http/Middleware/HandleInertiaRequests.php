@@ -40,6 +40,31 @@ class HandleInertiaRequests extends Middleware
     {
         $settings = $this->shopSettingService->getSettings();
 
+        // Prepare shopSettings with safe defaults
+        $shopSettings = null;
+        if ($settings) {
+            $shopSettings = [
+                'id' => $settings->id ?? null,
+                'shop_name' => $settings->shop_name ?? 'PaiTech',
+                'description' => $settings->description ?? '',
+                'address' => $settings->address ?? '',
+                'whatsapp_number' => $settings->whatsapp_number ?? '6281234567890',
+                'whatsapp_template' => $settings->whatsapp_template ?? '',
+                'operating_hours' => $settings->operating_hours ?? '',
+                'hero_banner_text_1' => $settings->hero_banner_text_1 ?? '',
+                'hero_banner_text_2' => $settings->hero_banner_text_2 ?? '',
+                'hero_banner_bg' => $settings->hero_banner_bg ?? null,
+                'shipping_areas' => $settings->shipping_areas ?? [],
+                'shipping_estimate_days' => $settings->shipping_estimate_days ?? '',
+                'logo_url' => $this->shopSettingService->getLogoUrl('light'),
+                'logo_dark_url' => $this->shopSettingService->getLogoUrl('dark'),
+                'favicon_url' => $this->shopSettingService->getFaviconUrl(),
+                'logo' => $settings->logo ?? null,
+                'logo_dark' => $settings->logo_dark ?? null,
+                'favicon' => $settings->favicon ?? null,
+            ];
+        }
+
         return [
             ...parent::share($request),
             'auth' => [
@@ -55,28 +80,7 @@ class HandleInertiaRequests extends Middleware
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
-            'shopSettings' => fn () => $settings ? [
-                'id' => $settings->id,
-                'shop_name' => $settings->shop_name,
-                'description' => $settings->description,
-                'address' => $settings->address,
-                'whatsapp_number' => $settings->whatsapp_number,
-                'whatsapp_template' => $settings->whatsapp_template,
-                'operating_hours' => $settings->operating_hours,
-                'hero_banner_text_1' => $settings->hero_banner_text_1,
-                'hero_banner_text_2' => $settings->hero_banner_text_2,
-                'hero_banner_bg' => $settings->hero_banner_bg,
-                'shipping_areas' => $settings->shipping_areas,
-                'shipping_estimate_days' => $settings->shipping_estimate_days,
-                // URL LOGO & FAVICON (auto fallback via service)
-                'logo_url' => $this->shopSettingService->getLogoUrl('light'),
-                'logo_dark_url' => $this->shopSettingService->getLogoUrl('dark'),
-                'favicon_url' => $this->shopSettingService->getFaviconUrl(),
-                // Field path asli (jika diperlukan di frontend)
-                'logo' => $settings->logo,
-                'logo_dark' => $settings->logo_dark,
-                'favicon' => $settings->favicon,
-            ] : null,
+            'shopSettings' => $shopSettings,
         ];
     }
 }
