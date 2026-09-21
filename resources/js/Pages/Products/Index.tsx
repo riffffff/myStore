@@ -44,13 +44,12 @@ export default function Index({ products, shopSettings, filters }: ProductsIndex
                 <meta name="description" content="Jelajahi koleksi gerobak dan meubel berkualitas untuk usaha, rumah, toko, dan kebutuhan custom." />
             </Head>
 
-            {/* Hero Banner — mahogany + wood texture */}
-            <div className="bg-mahogany-900 py-16 sm:py-20 text-center text-white relative overflow-hidden wood-texture">
-                <div className="absolute inset-0 bg-linear-to-b from-mahogany-950/60 to-mahogany-900/30 pointer-events-none" />
+            {/* Hero Banner */}
+            <div className="bg-primary-800 py-16 sm:py-20 text-center text-white relative overflow-hidden">
                 <div className="relative max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
                     <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight">Katalog Produk</h1>
-                    <p className="text-sm sm:text-base text-mahogany-200 max-w-2xl mx-auto leading-relaxed">
-                        Pilih berbagai desain gerobak dan meubel berkualitas untuk melengkapi kebutuhan usaha dan rumah Anda.
+                    <p className="text-sm sm:text-base text-gray-200 max-w-2xl mx-auto leading-relaxed">
+                        Pilih berbagai layanan dan produk teknologi untuk mengembangkan bisnis Anda.
                     </p>
                 </div>
             </div>
@@ -59,46 +58,48 @@ export default function Index({ products, shopSettings, filters }: ProductsIndex
                 <div className="flex flex-col md:flex-row gap-8 items-start">
 
                     {/* Sidebar Filter */}
-                    <ScrollReveal direction="left" className="w-full md:w-64 shrink-0">
-                        <div className="bg-white p-6 rounded-2xl border border-mahogany-100 shadow-sm space-y-6">
-                            <h3 className="font-bold text-mahogany-900 border-b border-mahogany-100 pb-3 flex items-center gap-2 text-sm uppercase tracking-wider">
-                                <Search className="h-4 w-4 text-mahogany-600" />
-                                Filter & Urutkan
-                            </h3>
-
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold text-mahogany-400 uppercase tracking-wider block">Status Stok</label>
-                                <select
-                                    value={filterStockStatus}
-                                    onChange={(e) => handleFilterChange('stock_status', e.target.value)}
-                                    className="w-full rounded-xl border border-mahogany-200 text-stone-700 bg-mahogany-50/30 focus:border-mahogany-700 focus:ring-1 focus:ring-mahogany-700/20 text-sm py-2.5 transition outline-none"
-                                >
-                                    <option value="">Semua Status</option>
-                                    <option value="available">Ready Stock</option>
-                                    <option value="preorder">Pre Order</option>
-                                    <option value="out_of_stock">Kosong</option>
-                                </select>
+                    <ScrollReveal direction="left" className="w-full md:w-80 shrink-0">
+                        <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-6 sticky top-24">
+                            <div className="flex items-center gap-2 pb-3 border-b border-gray-200">
+                                <Search className="h-5 w-5 text-primary-600" />
+                                <h3 className="font-bold text-primary-900 text-base">FILTER & URUTKAN</h3>
                             </div>
 
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold text-mahogany-400 uppercase tracking-wider block">Urutkan</label>
-                                <select
-                                    value={filterSort || 'newest'}
-                                    onChange={(e) => handleFilterChange('sort', e.target.value)}
-                                    className="w-full rounded-xl border border-mahogany-200 text-stone-700 bg-mahogany-50/30 focus:border-mahogany-700 focus:ring-1 focus:ring-mahogany-700/20 text-sm py-2.5 transition outline-none"
-                                >
-                                    <option value="newest">Terbaru</option>
-                                    <option value="price_low">Harga Terendah</option>
-                                    <option value="price_high">Harga Tertinggi</option>
-                                </select>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="text-sm font-semibold text-primary-700 block mb-2">STATUS STOK</label>
+                                    <select
+                                        value={filterStockStatus}
+                                        onChange={(e) => handleFilterChange('stock_status', e.target.value)}
+                                        className="w-full rounded-lg border-2 border-gray-300 text-primary-900 bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 text-sm py-2.5 px-3 transition outline-none"
+                                    >
+                                        <option value="">Semua Status</option>
+                                        <option value="available">Ready Stock</option>
+                                        <option value="preorder">Pre Order</option>
+                                        <option value="out_of_stock">Kosong</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="text-sm font-semibold text-primary-700 block mb-2">URUTKAN</label>
+                                    <select
+                                        value={filterSort || 'newest'}
+                                        onChange={(e) => handleFilterChange('sort', e.target.value)}
+                                        className="w-full rounded-lg border-2 border-gray-300 text-primary-900 bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 text-sm py-2.5 px-3 transition outline-none"
+                                    >
+                                        <option value="newest">Terbaru</option>
+                                        <option value="price_low">Harga Terendah</option>
+                                        <option value="price_high">Harga Tertinggi</option>
+                                    </select>
+                                </div>
                             </div>
 
                             {hasActiveFilters && (
                                 <button
                                     onClick={() => router.get(route('products.index'))}
-                                    className="w-full py-2 px-4 rounded-xl border border-mahogany-700 text-mahogany-700 hover:bg-mahogany-50 text-xs font-bold transition flex items-center justify-center gap-1.5"
+                                    className="w-full py-2.5 px-4 rounded-lg bg-gray-100 text-primary-900 hover:bg-gray-200 text-sm font-semibold transition flex items-center justify-center gap-2"
                                 >
-                                    <RefreshCcw className="h-3.5 w-3.5" />
+                                    <RefreshCcw className="h-4 w-4" />
                                     Bersihkan Filter
                                 </button>
                             )}
