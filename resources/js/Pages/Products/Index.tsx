@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Head, router } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import ProductCard from '@/Components/Public/ProductCard';
 import Pagination from '@/Components/Public/Pagination';
 import ScrollReveal from '@/Components/Public/ScrollReveal';
 import { Product, ShopSetting } from '@/types/mebel';
-import { RefreshCcw, Search, Sofa } from 'lucide-react';
+import { RefreshCcw, Search, Sofa, ChevronDown, Check } from 'lucide-react';
+import { Listbox, Transition } from '@headlessui/react';
 
 interface ProductsIndexProps {
     products: {
@@ -29,6 +30,22 @@ export default function Index({ products, shopSettings, filters }: ProductsIndex
     const filterStockStatus = typeof safeFilters.stock_status === 'string' ? safeFilters.stock_status : '';
     const filterSort        = typeof safeFilters.sort === 'string' ? safeFilters.sort : '';
     const hasActiveFilters  = Boolean(filterStockStatus) || (Boolean(filterSort) && filterSort !== 'newest');
+
+    const stockOptions = [
+        { value: '', label: 'Semua Status' },
+        { value: 'available', label: 'Ready Stock' },
+        { value: 'preorder', label: 'Pre Order' },
+        { value: 'out_of_stock', label: 'Kosong' },
+    ];
+
+    const sortOptions = [
+        { value: 'newest', label: 'Terbaru' },
+        { value: 'price_low', label: 'Harga Terendah' },
+        { value: 'price_high', label: 'Harga Tertinggi' },
+    ];
+
+    const currentStockOption = stockOptions.find(opt => opt.value === filterStockStatus) || stockOptions[0];
+    const currentSortOption = sortOptions.find(opt => opt.value === (filterSort || 'newest')) || sortOptions[0];
 
     const handleFilterChange = (key: string, value: string) => {
         const newFilters: Record<string, string> = { ...safeFilters } as Record<string, string>;
@@ -66,31 +83,100 @@ export default function Index({ products, shopSettings, filters }: ProductsIndex
                             </div>
 
                             <div className="space-y-4">
+                                {/* Status Stok Dropdown */}
                                 <div>
                                     <label className="text-sm font-semibold text-primary-700 block mb-2">STATUS STOK</label>
-                                    <select
-                                        value={filterStockStatus}
-                                        onChange={(e) => handleFilterChange('stock_status', e.target.value)}
-                                        className="w-full rounded-lg border-2 border-gray-300 text-primary-900 bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 text-sm py-2.5 px-3 transition outline-none"
-                                    >
-                                        <option value="">Semua Status</option>
-                                        <option value="available">Ready Stock</option>
-                                        <option value="preorder">Pre Order</option>
-                                        <option value="out_of_stock">Kosong</option>
-                                    </select>
+                                    <Listbox value={currentStockOption} onChange={(option) => handleFilterChange('stock_status', option.value)}>
+                                        <div className="relative">
+                                            <Listbox.Button className="relative w-full cursor-pointer rounded-lg bg-white py-2.5 pl-3 pr-10 text-left border-2 border-gray-300 focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 focus:outline-none transition">
+                                                <span className="block truncate text-sm text-primary-900">{currentStockOption.label}</span>
+                                                <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                                                    <ChevronDown className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                                                </span>
+                                            </Listbox.Button>
+                                            <Transition
+                                                as={Fragment}
+                                                leave="transition ease-in duration-100"
+                                                leaveFrom="opacity-100"
+                                                leaveTo="opacity-0"
+                                            >
+                                                <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none">
+                                                    {stockOptions.map((option) => (
+                                                        <Listbox.Option
+                                                            key={option.value}
+                                                            className={({ active }) =>
+                                                                `relative cursor-pointer select-none py-2.5 pl-10 pr-4 ${
+                                                                    active ? 'bg-accent-500/10 text-primary-900' : 'text-gray-700'
+                                                                }`
+                                                            }
+                                                            value={option}
+                                                        >
+                                                            {({ selected }) => (
+                                                                <>
+                                                                    <span className={`block truncate text-sm ${selected ? 'font-semibold' : 'font-normal'}`}>
+                                                                        {option.label}
+                                                                    </span>
+                                                                    {selected && (
+                                                                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-accent-500">
+                                                                            <Check className="h-4 w-4" aria-hidden="true" />
+                                                                        </span>
+                                                                    )}
+                                                                </>
+                                                            )}
+                                                        </Listbox.Option>
+                                                    ))}
+                                                </Listbox.Options>
+                                            </Transition>
+                                        </div>
+                                    </Listbox>
                                 </div>
 
+                                {/* Urutkan Dropdown */}
                                 <div>
                                     <label className="text-sm font-semibold text-primary-700 block mb-2">URUTKAN</label>
-                                    <select
-                                        value={filterSort || 'newest'}
-                                        onChange={(e) => handleFilterChange('sort', e.target.value)}
-                                        className="w-full rounded-lg border-2 border-gray-300 text-primary-900 bg-white focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 text-sm py-2.5 px-3 transition outline-none"
-                                    >
-                                        <option value="newest">Terbaru</option>
-                                        <option value="price_low">Harga Terendah</option>
-                                        <option value="price_high">Harga Tertinggi</option>
-                                    </select>
+                                    <Listbox value={currentSortOption} onChange={(option) => handleFilterChange('sort', option.value)}>
+                                        <div className="relative">
+                                            <Listbox.Button className="relative w-full cursor-pointer rounded-lg bg-white py-2.5 pl-3 pr-10 text-left border-2 border-gray-300 focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 focus:outline-none transition">
+                                                <span className="block truncate text-sm text-primary-900">{currentSortOption.label}</span>
+                                                <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                                                    <ChevronDown className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                                                </span>
+                                            </Listbox.Button>
+                                            <Transition
+                                                as={Fragment}
+                                                leave="transition ease-in duration-100"
+                                                leaveFrom="opacity-100"
+                                                leaveTo="opacity-0"
+                                            >
+                                                <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none">
+                                                    {sortOptions.map((option) => (
+                                                        <Listbox.Option
+                                                            key={option.value}
+                                                            className={({ active }) =>
+                                                                `relative cursor-pointer select-none py-2.5 pl-10 pr-4 ${
+                                                                    active ? 'bg-accent-500/10 text-primary-900' : 'text-gray-700'
+                                                                }`
+                                                            }
+                                                            value={option}
+                                                        >
+                                                            {({ selected }) => (
+                                                                <>
+                                                                    <span className={`block truncate text-sm ${selected ? 'font-semibold' : 'font-normal'}`}>
+                                                                        {option.label}
+                                                                    </span>
+                                                                    {selected && (
+                                                                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-accent-500">
+                                                                            <Check className="h-4 w-4" aria-hidden="true" />
+                                                                        </span>
+                                                                    )}
+                                                                </>
+                                                            )}
+                                                        </Listbox.Option>
+                                                    ))}
+                                                </Listbox.Options>
+                                            </Transition>
+                                        </div>
+                                    </Listbox>
                                 </div>
                             </div>
 
