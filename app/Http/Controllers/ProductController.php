@@ -17,22 +17,26 @@ class ProductController extends Controller
     {
         $filters = $request->only(['stock_status', 'sort', 'search']);
         $products = $this->productService->getPublishedProducts($filters, 12);
+        $shopSettings = \App\Models\ShopSetting::first();
 
         return Inertia::render('Products/Index', [
             'products' => $products,
             'filters' => $filters,
+            'shopSettings' => $shopSettings,
         ]);
     }
 
     public function show(string $slug): Response
     {
         $product = $this->productService->getProductBySlug($slug);
+        $shopSettings = \App\Models\ShopSetting::first();
 
         // Track view count
         $this->productService->incrementProductView($product);
 
         return Inertia::render('Products/Show', [
             'product' => $product,
+            'shopSettings' => $shopSettings,
         ]);
     }
 }

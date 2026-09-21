@@ -21,11 +21,13 @@ class HomeController extends Controller
         $heroArticles = $this->articleService->getHeroArticles();
         $topProducts = $this->productService->getTopProducts(8);
         $reviews = $this->reviewService->getApprovedReviews(9);
+        $shopSettings = \App\Models\ShopSetting::first();
 
         return Inertia::render('Home', [
             'heroArticles' => $heroArticles,
             'topProducts' => $topProducts,
             'reviews' => $reviews,
+            'shopSettings' => $shopSettings,
         ]);
     }
 }
