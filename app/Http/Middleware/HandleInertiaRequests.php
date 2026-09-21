@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\ShopSetting;
+use App\Services\ShopSettingService;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
@@ -15,6 +15,13 @@ class HandleInertiaRequests extends Middleware
      * @var string
      */
     protected $rootView = 'app';
+
+    /**
+     * Create a new middleware instance.
+     */
+    public function __construct(
+        private readonly ShopSettingService $shopSettingService
+    ) {}
 
     /**
      * Determine the current asset version.
@@ -31,7 +38,7 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        $shopSettings = ShopSetting::getSettings();
+        $settings = $this->shopSettingService->getSettings();
 
         return [
             ...parent::share($request),
@@ -41,32 +48,34 @@ class HandleInertiaRequests extends Middleware
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
+                'cart.flash' => fn () => $request->session()->get('cart.flash'),
+                'review_submitted' => fn () => $request->session()->get('review_submitted'),
             ],
             'ziggy' => fn () => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
-            'shopSettings' => [
-                'id' => $shopSettings->id,
-                'shop_name' => $shopSettings->shop_name,
-                'description' => $shopSettings->description,
-                'address' => $shopSettings->address,
-                'whatsapp_number' => $shopSettings->whatsapp_number,
-                'whatsapp_template' => $shopSettings->whatsapp_template,
-                'operating_hours' => $shopSettings->operating_hours,
-                'hero_banner_text_1' => $shopSettings->hero_banner_text_1,
-                'hero_banner_text_2' => $shopSettings->hero_banner_text_2,
-                'hero_banner_bg' => $shopSettings->hero_banner_bg,
-                'shipping_areas' => $shopSettings->shipping_areas,
-                'shipping_estimate_days' => $shopSettings->shipping_estimate_days,
-                // URL LOGO & FAVICON (sudah lewat getLogoUrl -> auto fallback ke placeholder jika null)
-                'logo_url'       => $shopSettings->getLogoUrl('light'),
-                'logo_dark_url'  => $shopSettings->getLogoUrl('dark'),
-                'favicon_url'    => $shopSettings->getFaviconUrl(),
+            'shopSettings' => fn () => [
+                'id' => $settings->id,
+                'shop_name' => $settings->shop_name,
+                'description' => $settings->description,
+                'address' => $settings->address,
+                'whatsapp_number' => $settings->whatsapp_number,
+                'whatsapp_template' => $settings->whatsapp_template,
+                'operating_hours' => $settings->operating_hours,
+                'hero_banner_text_1' => $settings->hero_banner_text_1,
+                'hero_banner_text_2' => $settings->hero_banner_text_2,
+                'hero_banner_bg' => $settings->hero_banner_bg,
+                'shipping_areas' => $settings->shipping_areas,
+                'shipping_estimate_days' => $settings->shipping_estimate_days,
+                // URL LOGO & FAVICON (auto fallback via service)
+                'logo_url' => $this->shopSettingService->getLogoUrl('light'),
+                'logo_dark_url' => $this->shopSettingService->getLogoUrl('dark'),
+                'favicon_url' => $this->shopSettingService->getFaviconUrl(),
                 // Field path asli (jika diperlukan di frontend)
-                'logo'           => $shopSettings->logo,
-                'logo_dark'      => $shopSettings->logo_dark,
-                'favicon'        => $shopSettings->favicon,
+                'logo' => $settings->logo,
+                'logo_dark' => $settings->logo_dark,
+                'favicon' => $settings->favicon,
             ],
         ];
     }

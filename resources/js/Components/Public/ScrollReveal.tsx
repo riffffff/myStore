@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, memo } from 'react';
 
 interface ScrollRevealProps {
     children: React.ReactNode;
@@ -7,7 +7,10 @@ interface ScrollRevealProps {
     direction?: 'up' | 'down' | 'left' | 'right' | 'none';
 }
 
-export default function ScrollReveal({
+/**
+ * Scroll reveal animation component - memoized to prevent unnecessary re-renders
+ */
+const ScrollReveal = memo(function ScrollReveal({
     children,
     className = '',
     delay = 0,
@@ -69,4 +72,6 @@ export default function ScrollReveal({
             {children}
         </div>
     );
-}
+});
+
+export default ScrollReveal;

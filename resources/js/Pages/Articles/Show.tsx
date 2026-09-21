@@ -3,8 +3,10 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import ScrollReveal from '@/Components/Public/ScrollReveal';
 import { Article } from '@/types/mebel';
-import { ArrowLeft, MessageCircle } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { PageProps } from '@/types';
+import { getImageUrl, formatDate } from '@/lib/utils';
+import WhatsAppButton from '@/Components/Public/WhatsAppButton';
 
 interface ArticleShowProps {
     article: Article;
@@ -22,19 +24,8 @@ export default function Show({ article }: ArticleShowProps) {
     const articleContent = article?.content ?? '';
     const articlePublishedAt = article?.published_at ?? new Date().toISOString();
 
-    const imageUrl = articleImage && (articleImage.startsWith('http') || articleImage.startsWith('/'))
-        ? articleImage
-        : articleImage
-            ? `/storage/${articleImage}`
-            : DEFAULT_ARTICLE_IMAGE;
-
-    const formattedDate = articlePublishedAt
-        ? new Date(articlePublishedAt).toLocaleDateString('id-ID', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric'
-        })
-        : '';
+    const imageUrl = getImageUrl(articleImage, DEFAULT_ARTICLE_IMAGE);
+    const formattedDate = formatDate(articlePublishedAt);
 
     const pageTitle = `${articleTitle} | Agus Gerobak`;
     const metaDescription = articleExcerpt || 'Artikel inspirasi dan tips seputar gerobak dan meubel dari Agus Gerobak.';
@@ -138,16 +129,13 @@ export default function Show({ article }: ArticleShowProps) {
                             <h3 className="text-lg font-bold text-stone-100">Ingin Punya Furniture Jati Impian?</h3>
                             <p className="text-xs text-stone-400 max-w-md leading-relaxed">Konsultasikan gratis desain gerobak atau meubel impian Anda dengan tim kami.</p>
                         </div>
-                        <a
+                        <WhatsAppButton
                             href={`https://wa.me/${waNumber}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-full md:w-auto inline-flex items-center justify-center gap-1.5 px-5 py-3 rounded-xl text-stone-100 font-extrabold text-sm shadow-md"
-                            style={{ backgroundColor: '#075E54' }}
+                            fullWidth
+                            className="md:w-auto"
                         >
-                            <MessageCircle className="h-4 w-4" />
                             Tanya Pengrajin WA
-                        </a>
+                        </WhatsAppButton>
                     </div>
                 </ScrollReveal>
 

@@ -1,3 +1,4 @@
+import React, { memo } from 'react';
 import { Link } from '@inertiajs/react';
 
 interface LinkItem {
@@ -16,7 +17,10 @@ function decodeHtmlEntities(str: string): string {
     return txt.value;
 }
 
-export default function Pagination({ links }: PaginationProps) {
+/**
+ * Pagination component - memoized to prevent unnecessary re-renders
+ */
+const Pagination = memo(function Pagination({ links }: PaginationProps) {
     if (links.length <= 3) {
         return null;
     }
@@ -53,4 +57,6 @@ export default function Pagination({ links }: PaginationProps) {
             })}
         </nav>
     );
-}
+});
+
+export default Pagination;

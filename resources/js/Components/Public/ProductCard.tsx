@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, memo, useCallback } from 'react';
 import { Link, router, usePage } from '@inertiajs/react';
 import { Product, StockStatus } from '@/types/mebel';
-import { ShoppingCart, MessageCircle, Check } from 'lucide-react';
-import { formatRupiah } from '@/lib/utils';
+import { ShoppingCart, Check } from 'lucide-react';
+import { formatRupiah, getPrimaryImageUrl, buildWhatsAppProductUrl } from '@/lib/utils';
 import { PageProps } from '@/types';
+import WhatsAppButton from '@/Components/Public/WhatsAppButton';
 
 const DEFAULT_PRODUCT_IMG = 'https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&q=80&w=800';
 
@@ -13,7 +14,10 @@ interface ProductCardProps {
     whatsappTemplate: string;
 }
 
-export default function ProductCard({ product, whatsappNumber, whatsappTemplate }: ProductCardProps) {
+/**
+ * Product card component - memoized to prevent unnecessary re-renders in product grids
+ */
+const ProductCard = memo(function ProductCard({ product, whatsappNumber, whatsappTemplate }: ProductCardProps) {
     const { auth } = usePage<PageProps>().props as any;
     const user = auth?.user;
 
@@ -27,25 +31,17 @@ export default function ProductCard({ product, whatsappNumber, whatsappTemplate 
     const productStockStatus = product?.stock_status ?? 'preorder';
     const productImages      = Array.isArray(product?.images) ? product.images : [];
 
-    const primaryImage = productImages.find(img => img && img.is_primary) || productImages[0];
-    const imageUrl = primaryImage?.url
-        ? (primaryImage.url.startsWith('http') || primaryImage.url.startsWith('/')
-            ? primaryImage.url
-            : `/storage/${primaryImage.url}`)
-        : DEFAULT_PRODUCT_IMG;
-
+    const imageUrl = getPrimaryImageUrl(productImages, DEFAULT_PRODUCT_IMG);
     const formattedPrice = formatRupiah(productPrice);
 
-    const buildWhatsAppUrl = () => {
-        const text = whatsappTemplate
-            ? whatsappTemplate
-                .replaceAll('{product_name}', productName)
-                .replaceAll('{product_price}', formattedPrice)
-            : `Halo, saya tertarik dengan produk ${productName} seharga ${formattedPrice}. Apakah masih tersedia?`;
-        return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`;
-    };
+    const whatsappUrl = buildWhatsAppProductUrl({
+        phoneNumber: whatsappNumber,
+        template: whatsappTemplate,
+        productName,
+        productPrice: formattedPrice,
+    });
 
-    const handleAddToCart = (e: React.MouseEvent) => {
+    const handleAddToCart = useCallback((e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
         if (!user) {
@@ -66,7 +62,7 @@ export default function ProductCard({ product, whatsappNumber, whatsappTemplate 
                 onError: () => setIsAdding(false),
             }
         );
-    };
+    }, [user, productSlug, product.id]);
 
     const status = productStockStatus as StockStatus;
 
@@ -155,20 +151,17 @@ export default function ProductCard({ product, whatsappNumber, whatsappTemplate 
                     </button>
 
                     {/* Tombol WhatsApp */}
-                    <a
-                        href={buildWhatsAppUrl()}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center flex-1 p-2.5 rounded-xl text-white font-bold shadow-xs transition hover:opacity-90 active:scale-95"
-                        style={{ backgroundColor: '#075E54' }}
-                        title="Pesan via WhatsApp"
-                        aria-label="Pesan via WhatsApp"
+                    <WhatsAppButton
+                        href={whatsappUrl}
+                        size="sm"
+                        className="flex-1"
                     >
-                        <MessageCircle className="w-4 h-4 mr-2" />
-                        <span className="text-xs">Pesan WA</span>
-                    </a>
+                        Pesan WA
+                    </WhatsAppButton>
                 </div>
             </div>
         </div>
     );
-}
+});
+
+export default ProductCard;

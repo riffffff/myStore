@@ -3,8 +3,9 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import ScrollReveal from '@/Components/Public/ScrollReveal';
 import { CartSummary, ShopSetting } from '@/types/mebel';
-import { MessageCircle, Minus, Plus, ShoppingCart, Trash2, X, AlertTriangle, Info } from 'lucide-react';
+import { ShoppingCart, Minus, Plus, Trash2, X, AlertTriangle, Info } from 'lucide-react';
 import { formatRupiah } from '@/lib/utils';
+import WhatsAppButton from '@/Components/Public/WhatsAppButton';
 
 interface CartIndexProps {
     cart: CartSummary;
@@ -109,16 +110,12 @@ export default function Index({ cart, shopSettings }: CartIndexProps) {
                                 >
                                     Lihat Katalog Produk
                                 </Link>
-                                <a
+                                <WhatsAppButton
                                     href={`https://wa.me/${waNumber}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs text-white shadow-xs transition"
-                                    style={{ backgroundColor: '#075E54' }}
+                                    size="sm"
                                 >
-                                    <MessageCircle className="h-4 w-4" />
                                     Konsultasi via WhatsApp
-                                </a>
+                                </WhatsAppButton>
                             </div>
                         </div>
                     </ScrollReveal>
@@ -260,16 +257,12 @@ export default function Index({ cart, shopSettings }: CartIndexProps) {
                                     </div>
 
                                     <div className="space-y-2 pt-2">
-                                        <a
+                                        <WhatsAppButton
                                             href={buildWhatsAppAll()}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-white font-bold text-xs shadow-xs transition"
-                                            style={{ backgroundColor: '#075E54' }}
+                                            fullWidth
                                         >
-                                            <MessageCircle className="w-4 h-4" />
-                                            <span>Checkout via WhatsApp</span>
-                                        </a>
+                                            Checkout via WhatsApp
+                                        </WhatsAppButton>
                                         <Link
                                             href={route('products.index')}
                                             className="block w-full text-center px-4 py-2.5 rounded-xl border border-stone-300 text-xs font-bold text-stone-700 hover:bg-stone-50 transition"

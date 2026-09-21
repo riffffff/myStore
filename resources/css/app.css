@@ -1,81 +1,54 @@
 @import "tailwindcss";
 
 @theme {
-    /* Palet warna Mahogany */
-    --color-mahogany-50:  #fdf5f0;
-    --color-mahogany-100: #fae6d9;
-    --color-mahogany-200: #f4cab0;
-    --color-mahogany-300: #eba87f;
-    --color-mahogany-400: #e0824d;
-    --color-mahogany-500: #d4622a;
-    --color-mahogany-600: #b8491f;
-    --color-mahogany-700: #97361b;
-    --color-mahogany-800: #7c2d1d;  /* warna utama mahogany */
-    --color-mahogany-900: #5e1f13;  /* mahogany gelap */
-    --color-mahogany-950: #3a1009;
+    /* PaiTech Brand Color Palette */
+    /* Primary: Dark Charcoal (#333333) - Professional, modern, tech-focused */
+    --color-primary-50:  #f7f7f7;
+    --color-primary-100: #e8e8e8;
+    --color-primary-200: #d1d1d1;
+    --color-primary-300: #ababab;
+    --color-primary-400: #7d7d7d;
+    --color-primary-500: #5c5c5c;  /* medium gray */
+    --color-primary-600: #4a4a4a;
+    --color-primary-700: #3d3d3d;
+    --color-primary-800: #333333;  /* brand primary - dark charcoal */
+    --color-primary-900: #262626;
+    --color-primary-950: #1a1a1a;
+
+    /* Accent: Mint/Turquoise (#A1E3D8) - Fresh, modern, tech-friendly */
+    --color-accent-50:  #f0fdfb;
+    --color-accent-100: #ccfbf1;
+    --color-accent-200: #99f6e4;
+    --color-accent-300: #5eead4;
+    --color-accent-400: #2dd4bf;
+    --color-accent-500: #A1E3D8;  /* brand accent - mint */
+    --color-accent-600: #0d9488;
+    --color-accent-700: #0f766e;
+    --color-accent-800: #115e59;
+    --color-accent-900: #134e4a;
+    --color-accent-950: #042f2e;
+
+    /* Background: Light Gray (#F1F1F1) - Clean, minimal */
+    --color-bg-light: #F1F1F1;
+    --color-bg-white: #FFFFFF;
+
+    /* WhatsApp brand colors */
+    --color-whatsapp: #25D366;        /* WhatsApp green */
+    --color-whatsapp-dark: #128C7E;   /* WhatsApp dark green (hover) */
+    --color-whatsapp-darker: #075E54; /* WhatsApp darker green (active) */
+
+    /* Legacy aliases (backward compatibility) */
+    --color-mahogany-50:  var(--color-primary-50);
+    --color-mahogany-100: var(--color-primary-100);
+    --color-mahogany-200: var(--color-primary-200);
+    --color-mahogany-300: var(--color-primary-300);
+    --color-mahogany-400: var(--color-primary-400);
+    --color-mahogany-500: var(--color-primary-500);
+    --color-mahogany-600: var(--color-primary-600);
+    --color-mahogany-700: var(--color-primary-700);
+    --color-mahogany-800: var(--color-primary-800);
+    --color-mahogany-900: var(--color-primary-900);
+    --color-mahogany-950: var(--color-primary-950);
 }
 
-@layer utilities {
-    .wood-texture {
-        position: relative;
-        isolation: isolate;
-    }
-
-    .wood-texture::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        z-index: 0;
-        pointer-events: none;
-        background-image:
-            repeating-linear-gradient(
-                180deg,
-                transparent 0px,
-                transparent 3px,
-                rgba(255, 220, 160, 0.07) 3px,
-                rgba(255, 220, 160, 0.07) 4px,
-                transparent 4px,
-                transparent 9px,
-                rgba(200, 140, 80, 0.06) 9px,
-                rgba(200, 140, 80, 0.06) 10px,
-                transparent 10px,
-                transparent 15px,
-                rgba(255, 200, 120, 0.09) 15px,
-                rgba(255, 200, 120, 0.09) 16px,
-                transparent 16px,
-                transparent 22px,
-                rgba(180, 100, 50, 0.05) 22px,
-                rgba(180, 100, 50, 0.05) 23px
-            ),
-            repeating-linear-gradient(
-                178deg,
-                rgba(0, 0, 0, 0.0) 0px,
-                rgba(0, 0, 0, 0.08) 8px,
-                rgba(255, 180, 80, 0.06) 14px,
-                rgba(0, 0, 0, 0.0) 22px,
-                rgba(0, 0, 0, 0.05) 28px,
-                rgba(0, 0, 0, 0.0) 35px
-            ),
-            repeating-linear-gradient(
-                175deg,
-                transparent 0px,
-                transparent 18px,
-                rgba(255, 230, 180, 0.05) 18px,
-                rgba(255, 230, 180, 0.05) 19px,
-                transparent 19px,
-                transparent 42px,
-                rgba(255, 210, 140, 0.07) 42px,
-                rgba(255, 210, 140, 0.07) 43px
-            );
-        background-size: 100% 23px, 100% 35px, 100% 43px;
-    }
-
-    .wood-texture > * {
-        position: relative;
-        z-index: 1;
-    }
-
-    .wood-texture-subtle::before {
-        opacity: 0.6;
-    }
-}
+/* PaiTech Custom Utilities - Clean, No Textures */

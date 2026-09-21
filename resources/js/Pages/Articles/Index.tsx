@@ -5,6 +5,7 @@ import Pagination from '@/Components/Public/Pagination';
 import ScrollReveal from '@/Components/Public/ScrollReveal';
 import { Article } from '@/types/mebel';
 import { ArrowRight, Clock3, Newspaper } from 'lucide-react';
+import { getImageUrl, formatDate, safeArray } from '@/lib/utils';
 
 const DEFAULT_ARTICLE_IMG = 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80&w=800';
 
@@ -16,7 +17,7 @@ interface ArticlesIndexProps {
 }
 
 export default function Index({ articles }: ArticlesIndexProps) {
-    const articlesData  = Array.isArray(articles?.data)  ? articles.data  : [];
+    const articlesData  = safeArray(articles?.data);
     const articlesLinks = Array.isArray(articles?.links) ? articles.links : [];
 
     return (
@@ -42,12 +43,8 @@ export default function Index({ articles }: ArticlesIndexProps) {
                     <>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {articlesData.map((article, index) => {
-                                if (!article) return null;
-
                                 const artImage      = article?.image ?? '';
-                                const imageUrl      = artImage && (artImage.startsWith('http') || artImage.startsWith('/'))
-                                    ? artImage
-                                    : artImage ? `/storage/${artImage}` : DEFAULT_ARTICLE_IMG;
+                                const imageUrl      = getImageUrl(artImage, DEFAULT_ARTICLE_IMG);
                                 const artTitle      = article?.title ?? '';
                                 const artSlug       = article?.slug ?? '';
                                 const artExcerpt    = article?.excerpt ?? '';
@@ -55,9 +52,7 @@ export default function Index({ articles }: ArticlesIndexProps) {
                                 const artIsHero     = article?.is_hero ?? false;
                                 const artId         = article?.id ?? index;
 
-                                const formattedDate = artPublishedAt
-                                    ? new Date(artPublishedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
-                                    : '';
+                                const formattedDate = formatDate(artPublishedAt);
 
                                 return (
                                     <ScrollReveal key={artId} delay={(index % 3) * 150} direction="up">

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Http\File;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -12,11 +13,11 @@ class ImageService
 {
     public function handleUpload(UploadedFile $file, string $dir = 'products'): array
     {
-        $filename = Str::random(24) . '_' . time();
+        $filename = Str::random(24).'_'.time();
         $storageDir = $dir;
 
         $paths = [
-            'url'       => null,
+            'url' => null,
             'thumbnail' => null,
         ];
 
@@ -26,12 +27,12 @@ class ImageService
 
         Log::warning('ImageService: konversi WebP gagal, menyimpan format asli.', [
             'original_name' => $file->getClientOriginalName(),
-            'mime'          => $file->getMimeType(),
-            'size'          => $file->getSize(),
-            'dir'           => $storageDir,
+            'mime' => $file->getMimeType(),
+            'size' => $file->getSize(),
+            'dir' => $storageDir,
         ]);
 
-        $fallbackName = $filename . '.' . $file->getClientOriginalExtension();
+        $fallbackName = $filename.'.'.$file->getClientOriginalExtension();
         $stored = $file->storeAs($storageDir, $fallbackName, 'public');
         $paths['url'] = $stored;
         $paths['thumbnail'] = $paths['url'];
@@ -41,7 +42,7 @@ class ImageService
 
     public function deleteIfExists(?string $path): void
     {
-        if (!$path) {
+        if (! $path) {
             return;
         }
 
@@ -61,7 +62,7 @@ class ImageService
         $disk = Storage::disk('public');
         $absPath = $disk->path($cleanPath);
 
-        if (!$disk->exists($cleanPath) || !file_exists($absPath)) {
+        if (! $disk->exists($cleanPath) || ! file_exists($absPath)) {
             return $cleanPath;
         }
 
@@ -71,6 +72,7 @@ class ImageService
                 'path' => $cleanPath,
                 'size' => $size,
             ]);
+
             return $cleanPath;
         }
 
@@ -80,7 +82,7 @@ class ImageService
             $mime = null;
         }
 
-        if (empty($mime) || !str_starts_with($mime, 'image/')) {
+        if (empty($mime) || ! str_starts_with($mime, 'image/')) {
             return $cleanPath;
         }
 
@@ -118,45 +120,48 @@ class ImageService
     private function convertToWebp(UploadedFile $file, string $storageDir, string $filename, array &$paths): bool
     {
         $realPath = $file->getRealPath();
-        if (!$realPath) {
+        if (! $realPath) {
             Log::warning('ImageService: getRealPath() mengembalikan null.', [
                 'original_name' => $file->getClientOriginalName(),
             ]);
+
             return false;
         }
 
-        $webpFilename = $filename . '.webp';
-        $webpTempPath = tempnam(sys_get_temp_dir(), 'img_') . '.webp';
+        $webpFilename = $filename.'.webp';
+        $webpTempPath = tempnam(sys_get_temp_dir(), 'img_').'.webp';
 
         try {
             $success = $this->convertWithPython($realPath, $webpTempPath);
 
-            if (!$success) {
+            if (! $success) {
                 Log::debug('ImageService: konversi Python gagal, mencoba GD.', [
                     'file' => $file->getClientOriginalName(),
                 ]);
                 $success = $this->convertWithPhpGd($realPath, $webpTempPath, $file->getMimeType());
             }
 
-            if (!$success) {
+            if (! $success) {
                 Log::warning('ImageService: semua metode konversi WebP gagal.', [
                     'file' => $file->getClientOriginalName(),
                     'mime' => $file->getMimeType(),
                 ]);
                 @unlink($webpTempPath);
+
                 return false;
             }
 
-            if (!file_exists($webpTempPath) || filesize($webpTempPath) < 100) {
+            if (! file_exists($webpTempPath) || filesize($webpTempPath) < 100) {
                 Log::warning('ImageService: file WebP hasil konversi kosong atau terlalu kecil.', [
                     'temp_path' => $webpTempPath,
-                    'size'      => file_exists($webpTempPath) ? filesize($webpTempPath) : 0,
+                    'size' => file_exists($webpTempPath) ? filesize($webpTempPath) : 0,
                 ]);
                 @unlink($webpTempPath);
+
                 return false;
             }
 
-            $stored = Storage::disk('public')->putFileAs($storageDir, new \Illuminate\Http\File($webpTempPath), $webpFilename);
+            $stored = Storage::disk('public')->putFileAs($storageDir, new File($webpTempPath), $webpFilename);
             $paths['url'] = $stored;
             $paths['thumbnail'] = $paths['url'];
 
@@ -164,7 +169,7 @@ class ImageService
 
             Log::debug('ImageService: konversi WebP berhasil.', [
                 'stored_path' => $paths['url'],
-                'original'    => $file->getClientOriginalName(),
+                'original' => $file->getClientOriginalName(),
             ]);
 
             return true;
@@ -172,10 +177,11 @@ class ImageService
             @unlink($webpTempPath);
             Log::error('ImageService: exception saat konversi WebP.', [
                 'message' => $e->getMessage(),
-                'file'    => $file->getClientOriginalName(),
-                'trace'   => $e->getTraceAsString(),
+                'file' => $file->getClientOriginalName(),
+                'trace' => $e->getTraceAsString(),
             ]);
             report($e);
+
             return false;
         }
     }
@@ -183,22 +189,25 @@ class ImageService
     private function convertWithPython(string $realPath, string $webpTempPath): bool
     {
         try {
-            if (!function_exists('shell_exec') || !function_exists('escapeshellarg')) {
+            if (! function_exists('shell_exec') || ! function_exists('escapeshellarg')) {
                 Log::debug('ImageService: shell_exec atau escapeshellarg tidak tersedia, skip Python converter.');
+
                 return false;
             }
 
             $pythonBin = trim((string) @shell_exec('which python3 2>/dev/null || which python 2>/dev/null'));
             if (empty($pythonBin)) {
                 Log::debug('ImageService: Python tidak ditemukan di server, skip Python converter.');
+
                 return false;
             }
 
-            $processorPath = __DIR__ . '/image_processor.py';
-            if (!file_exists($processorPath)) {
+            $processorPath = __DIR__.'/image_processor.py';
+            if (! file_exists($processorPath)) {
                 Log::warning('ImageService: image_processor.py tidak ditemukan.', [
                     'expected_path' => $processorPath,
                 ]);
+
                 return false;
             }
 
@@ -211,11 +220,12 @@ class ImageService
             $process->setTimeout(60);
             $process->run();
 
-            if (!$process->isSuccessful()) {
+            if (! $process->isSuccessful()) {
                 Log::warning('ImageService: Python converter gagal.', [
                     'exit_code' => $process->getExitCode(),
-                    'stderr'    => $process->getErrorOutput(),
+                    'stderr' => $process->getErrorOutput(),
                 ]);
+
                 return false;
             }
 
@@ -225,6 +235,7 @@ class ImageService
                 'message' => $e->getMessage(),
             ]);
             report($e);
+
             return false;
         }
     }
@@ -232,8 +243,9 @@ class ImageService
     private function convertWithPhpGd(string $realPath, string $webpTempPath, string $mime): bool
     {
         try {
-            if (!extension_loaded('gd') || !function_exists('imagewebp')) {
+            if (! extension_loaded('gd') || ! function_exists('imagewebp')) {
                 Log::warning('ImageService: ekstensi GD tidak tersedia atau imagewebp tidak didukung.');
+
                 return false;
             }
 
@@ -255,41 +267,43 @@ class ImageService
                     Log::warning('ImageService: tipe MIME tidak didukung untuk konversi GD.', [
                         'mime' => $mime,
                     ]);
+
                     return false;
             }
 
-            if (!$source) {
+            if (! $source) {
                 Log::warning('ImageService: GD gagal membaca file gambar.', [
                     'path' => $realPath,
                     'mime' => $mime,
                 ]);
+
                 return false;
             }
 
             imagepalettetotruecolor($source);
-            $width  = imagesx($source);
+            $width = imagesx($source);
             $height = imagesy($source);
             $maxDim = 2400;
 
             if ($width > $maxDim || $height > $maxDim) {
                 $ratio = min($maxDim / $width, $maxDim / $height);
-                $newW  = (int) round($width * $ratio);
-                $newH  = (int) round($height * $ratio);
-                $dst   = imagecreatetruecolor($newW, $newH);
+                $newW = (int) round($width * $ratio);
+                $newH = (int) round($height * $ratio);
+                $dst = imagecreatetruecolor($newW, $newH);
                 imagecopyresampled($dst, $source, 0, 0, 0, 0, $newW, $newH, $width, $height);
                 imagedestroy($source);
                 $source = $dst;
 
                 Log::debug('ImageService: gambar di-resize sebelum konversi WebP.', [
                     'original' => "{$width}x{$height}",
-                    'resized'  => "{$newW}x{$newH}",
+                    'resized' => "{$newW}x{$newH}",
                 ]);
             }
 
             $ok = @imagewebp($source, $webpTempPath, 85);
             imagedestroy($source);
 
-            if (!$ok) {
+            if (! $ok) {
                 Log::warning('ImageService: imagewebp() mengembalikan false.', [
                     'dest' => $webpTempPath,
                 ]);
@@ -299,9 +313,10 @@ class ImageService
         } catch (\Throwable $e) {
             Log::error('ImageService: exception di convertWithPhpGd.', [
                 'message' => $e->getMessage(),
-                'mime'    => $mime,
+                'mime' => $mime,
             ]);
             report($e);
+
             return false;
         }
     }

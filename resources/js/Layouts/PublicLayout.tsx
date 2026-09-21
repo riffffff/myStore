@@ -1,19 +1,11 @@
 import React, { useState } from 'react';
-import { Link, usePage } from '@inertiajs/react';
-import {
-    Clock3,
-    LogIn,
-    ShoppingCart,
-    MapPin,
-    MessageCircle,
-    Menu,
-    Phone,
-    X,
-    UserPlus,
-    LogOut,
-} from 'lucide-react';
+import { usePage } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import AuthModal from '@/Components/Public/AuthModal';
+import WhatsAppButton from '@/Components/Public/WhatsAppButton';
+import Header from '@/Components/Layout/Header';
+import Footer from '@/Components/Layout/Footer';
+import MobileMenu from '@/Components/Layout/MobileMenu';
 
 interface PublicLayoutProps {
     children: React.ReactNode;
@@ -32,9 +24,7 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
     const shopDescription =
         shopSettings?.description ||
         'Kami memproduksi gerobak dan meubel berkualitas untuk kebutuhan usaha, rumah, dan pesanan custom.';
-    // LOGO URL — UTAMAKAN window.__SHOP__ (dari app.blade, 100% fresh setiap HTML load)
-    //   -> fallback ke Inertia shared data shopSettings.logo_url
-    //   -> fallback terakhir ke placeholder default
+    
     const fallbackLogo = window.asset('storage/logo/logo.jpeg');
     const logoUrl =
         (typeof window !== 'undefined' && (window as any).__SHOP__?.logo_url) ||
@@ -52,7 +42,6 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
     const openAuthModal = (mode: 'login' | 'register') => {
         setAuthModalMode(mode);
         setIsAuthModalOpen(true);
-        setIsMenuOpen(false);
     };
 
     const formatWaDisplay = (num: string) => {
@@ -64,290 +53,36 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
     };
 
     return (
-        <div className="min-h-screen flex flex-col bg-stone-50 text-stone-900 font-sans selection:bg-mahogany-800 selection:text-white">
+        <div className="min-h-screen flex flex-col bg-white text-primary-900 font-sans selection:bg-accent-500 selection:text-primary-900">
+            <Header
+                shopName={shopName}
+                logoUrl={logoUrl}
+                user={user}
+                onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
+                onAuthModalOpen={openAuthModal}
+            />
 
-            {/* ── HEADER ─────────────────────────────────────────────────── */}
-            <header className="sticky top-0 z-40 bg-mahogany-900 shadow-lg wood-texture">
-                <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between h-20 items-center">
+            <MobileMenu
+                isOpen={isMenuOpen}
+                onClose={() => setIsMenuOpen(false)}
+                user={user}
+                waNumber={waNumber}
+                onAuthModalOpen={openAuthModal}
+            />
 
-                        {/* Logo & Nama Toko */}
-                        <div className="shrink-0 flex items-center">
-                            <Link href={route('home')} className="flex items-center gap-3 group">
-                                <div className="h-11 w-11 rounded-xl overflow-hidden bg-white/10 ring-1 ring-white/20 flex items-center justify-center shrink-0 transition group-hover:ring-white/40">
-                                    <img
-                                        src={logoUrl}
-                                        alt={shopName}
-                                        className="h-full w-full object-cover"
-                                        onError={(e) => {
-                                            e.currentTarget.style.display = 'none';
-                                        }}
-                                    />
-                                </div>
-                                <span className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-                                    {shopName}
-                                </span>
-                            </Link>
-                        </div>
-
-                        {/* Desktop Navigation */}
-                        <nav className="hidden md:flex items-center space-x-1">
-                            {[
-                                { href: route('home'), label: 'Beranda', active: route().current('home') },
-                                { href: route('products.index'), label: 'Katalog Produk', active: route().current('products.*') },
-                                { href: route('articles.index'), label: 'Artikel & Info', active: route().current('articles.*') },
-                            ].map((item) => (
-                                <Link
-                                    key={item.label}
-                                    href={item.href}
-                                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition duration-200 ${
-                                        item.active
-                                            ? 'bg-white/15 text-white'
-                                            : 'text-mahogany-200 hover:bg-white/10 hover:text-white'
-                                    }`}
-                                >
-                                    {item.label}
-                                </Link>
-                            ))}
-                        </nav>
-
-                        {/* Desktop Right: Cart + Auth */}
-                        <div className="hidden md:flex items-center gap-2">
-                            {user ? (
-                                <>
-                                    <Link
-                                        href={route('cart.index')}
-                                        className="inline-flex items-center justify-center p-2.5 rounded-lg text-mahogany-200 hover:text-white hover:bg-white/10 transition"
-                                        aria-label="Keranjang Belanja"
-                                    >
-                                        <ShoppingCart className="h-5 w-5" />
-                                    </Link>
-                                    <span className="text-xs text-mahogany-300 max-w-32 truncate">
-                                        Hai, <span className="font-semibold text-white">{user.name}</span>
-                                    </span>
-                                    <Link
-                                        href={route('logout')}
-                                        method="post"
-                                        as="button"
-                                        className="inline-flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg text-mahogany-200 hover:text-white hover:bg-white/10 transition font-semibold"
-                                    >
-                                        <LogOut className="h-4 w-4" />
-                                        <span>Keluar</span>
-                                    </Link>
-                                </>
-                            ) : (
-                                <>
-                                    <button
-                                        type="button"
-                                        onClick={() => openAuthModal('login')}
-                                        className="inline-flex items-center gap-1.5 px-4 py-2 text-sm rounded-lg text-mahogany-100 hover:text-white hover:bg-white/10 transition font-semibold"
-                                    >
-                                        <LogIn className="h-4 w-4" />
-                                        <span>Masuk</span>
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => openAuthModal('register')}
-                                        className="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm rounded-lg bg-white text-mahogany-900 hover:bg-mahogany-50 font-bold shadow-sm transition"
-                                    >
-                                        <UserPlus className="h-4 w-4" />
-                                        <span>Daftar</span>
-                                    </button>
-                                </>
-                            )}
-                        </div>
-
-                        {/* Mobile: Cart + Hamburger */}
-                        <div className="flex md:hidden items-center gap-2">
-                            {user && (
-                                <Link
-                                    href={route('cart.index')}
-                                    className="inline-flex items-center justify-center p-2 rounded-lg text-mahogany-200 hover:text-white hover:bg-white/10 transition"
-                                    aria-label="Keranjang Belanja"
-                                >
-                                    <ShoppingCart className="h-5 w-5" />
-                                </Link>
-                            )}
-                            <button
-                                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                className="inline-flex items-center justify-center p-2 rounded-lg text-mahogany-200 hover:text-white hover:bg-white/10 transition"
-                                aria-label="Toggle menu"
-                            >
-                                {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Mobile Menu */}
-                {isMenuOpen && (
-                    <div className="md:hidden bg-mahogany-950 border-t border-mahogany-800 wood-texture wood-texture-subtle">
-                        <div className="px-3 pt-2 pb-4 space-y-1">
-                            {[
-                                { href: route('home'), label: 'Beranda', active: route().current('home') },
-                                { href: route('products.index'), label: 'Katalog Produk', active: route().current('products.*') },
-                                { href: route('articles.index'), label: 'Artikel & Info', active: route().current('articles.*') },
-                            ].map((item) => (
-                                <Link
-                                    key={item.label}
-                                    href={item.href}
-                                    className={`block px-3 py-2.5 rounded-lg text-base font-semibold transition ${
-                                        item.active
-                                            ? 'bg-mahogany-800 text-white'
-                                            : 'text-mahogany-200 hover:bg-mahogany-800 hover:text-white'
-                                    }`}
-                                >
-                                    {item.label}
-                                </Link>
-                            ))}
-
-                            <div className="h-px bg-mahogany-800 my-2" />
-
-                            {user ? (
-                                <>
-                                    <Link
-                                        href={route('cart.index')}
-                                        className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-base font-semibold text-mahogany-200 hover:bg-mahogany-800 hover:text-white transition"
-                                    >
-                                        <ShoppingCart className="h-4 w-4" />
-                                        Keranjang Saya
-                                    </Link>
-                                    <div className="px-3 py-1 text-xs text-mahogany-400">
-                                        Hai, <span className="font-semibold text-mahogany-200">{user.name}</span>
-                                    </div>
-                                    <Link
-                                        href={route('logout')}
-                                        method="post"
-                                        as="button"
-                                        className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm font-bold text-rose-400 hover:bg-rose-950/40 transition"
-                                    >
-                                        <LogOut className="h-4 w-4" />
-                                        Keluar
-                                    </Link>
-                                </>
-                            ) : (
-                                <div className="space-y-2 pt-1">
-                                    <button
-                                        type="button"
-                                        onClick={() => openAuthModal('login')}
-                                        className="flex items-center justify-center gap-1.5 w-full px-4 py-2.5 rounded-lg text-sm font-semibold border border-mahogany-700 text-mahogany-200 hover:bg-mahogany-800 hover:text-white transition"
-                                    >
-                                        <LogIn className="h-4 w-4" />
-                                        Masuk
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => openAuthModal('register')}
-                                        className="flex items-center justify-center gap-1.5 w-full px-4 py-2.5 rounded-lg text-sm font-bold bg-white text-mahogany-900 hover:bg-mahogany-50 transition"
-                                    >
-                                        <UserPlus className="h-4 w-4" />
-                                        Daftar Akun Baru
-                                    </button>
-                                </div>
-                            )}
-
-                            <div className="pt-2">
-                                <a
-                                    href={`https://wa.me/${waNumber}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-lg text-white font-bold shadow-sm"
-                                    style={{ backgroundColor: '#075E54' }}
-                                >
-                                    <MessageCircle className="h-4 w-4" />
-                                    Hubungi Kami via WhatsApp
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </header>
-
-            {/* ── MAIN CONTENT ───────────────────────────────────────────── */}
             <main className="grow">{children}</main>
 
-            {/* ── FOOTER ─────────────────────────────────────────────────── */}
-            <footer className="bg-mahogany-950 text-mahogany-300 border-t border-mahogany-900 wood-texture wood-texture-subtle">
-                <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+            <Footer
+                shopName={shopName}
+                logoUrl={logoUrl}
+                logoDarkUrl={logoDarkUrl}
+                shopDescription={shopDescription}
+                address={address}
+                waNumber={waNumber}
+                operatingHours={operatingHours}
+                formatWaDisplay={formatWaDisplay}
+            />
 
-                        {/* Info Toko */}
-                        <div className="md:col-span-2 space-y-5">
-                            <div className="flex items-center gap-3">
-                                <div className="h-12 w-12 rounded-xl overflow-hidden bg-white/10 ring-1 ring-white/20 flex items-center justify-center shrink-0">
-                                    <img
-                                        src={logoUrl}
-                                        alt={shopName}
-                                        className="h-full w-full object-cover"
-                                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                                    />
-                                </div>
-                                <span className="text-2xl font-bold text-white">
-                                    {shopName}
-                                </span>
-                            </div>
-                            <p className="text-mahogany-400 text-sm leading-relaxed max-w-md">
-                                {shopDescription}
-                            </p>
-                            <a
-                                href={`https://wa.me/${waNumber}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 w-10 h-10 rounded-xl bg-mahogany-900 hover:bg-emerald-900/50 text-mahogany-300 hover:text-emerald-400 justify-center transition duration-300"
-                            >
-                                <MessageCircle className="w-5 h-5" />
-                            </a>
-                        </div>
-
-                        {/* Navigasi */}
-                        <div className="space-y-4">
-                            <h3 className="text-white font-bold text-sm uppercase tracking-wider">Halaman</h3>
-                            <ul className="space-y-2.5 text-sm">
-                                {[
-                                    { href: route('home'), label: 'Beranda' },
-                                    { href: route('products.index'), label: 'Katalog Produk' },
-                                    { href: route('articles.index'), label: 'Artikel & Info' },
-                                ].map((item) => (
-                                    <li key={item.label}>
-                                        <Link
-                                            href={item.href}
-                                            className="hover:text-mahogany-100 transition duration-200"
-                                        >
-                                            {item.label}
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-
-                        {/* Kontak */}
-                        <div className="space-y-4">
-                            <h3 className="text-white font-bold text-sm uppercase tracking-wider">Kontak Toko</h3>
-                            <ul className="space-y-3 text-sm">
-                                <li className="flex gap-2.5 items-start">
-                                    <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-mahogany-500" />
-                                    <span>{address}</span>
-                                </li>
-                                <li className="flex gap-2.5 items-start">
-                                    <Phone className="mt-0.5 h-4 w-4 shrink-0 text-mahogany-500" />
-                                    <span>{formatWaDisplay(waNumber)}</span>
-                                </li>
-                                <li className="flex gap-2.5 items-start">
-                                    <Clock3 className="mt-0.5 h-4 w-4 shrink-0 text-mahogany-500" />
-                                    <span>{operatingHours}</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    {/* Bottom bar */}
-                    <div className="mt-14 pt-8 border-t border-mahogany-900 flex flex-col md:flex-row justify-between items-center gap-3 text-xs text-mahogany-500">
-                        <p>&copy; {new Date().getFullYear()} Paitech</p>
-                    </div>
-                </div>
-            </footer>
-
-            {/* Auth Modal */}
             <AuthModal
                 isOpen={isAuthModalOpen}
                 onClose={() => setIsAuthModalOpen(false)}
@@ -364,15 +99,13 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                     animation: kembangKempis 3s ease-in-out infinite;
                 }
             `}</style>
-            <a
+            <WhatsAppButton
                 href={`https://wa.me/${waNumber}?text=${encodeURIComponent('Halo, saya ingin konsultasi mengenai produk mebel.')}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="fixed bottom-10 sm:bottom-12 right-6 sm:right-8 z-50 flex items-center gap-3 bg-white/95 backdrop-blur-md px-4 py-3 rounded-2xl border border-stone-200/80 shadow-xl transition-all duration-300 group animate-kembang-kempis hover:animate-none hover:scale-105"
-                aria-label="Konsultasi WhatsApp"
+                className="fixed bottom-10 sm:bottom-12 right-6 sm:right-8 z-50 !bg-white/95 !text-stone-900 backdrop-blur-md !px-4 !py-3 border border-stone-200/80 shadow-xl hover:scale-105 animate-kembang-kempis hover:animate-none"
+                showIcon={false}
             >
                 <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-[#25D366] text-white shadow-md group-hover:scale-110 transition-transform duration-300 shrink-0">
-                    <MessageCircle className="w-5 h-5 fill-white/20" />
+                    <svg className="w-5 h-5 fill-white/20" viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2M12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19L7.55 18.83L4.43 19.65L5.26 16.61L5.06 16.29C4.24 15 3.8 13.47 3.8 11.91C3.81 7.37 7.5 3.67 12.05 3.67M8.53 7.33C8.37 7.33 8.1 7.39 7.87 7.64C7.65 7.89 7 8.5 7 9.71C7 10.93 7.89 12.1 8 12.27C8.14 12.44 9.76 14.94 12.25 16C12.84 16.27 13.3 16.42 13.66 16.53C14.25 16.72 14.79 16.69 15.22 16.63C15.7 16.56 16.68 16.03 16.89 15.45C17.1 14.87 17.1 14.38 17.04 14.27C16.97 14.17 16.81 14.11 16.56 14C16.31 13.86 15.09 13.26 14.87 13.18C14.64 13.1 14.5 13.06 14.31 13.3C14.15 13.55 13.67 14.11 13.53 14.27C13.38 14.44 13.24 14.46 13 14.34C12.74 14.21 11.94 13.95 11 13.11C10.26 12.45 9.77 11.64 9.62 11.39C9.5 11.15 9.61 11 9.73 10.89C9.84 10.78 10 10.6 10.1 10.45C10.23 10.31 10.27 10.2 10.35 10.04C10.43 9.87 10.39 9.73 10.33 9.61C10.27 9.5 9.77 8.26 9.56 7.77C9.36 7.29 9.16 7.35 9 7.34C8.86 7.34 8.7 7.33 8.53 7.33Z" /></svg>
                     <span className="absolute -top-1 -right-1 flex h-3 w-3">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#25D366] opacity-75"></span>
                         <span className="relative inline-flex rounded-full h-3 w-3 bg-[#128C7E]"></span>
@@ -382,7 +115,7 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                     <span className="text-xs font-extrabold text-stone-900 leading-tight">Ingin konsultasi?</span>
                     <span className="text-[11px] font-semibold text-emerald-700 leading-tight">Hubungi kami di WhatsApp</span>
                 </div>
-            </a>
+            </WhatsAppButton>
         </div>
     );
 }

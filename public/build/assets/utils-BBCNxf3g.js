@@ -1,1 +1,0 @@
-function e(e){if(e==null)return`Rp 0`;let t=typeof e==`number`?e:parseFloat(String(e)),n=isNaN(t)?0:t;return new Intl.NumberFormat(`id-ID`,{style:`currency`,currency:`IDR`,minimumFractionDigits:0,maximumFractionDigits:0}).format(n)}export{e as t};
