@@ -55,7 +55,7 @@ class HandleInertiaRequests extends Middleware
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
-            'shopSettings' => fn () => [
+            'shopSettings' => fn () => $settings ? [
                 'id' => $settings->id,
                 'shop_name' => $settings->shop_name,
                 'description' => $settings->description,
@@ -76,7 +76,7 @@ class HandleInertiaRequests extends Middleware
                 'logo' => $settings->logo,
                 'logo_dark' => $settings->logo_dark,
                 'favicon' => $settings->favicon,
-            ],
+            ] : null,
         ];
     }
 }
