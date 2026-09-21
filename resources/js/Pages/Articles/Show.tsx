@@ -2,7 +2,7 @@ import React from 'react';
 import { Head, Link, usePage } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import ScrollReveal from '@/Components/Public/ScrollReveal';
-import { Article } from '@/types/mebel';
+import { Article, ShopSetting } from '@/types/mebel';
 import { ArrowLeft } from 'lucide-react';
 import { PageProps } from '@/types';
 import { getImageUrl, formatDate } from '@/lib/utils';
@@ -10,13 +10,16 @@ import WhatsAppButton from '@/Components/Public/WhatsAppButton';
 
 interface ArticleShowProps {
     article: Article;
+    shopSettings: ShopSetting;
 }
 
 const DEFAULT_ARTICLE_IMAGE = 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80&w=1600';
 
-export default function Show({ article }: ArticleShowProps) {
-    const { shopSettings } = usePage<PageProps>().props;
-    const waNumber = shopSettings?.whatsapp_number || '6281234567890';
+export default function Show({ article, shopSettings }: ArticleShowProps) {
+    const { shopSettings: globalShopSettings } = usePage<PageProps>().props;
+    const settings = shopSettings || globalShopSettings;
+    const waNumber = settings?.whatsapp_number || '6281234567890';
+    const shopName = settings?.shop_name || 'PaiTech';
 
     const articleTitle = article?.title ?? 'Artikel';
     const articleExcerpt = article?.excerpt ?? '';
@@ -27,8 +30,8 @@ export default function Show({ article }: ArticleShowProps) {
     const imageUrl = getImageUrl(articleImage, DEFAULT_ARTICLE_IMAGE);
     const formattedDate = formatDate(articlePublishedAt);
 
-    const pageTitle = `${articleTitle} | Agus Gerobak`;
-    const metaDescription = articleExcerpt || 'Artikel inspirasi dan tips seputar gerobak dan meubel dari Agus Gerobak.';
+    const pageTitle = `${articleTitle} | ${shopName}`;
+    const metaDescription = articleExcerpt || `Artikel insight teknologi dan digital transformation dari ${shopName}.`;
     const canonicalUrl = route('articles.show', article.slug);
     const articleJsonLd = JSON.stringify({
         '@context': 'https://schema.org',
@@ -38,8 +41,8 @@ export default function Show({ article }: ArticleShowProps) {
         image: imageUrl,
         datePublished: articlePublishedAt,
         dateModified: article.updated_at || articlePublishedAt,
-        author: { '@type': 'Organization', name: 'Agus Mebel' },
-        publisher: { '@type': 'Organization', name: 'Agus Mebel' },
+        author: { '@type': 'Organization', name: shopName },
+        publisher: { '@type': 'Organization', name: shopName },
         mainEntityOfPage: canonicalUrl,
     }).replace(/</g, '\\u003c');
 
@@ -113,7 +116,7 @@ export default function Show({ article }: ArticleShowProps) {
 
                         <footer className="mt-12 pt-6 border-t border-stone-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs text-stone-500">
                             <div>
-                                <span>Penulis: Admin Agus Mebel</span>
+                                <span>Penulis: Tim {shopName}</span>
                             </div>
                             <div>
                                 <span>Bagikan artikel ini ke media sosial Anda.</span>
@@ -126,15 +129,15 @@ export default function Show({ article }: ArticleShowProps) {
                 <ScrollReveal delay={200} direction="up">
                     <div className="mt-12 p-8 bg-stone-950 text-white rounded-3xl border border-stone-900 flex flex-col md:flex-row items-center justify-between gap-6">
                         <div className="space-y-1.5 text-center md:text-left">
-                            <h3 className="text-lg font-bold text-stone-100">Ingin Punya Furniture Jati Impian?</h3>
-                            <p className="text-xs text-stone-400 max-w-md leading-relaxed">Konsultasikan gratis desain gerobak atau meubel impian Anda dengan tim kami.</p>
+                            <h3 className="text-lg font-bold text-stone-100">Butuh Solusi Teknologi untuk Bisnis Anda?</h3>
+                            <p className="text-xs text-stone-400 max-w-md leading-relaxed">Konsultasikan kebutuhan digital transformation bisnis Anda dengan tim expert kami.</p>
                         </div>
                         <WhatsAppButton
                             href={`https://wa.me/${waNumber}`}
                             fullWidth
                             className="md:w-auto"
                         >
-                            Tanya Pengrajin WA
+                            Konsultasi Gratis
                         </WhatsAppButton>
                     </div>
                 </ScrollReveal>

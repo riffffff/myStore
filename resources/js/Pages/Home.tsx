@@ -29,8 +29,8 @@ export default function Home({ heroArticles, topProducts, reviews, shopSettings 
     return (
         <PublicLayout>
             <Head>
-                <title>{`${shopSettings?.shop_name || 'Agus Gerobak'} | Gerobak dan Meubel Custom`}</title>
-                <meta name="description" content="Produsen gerobak dan meubel custom berkualitas untuk usaha, rumah, dan kebutuhan komersial." />
+                <title>{shopSettings?.shop_name || 'PaiTech'} | {shopSettings?.hero_banner_text_1 || 'Transformasi Digital untuk Bisnis Modern'}</title>
+                <meta name="description" content={shopSettings?.description || 'Solusi teknologi terpadu untuk transformasi digital bisnis Anda'} />
             </Head>
 
             {/* Section Hero Banner */}

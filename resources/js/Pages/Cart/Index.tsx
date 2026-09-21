@@ -101,14 +101,14 @@ export default function Index({ cart, shopSettings }: CartIndexProps) {
                             </div>
                             <h2 className="text-lg font-bold text-stone-900">Keranjang Masih Kosong</h2>
                             <p className="mt-1 text-stone-500 text-xs max-w-md mx-auto leading-relaxed">
-                                Belum ada produk di keranjang. Silakan jelajahi katalog furniture kayu jati kami.
+                                Belum ada layanan di keranjang. Silakan jelajahi katalog solusi teknologi kami.
                             </p>
                             <div className="mt-6 inline-flex items-center justify-center gap-3 flex-wrap">
                                 <Link
                                     href={route('products.index')}
                                     className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-900 text-white text-xs font-bold hover:bg-amber-800 shadow-xs transition"
                                 >
-                                    Lihat Katalog Produk
+                                    Lihat Katalog Layanan
                                 </Link>
                                 <WhatsAppButton
                                     href={`https://wa.me/${waNumber}`}

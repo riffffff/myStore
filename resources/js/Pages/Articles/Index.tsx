@@ -3,7 +3,7 @@ import { Head, Link } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import Pagination from '@/Components/Public/Pagination';
 import ScrollReveal from '@/Components/Public/ScrollReveal';
-import { Article } from '@/types/mebel';
+import { Article, ShopSetting } from '@/types/mebel';
 import { ArrowRight, Clock3, Newspaper } from 'lucide-react';
 import { getImageUrl, formatDate, safeArray } from '@/lib/utils';
 
@@ -14,17 +14,18 @@ interface ArticlesIndexProps {
         data: Article[];
         links: any[];
     };
+    shopSettings: ShopSetting;
 }
 
-export default function Index({ articles }: ArticlesIndexProps) {
+export default function Index({ articles, shopSettings }: ArticlesIndexProps) {
     const articlesData  = safeArray(articles?.data);
     const articlesLinks = Array.isArray(articles?.links) ? articles.links : [];
 
     return (
         <PublicLayout>
             <Head>
-                <title>Artikel & Inspirasi Gerobak dan Meubel | Agus Gerobak</title>
-                <meta name="description" content="Tips memilih gerobak dan meubel, inspirasi desain usaha, serta panduan perawatan produk agar tahan lama." />
+                <title>Artikel & Insight Teknologi | {shopSettings?.shop_name || 'PaiTech'}</title>
+                <meta name="description" content="Dapatkan insight terbaru seputar teknologi, digital transformation, AI, cloud computing, cybersecurity, dan tips mengembangkan bisnis digital." />
             </Head>
 
             {/* Hero Banner */}

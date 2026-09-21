@@ -57,16 +57,16 @@ export default function Index({ products, shopSettings, filters }: ProductsIndex
     return (
         <PublicLayout>
             <Head>
-                <title>Katalog Gerobak dan Meubel | Agus Gerobak</title>
-                <meta name="description" content="Jelajahi koleksi gerobak dan meubel berkualitas untuk usaha, rumah, toko, dan kebutuhan custom." />
+                <title>Katalog Layanan | {shopSettings?.shop_name || 'PaiTech'}</title>
+                <meta name="description" content={`Jelajahi berbagai layanan teknologi dari ${shopSettings?.shop_name || 'PaiTech'}: web development, mobile app, cloud infrastructure, AI/ML integration, dan konsultasi IT profesional.`} />
             </Head>
 
             {/* Hero Banner */}
             <div className="bg-primary-800 py-16 sm:py-20 text-center text-white relative overflow-hidden">
                 <div className="relative max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
-                    <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight">Katalog Produk</h1>
+                    <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight">Katalog Layanan</h1>
                     <p className="text-sm sm:text-base text-gray-200 max-w-2xl mx-auto leading-relaxed">
-                        Pilih berbagai layanan dan produk teknologi untuk mengembangkan bisnis Anda.
+                        Pilih berbagai layanan teknologi untuk mengembangkan bisnis Anda.
                     </p>
                 </div>
             </div>
