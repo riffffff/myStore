@@ -1,18 +1,5 @@
 # syntax=docker/dockerfile:1
 
-# ── Stage 1: Build Frontend Assets (Vite + React) ──
-FROM node:22-alpine AS frontend
-WORKDIR /app
-
-# Cache package installation
-COPY package*.json ./
-RUN npm ci
-
-# Build production assets
-COPY . .
-RUN npm run build
-
-# ── Stage 2: PHP Application ──
 FROM php:8.3-cli-alpine AS app
 
 # Install necessary system libraries
@@ -51,11 +38,8 @@ WORKDIR /var/www/html
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
 
-# Copy application files
+# Copy application files (including pre-built public/build)
 COPY . .
-
-# Copy compiled frontend assets from Stage 1
-COPY --from=frontend /app/public/build ./public/build
 
 # Finish Composer optimized autoload
 RUN composer dump-autoload --optimize --no-dev
