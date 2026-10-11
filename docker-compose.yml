@@ -8,7 +8,8 @@ services:
     ports:
       - "8002:8002"
     env_file:
-      - .env
+      - path: .env
+        required: false
     environment:
       - APP_URL=http://localhost:8002
       - DB_CONNECTION=sqlite
@@ -16,4 +17,4 @@ services:
       - PHP_CLI_SERVER_WORKERS=4
     volumes:
       - ./storage/app:/var/www/html/storage/app
-      - ./database/database.sqlite:/var/www/html/database/database.sqlite
+      - ./database:/var/www/html/database
