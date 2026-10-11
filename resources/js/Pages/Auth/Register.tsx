@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
-import { Head } from '@inertiajs/react';
+import { useState } from 'react';
+import { Head, usePage } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import AuthModal from '@/Components/Public/AuthModal';
+import { PageProps } from '@/types';
 
 export default function Register() {
     const [isOpen, setIsOpen] = useState(true);
+    const { shopSettings } = usePage<PageProps>().props;
+    const shopName = shopSettings?.shop_name ?? '';
 
     const handleClose = () => {
         setIsOpen(false);
@@ -15,7 +18,7 @@ export default function Register() {
 
     return (
         <PublicLayout>
-            <Head title="Daftar Akun Baru" />
+            <Head title={shopName} />
             <AuthModal
                 isOpen={isOpen}
                 onClose={handleClose}

@@ -40,30 +40,47 @@ class HandleInertiaRequests extends Middleware
     {
         $settings = $this->shopSettingService->getSettings();
 
-        // Prepare shopSettings with safe defaults
-        $shopSettings = null;
-        if ($settings) {
-            $shopSettings = [
-                'id' => $settings->id ?? null,
-                'shop_name' => $settings->shop_name ?? 'PaiTech',
-                'description' => $settings->description ?? '',
-                'address' => $settings->address ?? '',
-                'whatsapp_number' => $settings->whatsapp_number ?? '6281234567890',
-                'whatsapp_template' => $settings->whatsapp_template ?? '',
-                'operating_hours' => $settings->operating_hours ?? '',
-                'hero_banner_text_1' => $settings->hero_banner_text_1 ?? '',
-                'hero_banner_text_2' => $settings->hero_banner_text_2 ?? '',
-                'hero_banner_bg' => $settings->hero_banner_bg ?? null,
-                'shipping_areas' => $settings->shipping_areas ?? [],
-                'shipping_estimate_days' => $settings->shipping_estimate_days ?? '',
-                'logo_url' => $this->shopSettingService->getLogoUrl('light'),
-                'logo_dark_url' => $this->shopSettingService->getLogoUrl('dark'),
-                'favicon_url' => $this->shopSettingService->getFaviconUrl(),
-                'logo' => $settings->logo ?? null,
-                'logo_dark' => $settings->logo_dark ?? null,
-                'favicon' => $settings->favicon ?? null,
-            ];
-        }
+        $shopSettings = [
+            'id'                    => $settings?->id ?? null,
+            'shop_name'             => $settings?->shop_name ?? 'PaiTech',
+            'description'           => $settings?->description ?? 'Solusi teknologi dan produk berkualitas untuk kebutuhan bisnis modern.',
+            'address'               => $settings?->address ?? 'Indonesia',
+            'whatsapp_number'       => $settings?->whatsapp_number ?? '6281234567890',
+            'whatsapp_template'     => $settings?->whatsapp_template ?? '',
+            'operating_hours'       => $settings?->operating_hours ?? 'Senin - Sabtu: 08:00 - 17:00',
+            'hero_banner_text_1'    => $settings?->hero_banner_text_1 ?? 'Teknologi & Produk Berkualitas',
+            'hero_banner_text_2'    => $settings?->hero_banner_text_2 ?? 'Solusi digital untuk transformasi bisnis Anda',
+            'hero_banner_bg'        => $settings?->hero_banner_bg ?? null,
+            'shipping_areas'        => $settings?->shipping_areas ?? [],
+            'shipping_estimate_days' => $settings?->shipping_estimate_days ?? '',
+            'logo_url'              => $this->shopSettingService->getLogoUrl('light'),
+            'logo_dark_url'         => $this->shopSettingService->getLogoUrl('dark'),
+            'favicon_url'           => $this->shopSettingService->getFaviconUrl(),
+            'logo'                  => $settings?->logo ?? null,
+            'logo_dark'             => $settings?->logo_dark ?? null,
+            'favicon'               => $settings?->favicon ?? null,
+            'qris_image'            => $settings?->qris_image ?? null,
+            'qris_image_url'        => $this->shopSettingService->getQrisImageUrl(),
+            'qris_account_name'     => $this->shopSettingService->getQrisAccountName() ?? ($settings?->shop_name ?? 'PaiTech'),
+        ];
+
+        // Theme data — lazily evaluated untuk performa
+        $theme = fn () => $settings?->getThemeColors() ?? [
+            'primary'         => '#3B82F6',
+            'secondary'       => '#8B5CF6',
+            'accent'          => '#F59E0B',
+            'background'      => '#FFFFFF',
+            'backgroundDark'  => '#111827',
+            'text'            => '#1F2937',
+            'textLight'       => '#6B7280',
+            'success'         => '#10B981',
+            'error'           => '#EF4444',
+            'warning'         => '#F59E0B',
+            'info'            => '#3B82F6',
+            'borderRadius'    => '0.5rem',
+            'fontFamily'      => 'Inter, system-ui, sans-serif',
+            'darkModeEnabled' => true,
+        ];
 
         return [
             ...parent::share($request),
@@ -71,9 +88,9 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
             ],
             'flash' => [
-                'success' => fn () => $request->session()->get('success'),
-                'error' => fn () => $request->session()->get('error'),
-                'cart.flash' => fn () => $request->session()->get('cart.flash'),
+                'success'          => fn () => $request->session()->get('success'),
+                'error'            => fn () => $request->session()->get('error'),
+                'cart.flash'       => fn () => $request->session()->get('cart.flash'),
                 'review_submitted' => fn () => $request->session()->get('review_submitted'),
             ],
             'ziggy' => fn () => [
@@ -81,6 +98,7 @@ class HandleInertiaRequests extends Middleware
                 'location' => $request->url(),
             ],
             'shopSettings' => $shopSettings,
+            'theme'        => $theme,
         ];
     }
 }

@@ -28,7 +28,8 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email'],
+            'login'    => ['nullable', 'string'],
+            'email'    => ['nullable', 'string'],
             'password' => ['required', 'string'],
         ];
     }
@@ -42,11 +43,40 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        $loginInput = trim((string) ($this->input('login') ?: $this->input('email')));
+        if ($loginInput === '') {
+            throw ValidationException::withMessages([
+                'email' => 'Nomor HP atau Email wajib diisi.',
+                'login' => 'Nomor HP atau Email wajib diisi.',
+            ]);
+        }
+
+        $credentials = [
+            'password' => $this->input('password'),
+        ];
+
+        if (filter_var($loginInput, FILTER_VALIDATE_EMAIL)) {
+            $credentials['email'] = strtolower($loginInput);
+        } else {
+            // Cek nomor telepon (dengan atau tanpa sanitasi angka)
+            $cleanPhone = preg_replace('/[^0-9]/', '', $loginInput);
+            $user = \App\Models\User::where('phone', $loginInput)
+                ->orWhere('phone', $cleanPhone)
+                ->first();
+
+            if ($user) {
+                $credentials['id'] = $user->id;
+            } else {
+                $credentials['phone'] = $loginInput;
+            }
+        }
+
+        if (! Auth::attempt($credentials, $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
+                'login' => trans('auth.failed'),
             ]);
         }
 
@@ -81,6 +111,7 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+        $loginInput = $this->string('login')->value() ?: $this->string('email')->value();
+        return Str::transliterate(Str::lower($loginInput).'|'.$this->ip());
     }
 }

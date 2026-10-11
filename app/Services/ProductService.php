@@ -21,15 +21,28 @@ class ProductService
      * @param  array  $filters  Available filters: stock_status, sort, search
      * @param  int  $perPage  Number of items per page
      */
-    public function getPublishedProducts(array $filters = [], int $perPage = 12): LengthAwarePaginator
+    public function getPublishedProducts(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
         $query = Product::with(['images' => function ($query) {
             $query->where('is_primary', true);
         }])->where('is_published', true);
 
+        // Apply category filter
+        if (! empty($filters['category'])) {
+            $query->where('category', $filters['category']);
+        }
+
         // Apply stock status filter
         if (! empty($filters['stock_status'])) {
             $this->applyStockStatusFilter($query, $filters['stock_status']);
+        }
+
+        // Apply price range filter
+        if (isset($filters['min_price']) && is_numeric($filters['min_price'])) {
+            $query->where('price', '>=', (float) $filters['min_price']);
+        }
+        if (isset($filters['max_price']) && is_numeric($filters['max_price']) && (float) $filters['max_price'] > 0) {
+            $query->where('price', '<=', (float) $filters['max_price']);
         }
 
         // Apply search filter
@@ -38,7 +51,7 @@ class ProductService
         }
 
         // Apply sorting
-        $this->applySorting($query, $filters['sort'] ?? 'newest');
+        $this->applySorting($query, $filters['sort'] ?? 'popular');
 
         return $query->paginate($perPage)->withQueryString();
     }
@@ -109,8 +122,25 @@ class ProductService
         match ($sort) {
             'price_low' => $query->orderBy('price', 'asc'),
             'price_high' => $query->orderBy('price', 'desc'),
-            'popular' => $query->orderBy('view_count', 'desc'),
-            default => $query->orderBy('created_at', 'desc'),
+            'popular', 'top_sales' => $query->orderBy('views_count', 'desc'),
+            'newest' => $query->orderBy('created_at', 'desc'),
+            default => $query->orderBy('views_count', 'desc'),
         };
+    }
+
+    /**
+     * Get distinct categories from published products with counts.
+     */
+    public function getCategories(): array
+    {
+        return Product::where('is_published', true)
+            ->whereNotNull('category')
+            ->where('category', '!=', '')
+            ->select('category')
+            ->selectRaw('count(*) as count')
+            ->groupBy('category')
+            ->orderBy('category', 'asc')
+            ->get()
+            ->toArray();
     }
 }

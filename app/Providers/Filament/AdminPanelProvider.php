@@ -27,11 +27,11 @@ class AdminPanelProvider extends PanelProvider
     {
         try {
             $shopSettings = \App\Models\ShopSetting::getSettings();
-            $brandName    = ($shopSettings->shop_name ?? 'Agus Mebel') . ' Admin';
+            $brandName    = ($shopSettings->shop_name ?? 'Store') . ' Admin';
             $brandLogo    = $shopSettings->getLogoUrl('light');
             $favicon      = $shopSettings->getFaviconUrl();
         } catch (\Throwable) {
-            $brandName = 'Agus Mebel Admin';
+            $brandName = 'Store Admin';
             $brandLogo = null;
             $favicon   = null;
         }
@@ -89,7 +89,7 @@ class AdminPanelProvider extends PanelProvider
     public function boot(): void
     {
         FilamentAsset::register([
-            Css::make('agus-mebel-admin', public_path('css/filament-admin.css'))
+            Css::make('store-admin', public_path('css/filament-admin.css'))
                 ->loadedOnRequest(),
         ]);
     }

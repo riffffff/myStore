@@ -2,24 +2,24 @@ import React from 'react';
 import { Head, Link, usePage } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import ScrollReveal from '@/Components/Public/ScrollReveal';
-import { Article, ShopSetting } from '@/types/mebel';
+import { Article, ShopSetting } from '@/types/store';
 import { ArrowLeft } from 'lucide-react';
 import { PageProps } from '@/types';
-import { getImageUrl, formatDate } from '@/lib/utils';
+import { getImageUrl, formatDate, getSafeShopSettings } from '@/lib/utils';
 import WhatsAppButton from '@/Components/Public/WhatsAppButton';
 
 interface ArticleShowProps {
     article: Article;
-    shopSettings: ShopSetting;
+    shopSettings?: ShopSetting;
 }
 
 const DEFAULT_ARTICLE_IMAGE = 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80&w=1600';
 
 export default function Show({ article, shopSettings }: ArticleShowProps) {
     const { shopSettings: globalShopSettings } = usePage<PageProps>().props;
-    const settings = shopSettings || globalShopSettings;
-    const waNumber = settings?.whatsapp_number || '6281234567890';
-    const shopName = settings?.shop_name || 'PaiTech';
+    const safeSettings = getSafeShopSettings(shopSettings || globalShopSettings);
+    const waNumber = safeSettings.whatsapp_number;
+    const shopName = safeSettings.shop_name;
 
     const articleTitle = article?.title ?? 'Artikel';
     const articleExcerpt = article?.excerpt ?? '';
@@ -30,8 +30,8 @@ export default function Show({ article, shopSettings }: ArticleShowProps) {
     const imageUrl = getImageUrl(articleImage, DEFAULT_ARTICLE_IMAGE);
     const formattedDate = formatDate(articlePublishedAt);
 
-    const pageTitle = `${articleTitle} | ${shopName}`;
-    const metaDescription = articleExcerpt || `Artikel insight teknologi dan digital transformation dari ${shopName}.`;
+    const pageTitle = shopName ?? '';
+    const metaDescription = articleExcerpt || 'Baca artikel dan tips bermanfaat seputar produk unggulan kami.';
     const canonicalUrl = route('articles.show', article.slug);
     const articleJsonLd = JSON.stringify({
         '@context': 'https://schema.org',
@@ -48,8 +48,7 @@ export default function Show({ article, shopSettings }: ArticleShowProps) {
 
     return (
         <PublicLayout>
-            <Head>
-                <title>{pageTitle}</title>
+            <Head title={pageTitle}>
                 <meta name="description" content={metaDescription} />
                 <meta property="og:title" content={pageTitle} />
                 <meta property="og:description" content={metaDescription} />
@@ -68,7 +67,7 @@ export default function Show({ article, shopSettings }: ArticleShowProps) {
                         className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-stone-600 hover:text-amber-900 transition"
                     >
                         <ArrowLeft className="w-4 h-4" />
-                        Kembali ke Artikel & Info
+                        Kembali ke Artikel
                     </Link>
                 </div>
 
@@ -77,7 +76,7 @@ export default function Show({ article, shopSettings }: ArticleShowProps) {
 
                         <header className="space-y-4 text-center">
                             <div className="flex justify-center items-center gap-2 text-xs text-stone-400 font-semibold uppercase tracking-wider">
-                                <span>Kategori Tips</span>
+                                <span>Artikel</span>
                                 {formattedDate && (
                                     <>
                                         <span>•</span>
@@ -116,10 +115,10 @@ export default function Show({ article, shopSettings }: ArticleShowProps) {
 
                         <footer className="mt-12 pt-6 border-t border-stone-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs text-stone-500">
                             <div>
-                                <span>Penulis: Tim {shopName}</span>
+                                <span>Diterbitkan oleh: {shopName}</span>
                             </div>
                             <div>
-                                <span>Bagikan artikel ini ke media sosial Anda.</span>
+                                <span>Hak Cipta Dilindungi.</span>
                             </div>
                         </footer>
 
@@ -129,15 +128,15 @@ export default function Show({ article, shopSettings }: ArticleShowProps) {
                 <ScrollReveal delay={200} direction="up">
                     <div className="mt-12 p-8 bg-stone-950 text-white rounded-3xl border border-stone-900 flex flex-col md:flex-row items-center justify-between gap-6">
                         <div className="space-y-1.5 text-center md:text-left">
-                            <h3 className="text-lg font-bold text-stone-100">Butuh Solusi Teknologi untuk Bisnis Anda?</h3>
-                            <p className="text-xs text-stone-400 max-w-md leading-relaxed">Konsultasikan kebutuhan digital transformation bisnis Anda dengan tim expert kami.</p>
+                            <h3 className="text-lg font-bold text-stone-100">Punya Pertanyaan Seputar Produk?</h3>
+                            <p className="text-xs text-stone-400 max-w-md leading-relaxed">Hubungi tim kami langsung via WhatsApp untuk konsultasi dan pemesanan produk dengan mudah.</p>
                         </div>
                         <WhatsAppButton
                             href={`https://wa.me/${waNumber}`}
                             fullWidth
                             className="md:w-auto"
                         >
-                            Konsultasi Gratis
+                            Chat via WhatsApp
                         </WhatsAppButton>
                     </div>
                 </ScrollReveal>

@@ -92,4 +92,20 @@ class ShopSettingService
     {
         return $this->getSettings()->description;
     }
+
+    /**
+     * Get QRIS image URL.
+     */
+    public function getQrisImageUrl(): ?string
+    {
+        return $this->getSettings()->getQrisImageUrl();
+    }
+
+    /**
+     * Get QRIS account name.
+     */
+    public function getQrisAccountName(): ?string
+    {
+        return $this->getSettings()->qris_account_name;
+    }
 }

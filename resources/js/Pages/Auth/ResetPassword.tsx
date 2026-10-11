@@ -3,8 +3,9 @@ import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import GuestLayout from '@/Layouts/GuestLayout';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
+import { PageProps } from '@/types';
 
 export default function ResetPassword({
     token,
@@ -19,6 +20,8 @@ export default function ResetPassword({
         password: '',
         password_confirmation: '',
     });
+    const { shopSettings } = usePage<PageProps>().props;
+    const shopName = shopSettings?.shop_name ?? '';
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -30,7 +33,7 @@ export default function ResetPassword({
 
     return (
         <GuestLayout>
-            <Head title="Reset Password" />
+            <Head title={shopName} />
 
             <form onSubmit={submit}>
                 <div>

@@ -15,28 +15,33 @@ class ProductController extends Controller
 
     public function index(Request $request): Response
     {
-        $filters = $request->only(['stock_status', 'sort', 'search']);
-        $products = $this->productService->getPublishedProducts($filters, 12);
-        $shopSettings = \App\Models\ShopSetting::first();
+        $filters = $request->only(['stock_status', 'category', 'sort', 'search', 'min_price', 'max_price', 'per_page']);
+        
+        $perPage = (int) $request->input('per_page', 6);
+        $allowedPerPage = [3, 6, 12, 24, 48];
+        if (! in_array($perPage, $allowedPerPage, true)) {
+            $perPage = 6;
+        }
+
+        $products = $this->productService->getPublishedProducts($filters, $perPage);
+        $categories = $this->productService->getCategories();
 
         return Inertia::render('Products/Index', [
             'products' => $products,
-            'filters' => $filters,
-            'shopSettings' => $shopSettings,
+            'filters' => array_merge($filters, ['per_page' => $perPage]),
+            'categories' => $categories,
         ]);
     }
 
     public function show(string $slug): Response
     {
         $product = $this->productService->getProductBySlug($slug);
-        $shopSettings = \App\Models\ShopSetting::first();
 
         // Track view count
         $this->productService->incrementProductView($product);
 
         return Inertia::render('Products/Show', [
             'product' => $product,
-            'shopSettings' => $shopSettings,
         ]);
     }
 }

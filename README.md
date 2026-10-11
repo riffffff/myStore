@@ -1,58 +1,128 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# PaiTech — Modern E-Commerce Platform
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+PaiTech adalah platform e-commerce modern dengan arsitektur **Laravel 12 + Filament 3 + React 19 + Inertia.js 2 + TailwindCSS 4**, dilengkapi dengan **Dynamic Theme Customization System** dan arsitektur backend berbasis Service Pattern & Form Requests.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🚀 Fitur Unggulan
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 1. 🎨 Dynamic Theme Customization System
+Admin dapat menyesuaikan tema tampilan website secara langsung melalui Filament Admin Panel tanpa perlu rebuild aplikasi:
+- **11 Palette Warna**:
+  - Primary, Secondary, Accent
+  - Background (Light & Dark)
+  - Text & Text Light
+  - Status: Success, Error, Warning, Info
+- **13 Google Fonts Terpilih**: Inter, Roboto, Poppins, Montserrat, Open Sans, Lato, Raleway, Nunito, Source Sans 3, Work Sans, Playfair Display, Merriweather, dan System Default.
+- **Border Radius**: Sharp (0), Small (4px), Medium (8px), Large (12px), XL (16px), Rounded (24px).
+- **Dark Mode Support**: Admin dapat mengaktifkan/menonaktifkan dukungan mode gelap.
+- **Real-Time CSS Injection**: Disinkronkan melalui CSS Custom Properties (`:root`) via React Context (`ThemeContext.tsx`).
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 2. ⚡ Modern Frontend Stack
+- **React 19 + TypeScript 5.7**: Tipikal tipe yang ketat dengan `@/types/index.d.ts`.
+- **Inertia.js v2**: Seamless SPA navigation dengan dynamic page props sharing.
+- **TailwindCSS v4**: Dynamic CSS variables mapping dengan class utilities (`bg-theme-primary`, `font-theme`, `rounded-theme`, dll).
+- **Lucide React Icons**: Iconography modern dan konsisten.
 
-## Learning Laravel
+### 3. 🛡️ Clean Architecture Backend
+- **Service Layer Pattern**: Logika bisnis diisolasi di `app/Services/` (`ArticleService`, `ProductService`, `ReviewService`, `ShopSettingService`).
+- **Form Request Validation**: Validasi terisolasi di `app/Http/Requests/`.
+- **Filament Admin 3**: Panel admin responsif dengan Tabs organisasi (Identitas, Branding, Kontak, Theme Colors).
+- **Cache Optimization**: Pengaturan toko dicache dengan `ShopSetting::getSettings()` dan auto-flushed saat disimpan.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+---
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 🛠️ Tech Stack
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+| Layer | Teknologi |
+|---|---|
+| **Backend Framework** | Laravel 12.x / PHP 8.2+ |
+| **Admin Panel** | Filament 3.x |
+| **Frontend Framework** | React 19, Inertia.js 2.x |
+| **Styling** | TailwindCSS 4.x |
+| **Language** | PHP, TypeScript, Blade |
+| **Database** | SQLite (dev) / MySQL / PostgreSQL |
 
-## Agentic Development
+---
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## 📦 Instalasi & Setup Lokal
 
+### 1. Clone & Dependencies
 ```bash
-composer require laravel/boost --dev
+# Clone repository
+git clone <repository-url>
+cd Store
 
-php artisan boost:install
+# Install PHP dependencies
+composer install
+
+# Install Node dependencies
+npm install
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 2. Konfigurasi Lingkungan
+```bash
+# Salin file konfigurasi .env
+cp .env.example .env
 
-## Contributing
+# Generate application key
+php artisan key:generate
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Pastikan variabel `APP_NAME` di file `.env`:
+```env
+APP_NAME=PaiTech
+```
 
-## Code of Conduct
+### 3. Migrasi & Seeder Database
+```bash
+# Jalankan migrasi dan seeder awal
+php artisan migrate --seed
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Default kredensial admin:
+- **URL**: `http://localhost:8000/admin`
+- **Email**: `admin@paitech.id`
+- **Password**: `password123`
 
-## Security Vulnerabilities
+### 4. Menjalankan Aplikasi
+Buka dua terminal terpisah:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+**Terminal 1 (Backend Server):**
+```bash
+php artisan serve
+```
 
-## License
+**Terminal 2 (Vite Dev Server):**
+```bash
+npm run dev
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+## 🎨 Panduan Kustomisasi Tema
+
+1. Buka panel admin di `/admin`.
+2. Masuk ke menu **Shop Settings**.
+3. Pilih tab **Theme Colors**.
+4. Atur palet warna sesuai kebutuhan brand menggunakan color picker interaktif.
+5. Pilih jenis font dan border radius.
+6. Klik **Save** (Simpan).
+7. Tampilan frontend toko akan langsung berubah sesuai pengaturan baru tanpa perlu restart server!
+
+---
+
+## 🧪 Testing & Build
+
+```bash
+# Verifikasi Type & Build Frontend (Client + SSR)
+npm run build
+
+# Clear Cache Aplikasi
+php artisan optimize:clear
+```
+
+---
+
+## 📄 Lisensi
+Platform ini dilisensikan di bawah lisensi [MIT](LICENSE).

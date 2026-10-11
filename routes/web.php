@@ -7,7 +7,8 @@ use App\Http\Controllers\{
     ArticleController,
     CartController,
     ProfileController,
-    ReviewController
+    ReviewController,
+    OrderController
 };
 use App\Models\Article;
 use App\Models\Product;
@@ -126,8 +127,18 @@ Route::post('/review', [ReviewController::class, 'store'])
     ->middleware('throttle:review')
     ->name('reviews.store');
 
+// Lacak status pesanan & halaman sukses pesanan (Publik)
+Route::get('/pesan/status', [OrderController::class, 'track'])->name('orders.track');
+Route::get('/pesan/sukses/{orderNumber}', [OrderController::class, 'success'])->name('orders.success');
+
 // ===== USER ROUTES (Auth Required) =====
 Route::middleware('auth')->group(function () {
+    // Checkout & Buat Pesanan
+    Route::prefix('pesan')->name('orders.')->controller(OrderController::class)->group(function () {
+        Route::get('/', 'create')->name('create');
+        Route::post('/', 'store')->name('store');
+    });
+
     // Dashboard redirect
     Route::get('/dashboard', function (\Illuminate\Http\Request $request) {
         if ($request->user()?->is_admin) {

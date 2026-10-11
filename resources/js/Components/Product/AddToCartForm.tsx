@@ -1,5 +1,5 @@
 import React, { useState, useCallback, memo } from 'react';
-import { useForm } from '@inertiajs/react';
+import { useForm, Link } from '@inertiajs/react';
 import { ShoppingCart, UserPlus, LogIn, Lock, Minus, Plus, AlertCircle } from 'lucide-react';
 import { formatRupiah } from '@/lib/utils';
 import WhatsAppButton from '@/Components/Public/WhatsAppButton';
@@ -58,26 +58,26 @@ const AddToCartForm = memo(function AddToCartForm({
     // Not logged in - show auth prompt
     if (!isLoggedIn) {
         return (
-            <div className="pt-4 space-y-3">
-                <div className="p-5 rounded-2xl border border-mahogany-100 bg-mahogany-50/50">
-                    <div className="flex items-start gap-3">
-                        <div className="p-2 rounded-xl bg-mahogany-100 text-mahogany-800 shrink-0">
+            <div className="pt-2 space-y-3">
+                <div className="p-5 rounded-2xl border border-stone-200 bg-stone-50">
+                    <div className="flex items-start gap-3.5">
+                        <div className="p-2.5 rounded-xl bg-stone-200/80 text-stone-800 shrink-0">
                             <Lock className="h-5 w-5" />
                         </div>
                         <div className="space-y-3">
                             <div>
                                 <p className="text-sm font-bold text-stone-900">
-                                    Masuk untuk Memesan ke Keranjang
+                                    Silakan Masuk untuk Memesan
                                 </p>
                                 <p className="text-xs text-stone-500 mt-1 leading-relaxed">
-                                    Silakan masuk atau buat akun untuk menambahkan ke keranjang.
+                                    Gunakan akun Anda untuk langsung memesan produk ini dengan mudah.
                                 </p>
                             </div>
                             <div className="flex flex-wrap gap-2">
                                 <button
                                     type="button"
                                     onClick={() => onAuthModalOpen('login')}
-                                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-mahogany-800 text-white text-xs font-bold hover:bg-mahogany-700 transition"
+                                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-accent-600 text-white text-xs font-semibold hover:bg-accent-700 transition shadow-xs"
                                 >
                                     <LogIn className="h-3.5 w-3.5" />
                                     <span>Masuk</span>
@@ -85,7 +85,7 @@ const AddToCartForm = memo(function AddToCartForm({
                                 <button
                                     type="button"
                                     onClick={() => onAuthModalOpen('register')}
-                                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-mahogany-200 bg-white text-mahogany-800 text-xs font-bold hover:bg-mahogany-50 transition"
+                                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-stone-300 bg-white text-stone-800 text-xs font-semibold hover:bg-stone-100 transition"
                                 >
                                     <UserPlus className="h-3.5 w-3.5" />
                                     <span>Daftar Akun</span>
@@ -95,8 +95,8 @@ const AddToCartForm = memo(function AddToCartForm({
                     </div>
                 </div>
 
-                <WhatsAppButton href={whatsappUrl} fullWidth>
-                    Tanya / Pesan via WhatsApp
+                <WhatsAppButton href={whatsappUrl} fullWidth className="py-3 text-sm font-semibold rounded-xl">
+                    Tanya Produk via WhatsApp
                 </WhatsAppButton>
             </div>
         );
@@ -104,21 +104,23 @@ const AddToCartForm = memo(function AddToCartForm({
 
     // Logged in - show cart form
     return (
-        <form onSubmit={handleSubmit} className="pt-4 space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end p-4 sm:p-5 rounded-2xl bg-mahogany-50/50 border border-mahogany-100">
+        <form onSubmit={handleSubmit} className="pt-2 space-y-4">
+            {/* Box Jumlah & Subtotal */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-stone-50 border border-stone-200/90 shadow-2xs">
                 {/* Quantity Selector */}
-                <div className="space-y-2.5">
-                    <label className="text-xs font-bold text-stone-600 uppercase tracking-wider">
-                        Jumlah Pembelian
-                    </label>
-                    <div className="inline-flex items-center border border-mahogany-200 rounded-xl overflow-hidden bg-white shadow-sm h-11">
+                <div className="space-y-1.5">
+                    <span className="text-xs font-semibold text-stone-500 uppercase tracking-wider block">
+                        Jumlah Produk
+                    </span>
+                    <div className="inline-flex items-center border border-stone-300 rounded-xl overflow-hidden bg-white shadow-2xs h-10">
                         <button
                             type="button"
                             onClick={decrementQty}
-                            className="w-11 h-full flex items-center justify-center text-mahogany-700 hover:bg-mahogany-50 active:bg-mahogany-100 transition disabled:opacity-40 disabled:hover:bg-transparent shrink-0"
+                            className="w-10 h-full flex items-center justify-center text-stone-600 hover:bg-stone-100 hover:text-stone-900 active:bg-stone-200 transition disabled:opacity-30 disabled:hover:bg-transparent shrink-0"
                             disabled={qty <= 1}
+                            aria-label="Kurangi jumlah"
                         >
-                            <Minus className="w-4.5 h-4.5 stroke-[2.5]" />
+                            <Minus className="w-3.5 h-3.5" />
                         </button>
                         <input
                             type="number"
@@ -126,24 +128,26 @@ const AddToCartForm = memo(function AddToCartForm({
                             max={100}
                             value={qty}
                             onChange={handleQtyChange}
-                            className="w-16 h-full text-center font-extrabold text-stone-900 text-base border-x border-mahogany-200 focus:outline-none bg-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            className="w-14 h-full text-center font-bold text-stone-900 text-sm border-x border-stone-200 focus:outline-none bg-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            aria-label="Jumlah produk"
                         />
                         <button
                             type="button"
                             onClick={incrementQty}
-                            className="w-11 h-full flex items-center justify-center text-mahogany-700 hover:bg-mahogany-50 active:bg-mahogany-100 transition shrink-0"
+                            className="w-10 h-full flex items-center justify-center text-stone-600 hover:bg-stone-100 hover:text-stone-900 active:bg-stone-200 transition shrink-0"
+                            aria-label="Tambah jumlah"
                         >
-                            <Plus className="w-4.5 h-4.5 stroke-[2.5]" />
+                            <Plus className="w-3.5 h-3.5" />
                         </button>
                     </div>
                 </div>
 
-                {/* Total Price */}
-                <div className="flex flex-col items-start sm:items-end justify-end space-y-1">
-                    <span className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
-                        Total Harga
+                {/* Subtotal */}
+                <div className="flex flex-col sm:items-end justify-center">
+                    <span className="text-xs font-semibold text-stone-500 uppercase tracking-wider block mb-1">
+                        Subtotal
                     </span>
-                    <span className="text-lg sm:text-xl font-extrabold text-mahogany-900 leading-none">
+                    <span className="text-xl sm:text-2xl font-black text-stone-950 tracking-tight leading-none">
                         {formatRupiah(productPrice * qty)}
                     </span>
                 </div>
@@ -158,24 +162,40 @@ const AddToCartForm = memo(function AddToCartForm({
             )}
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3">
-                <button
-                    type="submit"
-                    disabled={isOutOfStock || processing}
-                    className={`grow inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl font-bold text-sm shadow-xs transition ${
-                        isOutOfStock
-                            ? 'bg-stone-200 text-stone-500 cursor-not-allowed'
-                            : 'bg-mahogany-800 text-white hover:bg-mahogany-700 active:scale-[0.98]'
-                    }`}
-                >
-                    <ShoppingCart className="w-4 h-4" />
-                    <span>
-                        {isOutOfStock ? 'Stok Habis' : processing ? 'Menambahkan...' : 'Tambah ke Keranjang'}
-                    </span>
-                </button>
+            <div className="space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {/* Beli Sekarang (Direct Checkout) */}
+                    <Link
+                        href={route('orders.create', { product_id: productId, quantity: qty })}
+                        className={`inline-flex items-center justify-center px-6 py-3.5 rounded-xl font-bold text-sm shadow-sm transition active:scale-[0.99] text-center ${
+                            isOutOfStock
+                                ? 'bg-stone-200 text-stone-400 pointer-events-none'
+                                : 'bg-accent-600 text-white hover:bg-accent-700'
+                        }`}
+                    >
+                        Beli Sekarang
+                    </Link>
 
-                <WhatsAppButton href={whatsappUrl} className="grow">
-                    Pesan via WhatsApp
+                    {/* Tambah ke Keranjang */}
+                    <button
+                        type="submit"
+                        disabled={isOutOfStock || processing}
+                        className={`inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-bold text-sm border-2 shadow-2xs transition active:scale-[0.99] ${
+                            isOutOfStock
+                                ? 'bg-stone-100 border-stone-200 text-stone-400 cursor-not-allowed'
+                                : 'bg-white hover:bg-accent-50/50 border-accent-600 text-accent-700'
+                        }`}
+                    >
+                        <ShoppingCart className="w-4 h-4" />
+                        <span>
+                            {isOutOfStock ? 'Stok Habis' : processing ? 'Menambahkan...' : '+ Keranjang'}
+                        </span>
+                    </button>
+                </div>
+
+                {/* WhatsApp Button */}
+                <WhatsAppButton href={whatsappUrl} fullWidth className="py-3 text-sm font-semibold rounded-xl">
+                    Tanya via WhatsApp
                 </WhatsAppButton>
             </div>
         </form>

@@ -22,20 +22,33 @@ class RegisteredUserController extends Controller
     public function store(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $validated = $request->validate([
-            'name' => 'nullable|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'name'     => 'required|string|max:255',
+            'phone'    => 'nullable|string|max:25|unique:'.User::class.',phone',
+            'email'    => 'nullable|string|lowercase|email|max:255|unique:'.User::class.',email',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ], [
+            'name.required'     => 'Nama lengkap wajib diisi.',
+            'phone.unique'      => 'Nomor HP ini sudah terdaftar. Silakan masuk / login.',
+            'email.unique'      => 'Email ini sudah terdaftar.',
+            'password.required' => 'Kata sandi wajib diisi.',
+            'password.confirmed'=> 'Konfirmasi kata sandi tidak cocok.',
         ]);
 
-        $name = trim((string) ($validated['name'] ?? ''));
-        if ($name === '') {
-            $emailName = explode('@', $validated['email'], 2)[0] ?? 'User';
-            $name = ucfirst(preg_replace('/[^a-zA-Z0-9]+/', ' ', $emailName));
+        if (empty($validated['phone']) && empty($validated['email'])) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'phone' => 'Nomor HP atau Email wajib diisi.',
+            ]);
         }
 
+        $name = trim((string) $validated['name']);
+        $phone = !empty($validated['phone']) ? $validated['phone'] : null;
+        $cleanPhone = $phone ? preg_replace('/[^0-9]/', '', $phone) : null;
+        $email = !empty($validated['email']) ? strtolower($validated['email']) : ($cleanPhone ? $cleanPhone . '@customer.local' : 'user_' . uniqid() . '@customer.local');
+
         $user = User::create([
-            'name' => $name,
-            'email' => $validated['email'],
+            'name'     => $name,
+            'phone'    => $phone,
+            'email'    => $email,
             'password' => Hash::make($validated['password']),
             'is_admin' => false,
         ]);

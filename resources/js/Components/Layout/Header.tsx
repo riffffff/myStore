@@ -1,6 +1,5 @@
-import React from 'react';
 import { Link } from '@inertiajs/react';
-import { ShoppingCart, Menu, LogIn, UserPlus, LogOut } from 'lucide-react';
+import { ShoppingCart, LogIn, UserPlus, LogOut, UserRound } from 'lucide-react';
 
 interface HeaderProps {
     shopName: string;
@@ -13,44 +12,60 @@ interface HeaderProps {
 export default function Header({ shopName, logoUrl, user, onMenuToggle, onAuthModalOpen }: HeaderProps) {
     const navItems = [
         { href: route('home'), label: 'Beranda', active: route().current('home') },
-        { href: route('products.index'), label: 'Katalog Produk', active: route().current('products.*') },
-        { href: route('articles.index'), label: 'Artikel & Info', active: route().current('articles.*') },
+        { href: route('products.index'), label: 'Katalog', active: route().current('products.*') },
+        { href: route('articles.index'), label: 'Artikel', active: route().current('articles.*') },
+        { href: route('orders.track'), label: 'Pesanan', active: route().current('orders.track') },
     ];
 
     return (
-        <header className="sticky top-0 z-40 bg-primary-800 shadow-lg">
-            <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between h-20 items-center">
+        <header
+            className="sticky top-0 z-40"
+            style={{
+                background: 'var(--header-bg, #333333)',
+                borderBottom: '1px solid color-mix(in srgb, var(--header-text, #FFFFFF) 10%, transparent)',
+            }}
+        >
+            <div className="max-w-360 mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex justify-between h-16 items-center gap-4">
+
                     {/* Logo & Nama Toko */}
                     <div className="shrink-0 flex items-center">
                         <Link href={route('home')} className="flex items-center gap-3 group">
-                            <div className="h-11 w-11 rounded-xl overflow-hidden bg-accent-500/20 ring-1 ring-accent-500/30 flex items-center justify-center shrink-0 transition group-hover:ring-accent-500/50">
+                            <div
+                                className="h-9 w-9 rounded-xl overflow-hidden flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-105"
+                                style={{
+                                    background: 'color-mix(in srgb, var(--header-active, #0D9488) 20%, transparent)',
+                                    boxShadow: '0 0 0 1px color-mix(in srgb, var(--header-active, #0D9488) 40%, transparent), 0 2px 8px color-mix(in srgb, var(--header-active, #0D9488) 25%, transparent)',
+                                }}
+                            >
                                 <img
                                     src={logoUrl}
                                     alt={shopName}
                                     className="h-full w-full object-cover"
-                                    onError={(e) => {
-                                        e.currentTarget.style.display = 'none';
-                                    }}
+                                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
                                 />
                             </div>
-                            <span className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                            <span className="text-sm sm:text-base font-bold text-header-text tracking-tight">
                                 {shopName}
                             </span>
                         </Link>
                     </div>
 
-                    {/* Desktop Navigation */}
-                    <nav className="hidden md:flex items-center space-x-1">
+                    {/* Desktop Navigation — Pill style */}
+                    <nav className="hidden md:flex items-center gap-1 flex-1 justify-center">
                         {navItems.map((item) => (
                             <Link
                                 key={item.label}
                                 href={item.href}
-                                className={`px-4 py-2 rounded-lg text-sm font-semibold transition duration-200 ${
+                                className={`relative px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-200 ${
                                     item.active
-                                        ? 'bg-accent-500 text-primary-900'
-                                        : 'text-gray-300 hover:bg-primary-700 hover:text-white'
+                                        ? 'text-white shadow-sm'
+                                        : 'text-header-text/75 hover:text-header-text hover:bg-white/10'
                                 }`}
+                                style={item.active ? {
+                                    background: 'var(--header-active, #0D9488)',
+                                    boxShadow: '0 2px 12px color-mix(in srgb, var(--header-active, #0D9488) 40%, transparent)',
+                                } : {}}
                             >
                                 {item.label}
                             </Link>
@@ -58,24 +73,40 @@ export default function Header({ shopName, logoUrl, user, onMenuToggle, onAuthMo
                     </nav>
 
                     {/* Desktop Right: Cart + Auth */}
-                    <div className="hidden md:flex items-center gap-2">
+                    <div className="hidden md:flex items-center gap-2 shrink-0">
                         {user ? (
                             <>
                                 <Link
                                     href={route('cart.index')}
-                                    className="inline-flex items-center justify-center p-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-primary-700 transition"
+                                    className="inline-flex items-center justify-center w-9 h-9 rounded-xl text-header-text/80 hover:text-white hover:bg-white/10 transition"
                                     aria-label="Keranjang Belanja"
                                 >
                                     <ShoppingCart className="h-5 w-5" />
                                 </Link>
-                                <span className="text-xs text-gray-400 max-w-32 truncate">
-                                    Hai, <span className="font-semibold text-white">{user.name}</span>
-                                </span>
+
+                                {/* User pill */}
+                                <Link
+                                    href={route('profile.edit')}
+                                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all hover:bg-white/10"
+                                    style={{ color: 'var(--header-text, #FFFFFF)' }}
+                                >
+                                    <div
+                                        className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
+                                        style={{
+                                            background: 'var(--header-active, #0D9488)',
+                                            color: '#fff',
+                                        }}
+                                    >
+                                        {user.name?.charAt(0)?.toUpperCase()}
+                                    </div>
+                                    <span className="max-w-28 truncate text-header-text">{user.name}</span>
+                                </Link>
+
                                 <Link
                                     href={route('logout')}
                                     method="post"
                                     as="button"
-                                    className="inline-flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg text-gray-300 hover:text-white hover:bg-primary-700 transition font-semibold"
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full text-header-text/70 hover:text-white hover:bg-white/10 transition font-medium"
                                 >
                                     <LogOut className="h-4 w-4" />
                                     <span>Keluar</span>
@@ -86,7 +117,8 @@ export default function Header({ shopName, logoUrl, user, onMenuToggle, onAuthMo
                                 <button
                                     type="button"
                                     onClick={() => onAuthModalOpen('login')}
-                                    className="inline-flex items-center gap-1.5 px-4 py-2 text-sm rounded-lg text-gray-300 hover:text-white hover:bg-primary-700 transition font-semibold"
+                                    className="inline-flex items-center gap-1.5 px-4 py-1.5 text-sm rounded-full text-header-text/80 hover:text-white hover:bg-white/10 transition font-medium border"
+                                    style={{ borderColor: 'color-mix(in srgb, var(--header-text, #FFFFFF) 25%, transparent)' }}
                                 >
                                     <LogIn className="h-4 w-4" />
                                     <span>Masuk</span>
@@ -94,7 +126,11 @@ export default function Header({ shopName, logoUrl, user, onMenuToggle, onAuthMo
                                 <button
                                     type="button"
                                     onClick={() => onAuthModalOpen('register')}
-                                    className="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm rounded-lg bg-accent-500 text-primary-900 hover:bg-accent-400 font-bold shadow-sm transition"
+                                    className="inline-flex items-center gap-1.5 px-4 py-1.5 text-sm rounded-full text-white font-bold transition-all hover:opacity-90 hover:scale-[1.03]"
+                                    style={{
+                                        background: 'var(--header-active, #0D9488)',
+                                        boxShadow: '0 2px 12px color-mix(in srgb, var(--header-active, #0D9488) 40%, transparent)',
+                                    }}
                                 >
                                     <UserPlus className="h-4 w-4" />
                                     <span>Daftar</span>
@@ -103,26 +139,40 @@ export default function Header({ shopName, logoUrl, user, onMenuToggle, onAuthMo
                         )}
                     </div>
 
-                    {/* Mobile: Cart + Hamburger */}
-                    <div className="flex md:hidden items-center gap-2">
-                        {user && (
-                            <Link
-                                href={route('cart.index')}
-                                className="inline-flex items-center justify-center p-2 rounded-lg text-gray-300 hover:text-white hover:bg-primary-700 transition"
-                                aria-label="Keranjang Belanja"
-                            >
-                                <ShoppingCart className="h-5 w-5" />
-                            </Link>
-                        )}
-                        <button
-                            type="button"
-                            onClick={onMenuToggle}
-                            className="inline-flex items-center justify-center p-2 rounded-lg text-gray-300 hover:text-white hover:bg-primary-700 transition"
-                            aria-label="Menu"
+                    {/* Mobile: Cart + Profile */}
+                    <div className="flex md:hidden items-center gap-1">
+                        <Link
+                            href={route('cart.index')}
+                            className="relative inline-flex items-center justify-center w-9 h-9 rounded-xl text-header-text/90 hover:text-white hover:bg-white/10 transition"
+                            aria-label="Keranjang Belanja"
                         >
-                            <Menu className="h-6 w-6" />
-                        </button>
+                            <ShoppingCart className="h-5 w-5" />
+                        </Link>
+                        {user ? (
+                            <Link
+                                href={route('profile.edit')}
+                                className="inline-flex items-center justify-center w-9 h-9 rounded-xl transition hover:bg-white/10"
+                                aria-label="Profil Akun"
+                            >
+                                <div
+                                    className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white"
+                                    style={{ background: 'var(--header-active, #0D9488)' }}
+                                >
+                                    {user.name?.charAt(0)?.toUpperCase()}
+                                </div>
+                            </Link>
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={() => onAuthModalOpen('login')}
+                                className="relative inline-flex items-center justify-center w-9 h-9 rounded-xl text-header-text/90 hover:text-white hover:bg-white/10 transition"
+                                aria-label="Masuk Akun"
+                            >
+                                <UserRound className="h-5 w-5" />
+                            </button>
+                        )}
                     </div>
+
                 </div>
             </div>
         </header>

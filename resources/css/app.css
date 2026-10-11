@@ -1,41 +1,77 @@
 @import "tailwindcss";
 
 @theme {
-    /* PaiTech Brand Color Palette */
-    /* Primary: Dark Charcoal (#333333) - Professional, modern, tech-focused */
+    /* ─── Dynamic Component Colors (Linked directly to ShopSetting Component Variables) ─── */
+    /* Header */
+    --color-header-bg:            var(--header-bg, #333333);
+    --color-header-text:          var(--header-text, #FFFFFF);
+    --color-header-active:        var(--header-active, #0D9488);
+
+    /* Footer */
+    --color-footer-bg:            var(--footer-bg, #262626);
+    --color-footer-text:          var(--footer-text, #9CA3AF);
+    --color-footer-accent:        var(--footer-accent, #0D9488);
+
+    /* Hero Section */
+    --color-hero-bg:              var(--hero-bg, #F1F1F1);
+    --color-hero-text:            var(--hero-text, #262626);
+    --color-hero-btn:             var(--hero-btn, #0D9488);
+    --color-hero-btn-text:        var(--hero-btn-text, #FFFFFF);
+
+    /* Card Product */
+    --color-card-product-bg:      var(--card-product-bg, #FFFFFF);
+    --color-card-product-border:  var(--card-product-border, #E5E7EB);
+    --color-card-product-text:    var(--card-product-text, #262626);
+    --color-card-product-price:   var(--card-product-price, #262626);
+    --color-card-product-btn:     var(--card-product-btn, #0D9488);
+
+    /* Card Article */
+    --color-card-article-bg:      var(--card-article-bg, #FFFFFF);
+    --color-card-article-border:  var(--card-article-border, #E5E7EB);
+    --color-card-article-tag:     var(--card-article-tag, #0D9488);
+    --color-card-article-title:   var(--card-article-title, #262626);
+    --color-card-article-text:    var(--card-article-text, #4B5563);
+
+    /* Page & Global Buttons */
+    --color-page-bg:              var(--page-bg, #FFFFFF);
+    --color-page-text:            var(--page-text, #262626);
+    --color-primary-btn:          var(--primary-btn, #0D9488);
+    --color-primary-btn-text:     var(--primary-btn-text, #FFFFFF);
+
+    /* ─── Dynamic Accent / Interactive Palette (Default: #0D9488) ─── */
+    --color-accent-50:            color-mix(in srgb, var(--header-active, #0D9488) 8%, white);
+    --color-accent-100:           color-mix(in srgb, var(--header-active, #0D9488) 15%, white);
+    --color-accent-200:           color-mix(in srgb, var(--header-active, #0D9488) 30%, white);
+    --color-accent-300:           color-mix(in srgb, var(--header-active, #0D9488) 55%, white);
+    --color-accent-400:           color-mix(in srgb, var(--header-active, #0D9488) 80%, white);
+    --color-accent-500:           var(--header-active, #0D9488);
+    --color-accent-600:           color-mix(in srgb, var(--header-active, #0D9488) 85%, black);
+    --color-accent-700:           color-mix(in srgb, var(--header-active, #0D9488) 70%, black);
+    --color-accent-800:           color-mix(in srgb, var(--header-active, #0D9488) 55%, black);
+    --color-accent-900:           color-mix(in srgb, var(--header-active, #0D9488) 40%, black);
+    --color-accent-950:           color-mix(in srgb, var(--header-active, #0D9488) 25%, black);
+
+    /* Primary: Dark Charcoal for dark header and dark structural surfaces */
     --color-primary-50:  #f7f7f7;
     --color-primary-100: #e8e8e8;
     --color-primary-200: #d1d1d1;
     --color-primary-300: #ababab;
     --color-primary-400: #7d7d7d;
-    --color-primary-500: #5c5c5c;  /* medium gray */
+    --color-primary-500: #5c5c5c;
     --color-primary-600: #4a4a4a;
     --color-primary-700: #3d3d3d;
-    --color-primary-800: #333333;  /* brand primary - dark charcoal */
+    --color-primary-800: #333333;
     --color-primary-900: #262626;
     --color-primary-950: #1a1a1a;
 
-    /* Accent: Mint/Turquoise (#A1E3D8) - Fresh, modern, tech-friendly */
-    --color-accent-50:  #f0fdfb;
-    --color-accent-100: #ccfbf1;
-    --color-accent-200: #99f6e4;
-    --color-accent-300: #5eead4;
-    --color-accent-400: #2dd4bf;
-    --color-accent-500: #A1E3D8;  /* brand accent - mint */
-    --color-accent-600: #0d9488;
-    --color-accent-700: #0f766e;
-    --color-accent-800: #115e59;
-    --color-accent-900: #134e4a;
-    --color-accent-950: #042f2e;
-
-    /* Background: Light Gray (#F1F1F1) - Clean, minimal */
+    /* Background: Light Gray (#F1F1F1) */
     --color-bg-light: #F1F1F1;
     --color-bg-white: #FFFFFF;
 
     /* WhatsApp brand colors */
-    --color-whatsapp: #25D366;        /* WhatsApp green */
-    --color-whatsapp-dark: #128C7E;   /* WhatsApp dark green (hover) */
-    --color-whatsapp-darker: #075E54; /* WhatsApp darker green (active) */
+    --color-whatsapp:        #25D366;
+    --color-whatsapp-dark:   #128C7E;
+    --color-whatsapp-darker: #075E54;
 
     /* Legacy aliases (backward compatibility) */
     --color-mahogany-50:  var(--color-primary-50);
@@ -49,6 +85,50 @@
     --color-mahogany-800: var(--color-primary-800);
     --color-mahogany-900: var(--color-primary-900);
     --color-mahogany-950: var(--color-primary-950);
+
+    /* ─── Border Radius & Font ─── */
+    --radius-theme: var(--border-radius, 0.5rem);
+    --font-theme: var(--font-family, 'Inter', system-ui, sans-serif);
 }
 
-/* PaiTech Custom Utilities - Clean, No Textures */
+/* ─── Base Resets ─── */
+
+:root {
+    /* Component fallbacks */
+    --header-bg:              #333333;
+    --header-text:            #FFFFFF;
+    --header-active:          #0D9488;
+    --footer-bg:              #333333;
+    --footer-text:            #FFFFFF;
+    --footer-accent:          #0D9488;
+    --hero-bg:                #F1F1F1;
+    --hero-text:              #262626;
+    --hero-btn:               #0D9488;
+    --hero-btn-text:          #FFFFFF;
+    --card-product-bg:        #FFFFFF;
+    --card-product-border:    #E5E7EB;
+    --card-product-text:      #262626;
+    --card-product-price:     #262626;
+    --card-product-btn:       #0D9488;
+    --card-article-bg:        #FFFFFF;
+    --card-article-border:    #E5E7EB;
+    --card-article-tag:       #0D9488;
+    --card-article-title:     #262626;
+    --card-article-text:      #4B5563;
+    --page-bg:                #FFFFFF;
+    --page-text:              #262626;
+    --primary-btn:            #0D9488;
+    --primary-btn-text:       #FFFFFF;
+
+    /* Base tokens */
+    --color-primary:          #0D9488;
+    --color-primary-contrast: #ffffff;
+    --color-secondary:        #8B5CF6;
+    --color-accent:           #F59E0B;
+    --color-bg:               #FFFFFF;
+    --color-bg-dark:          #111827;
+    --color-text:             #1F2937;
+    --color-text-light:       #6B7280;
+    --border-radius:          0.5rem;
+    --font-family:            'Inter', system-ui, sans-serif;
+}

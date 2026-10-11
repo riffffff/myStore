@@ -1,3 +1,39 @@
+import { ShopSetting } from '@/types/store';
+
+const DEFAULT_SHOP_SETTINGS: Required<ShopSetting> = {
+    id: 0,
+    shop_name: 'PaiTech',
+    description: 'Solusi teknologi dan produk berkualitas untuk kebutuhan Anda',
+    address: 'Indonesia',
+    whatsapp_number: '6281234567890',
+    whatsapp_template: '',
+    operating_hours: 'Senin - Sabtu: 08:00 - 17:00',
+    hero_banner_text_1: 'Produk Berkualitas Terbaik',
+    hero_banner_text_2: 'Pilihan lezat dan fresh untuk melengkapi momen istimewa Anda',
+    hero_banner_bg: null,
+    shipping_areas: [],
+    shipping_estimate_days: '',
+    logo_url: '',
+    logo_dark_url: '',
+    favicon_url: '',
+    logo: null,
+    logo_dark: null,
+    favicon: null,
+    qris_image: null,
+    qris_image_url: null,
+    qris_account_name: null,
+    created_at: '',
+    updated_at: '',
+};
+
+export function getSafeShopSettings(settings: ShopSetting | null | undefined): Required<ShopSetting> {
+    if (!settings) return DEFAULT_SHOP_SETTINGS;
+    return {
+        ...DEFAULT_SHOP_SETTINGS,
+        ...settings,
+    } as Required<ShopSetting>;
+}
+
 /**
  * Format number as Indonesian Rupiah currency
  * @param val - Number or string to format

@@ -18,6 +18,7 @@ export default function MobileMenu({ isOpen, onClose, user, waNumber, onAuthModa
         { href: route('home'), label: 'Beranda', active: route().current('home') },
         { href: route('products.index'), label: 'Katalog Produk', active: route().current('products.*') },
         { href: route('articles.index'), label: 'Artikel & Info', active: route().current('articles.*') },
+        { href: route('orders.track'), label: 'Lacak Pesanan', active: route().current('orders.track') },
     ];
 
     return (

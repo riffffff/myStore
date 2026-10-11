@@ -14,10 +14,6 @@ interface ProductImageGalleryProps {
     defaultImage: string;
 }
 
-/**
- * Product image gallery with main image and thumbnails
- * Memoized to prevent unnecessary re-renders
- */
 const ProductImageGallery = memo(function ProductImageGallery({
     images,
     productName,
@@ -33,60 +29,58 @@ const ProductImageGallery = memo(function ProductImageGallery({
     const getStockBadge = () => {
         if (stockStatus === 'available') {
             return (
-                <span className="bg-emerald-800 text-white text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-md shadow-xs">
-                    Ready Stock
+                <span className="bg-accent-600 text-white text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-md shadow-xs">
+                    Tersedia
                 </span>
             );
         }
         if (stockStatus === 'out_of_stock') {
             return (
-                <span className="bg-rose-800 text-white text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-md shadow-xs">
-                    Stok Habis
+                <span className="bg-rose-700 text-white text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-md shadow-xs">
+                    Habis
                 </span>
             );
         }
         return (
-            <span className="bg-mahogany-700 text-white text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-md shadow-xs">
-                Pre Order
+            <span className="bg-amber-500 text-white text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-md shadow-xs">
+                Pre-Order
             </span>
         );
     };
 
     return (
         <div className="lg:col-span-7 space-y-4">
-            {/* Main Image */}
-            <div className="aspect-square bg-mahogany-50 rounded-2xl overflow-hidden border border-mahogany-100 shadow-sm relative">
-                <img
-                    src={activeImageUrl}
-                    alt={productName}
-                    className="w-full h-full object-cover object-center"
-                />
-
-                {/* Stock Badge */}
+            <div className="aspect-square bg-gray-50 rounded-2xl overflow-hidden border border-gray-200 shadow-sm relative">
+                <img src={activeImageUrl} alt={productName} className="w-full h-full object-cover object-center" />
                 <div className="absolute top-4 left-4">{getStockBadge()}</div>
             </div>
 
-            {/* Thumbnails */}
             {images.length > 1 && (
                 <div className="grid grid-cols-5 gap-3">
-                    {images.map((img) => {
+                    {images.map((img, index) => {
                         if (!img?.url) return null;
                         const imgUrl = getImageUrl(img.url, defaultImage);
                         const isActive = activeImageUrl === imgUrl;
                         return (
                             <button
-                                key={img.id ?? Math.random()}
+                                key={img.id ?? `thumb-${index}`}
                                 onClick={() => handleThumbnailClick(imgUrl)}
-                                className={`aspect-square rounded-xl overflow-hidden border bg-mahogany-50 transition-all duration-200 ${
-                                    isActive
-                                        ? 'border-mahogany-700 ring-2 ring-mahogany-700/20 scale-[0.98]'
-                                        : 'border-mahogany-100 hover:border-mahogany-300'
+                                className={`aspect-square rounded-xl overflow-hidden border bg-gray-50 transition-all duration-200 ${
+                                    isActive ? 'ring-2 scale-[0.98]' : 'border-gray-200 hover:border-gray-300'
                                 }`}
+                                style={
+                                    isActive
+                                        ? {
+                                              borderColor: 'var(--color-primary-btn, #0D9488)',
+                                              '--tw-ring-color': 'color-mix(in srgb, var(--color-primary-btn, #0D9488) 25%, transparent)',
+                                          } as React.CSSProperties
+                                        : undefined
+                                }
                                 type="button"
                             >
                                 <img
                                     src={imgUrl}
-                                    alt={`${productName} Gallery`}
+                                    alt={`${productName} ${index + 1}`}
                                     className="w-full h-full object-cover"
                                     loading="lazy"
                                 />

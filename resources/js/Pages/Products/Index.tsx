@@ -1,205 +1,564 @@
-import React, { Fragment } from 'react';
-import { Head, router } from '@inertiajs/react';
+import React, { useEffect, useState, Fragment } from 'react';
+import { Head, router, Link } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import ProductCard from '@/Components/Public/ProductCard';
-import Pagination from '@/Components/Public/Pagination';
 import ScrollReveal from '@/Components/Public/ScrollReveal';
-import { Product, ShopSetting } from '@/types/mebel';
-import { RefreshCcw, Search, Sofa, ChevronDown, Check } from 'lucide-react';
+import { Product, ShopSetting } from '@/types/store';
+import {
+    RefreshCcw,
+    Search,
+    Package,
+    ChevronDown,
+    ChevronLeft,
+    ChevronRight,
+    Check,
+    SlidersHorizontal,
+    X,
+    Banknote,
+    ArrowDown,
+    ArrowUp,
+    LayoutGrid,
+} from 'lucide-react';
 import { Listbox, Transition } from '@headlessui/react';
+import { getSafeShopSettings } from '@/lib/utils';
+
+interface CategoryItem {
+    category: string;
+    count: number;
+}
 
 interface ProductsIndexProps {
     products: {
         data: Product[];
-        links: any[];
+        current_page?: number;
+        last_page?: number;
+        from?: number | null;
+        to?: number | null;
+        total?: number;
+        per_page?: number;
+        prev_page_url?: string | null;
+        next_page_url?: string | null;
+        links: Array<{
+            url: string | null;
+            label: string;
+            active: boolean;
+        }>;
     };
-    shopSettings: ShopSetting;
+    shopSettings?: ShopSetting;
     filters: {
         stock_status?: string;
+        category?: string;
         sort?: string;
+        search?: string;
+        min_price?: string | number;
+        max_price?: string | number;
+        per_page?: number | string;
     };
+    categories?: CategoryItem[];
 }
 
+const stockOptions = [
+    { value: '', label: 'Semua Status' },
+    { value: 'available', label: 'Tersedia' },
+    { value: 'preorder', label: 'Pre-Order' },
+    { value: 'out_of_stock', label: 'Stok Habis' },
+];
+
+const perPageOptions = [
+    { value: 3, label: '3 produk' },
+    { value: 6, label: '6 produk' },
+    { value: 12, label: '12 produk' },
+    { value: 24, label: '24 produk' },
+];
+
+const sortOptions = [
+    { value: 'popular', label: 'Populer' },
+    { value: 'newest', label: 'Terbaru' },
+    { value: 'top_sales', label: 'Terlaris' },
+    { value: 'price_low', label: 'Harga Terendah', icon: 'down' as const },
+    { value: 'price_high', label: 'Harga Tertinggi', icon: 'up' as const },
+];
+
+const primaryBtnStyle = { backgroundColor: 'var(--color-primary-btn, #0D9488)' };
+const primaryTextStyle = { color: 'var(--color-primary-btn, #0D9488)' };
+
 export default function Index({ products, shopSettings, filters }: ProductsIndexProps) {
-    const waNumber   = shopSettings?.whatsapp_number   || '6281234567890';
-    const waTemplate = shopSettings?.whatsapp_template || '';
+    const safeSettings = getSafeShopSettings(shopSettings);
+    const waNumber = safeSettings.whatsapp_number;
+    const waTemplate = safeSettings.whatsapp_template;
+    const shopName = safeSettings.shop_name ?? '';
 
-    const productsData    = Array.isArray(products?.data)  ? products.data  : [];
-    const productsLinks   = Array.isArray(products?.links) ? products.links : [];
-    const safeFilters     = filters && typeof filters === 'object' ? filters : {};
+    const productsData = Array.isArray(products?.data) ? products.data : [];
+    const productsLinks = Array.isArray(products?.links) ? products.links : [];
+    const lastPage = products?.last_page ?? 1;
+    const totalProducts = products?.total ?? productsData.length;
+
+    const safeFilters = filters && typeof filters === 'object' ? filters : {};
     const filterStockStatus = typeof safeFilters.stock_status === 'string' ? safeFilters.stock_status : '';
-    const filterSort        = typeof safeFilters.sort === 'string' ? safeFilters.sort : '';
-    const hasActiveFilters  = Boolean(filterStockStatus) || (Boolean(filterSort) && filterSort !== 'newest');
+    const filterSort = typeof safeFilters.sort === 'string' && safeFilters.sort ? safeFilters.sort : 'popular';
+    const filterSearch = typeof safeFilters.search === 'string' ? safeFilters.search : '';
 
-    const stockOptions = [
-        { value: '', label: 'Semua Status' },
-        { value: 'available', label: 'Ready Stock' },
-        { value: 'preorder', label: 'Pre Order' },
-        { value: 'out_of_stock', label: 'Kosong' },
-    ];
+    const currentPerPage = Number(safeFilters.per_page) || products?.per_page || 6;
 
-    const sortOptions = [
-        { value: 'newest', label: 'Terbaru' },
-        { value: 'price_low', label: 'Harga Terendah' },
-        { value: 'price_high', label: 'Harga Tertinggi' },
-    ];
+    const [minPriceInput, setMinPriceInput] = useState<string>(
+        safeFilters.min_price !== undefined ? String(safeFilters.min_price) : ''
+    );
+    const [maxPriceInput, setMaxPriceInput] = useState<string>(
+        safeFilters.max_price !== undefined ? String(safeFilters.max_price) : ''
+    );
+    const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
-    const currentStockOption = stockOptions.find(opt => opt.value === filterStockStatus) || stockOptions[0];
-    const currentSortOption = sortOptions.find(opt => opt.value === (filterSort || 'newest')) || sortOptions[0];
+    const hasActiveFilters =
+        Boolean(filterStockStatus) ||
+        Boolean(safeFilters.min_price) ||
+        Boolean(safeFilters.max_price) ||
+        Boolean(filterSearch) ||
+        (filterSort !== 'popular' && Boolean(filterSort));
 
-    const handleFilterChange = (key: string, value: string) => {
-        const newFilters: Record<string, string> = { ...safeFilters } as Record<string, string>;
-        newFilters[key] = value;
-        if (!value) delete newFilters[key];
-        router.get(route('products.index'), newFilters, { preserveState: true, replace: true });
+    const hasFilterBadges =
+        Boolean(filterStockStatus) ||
+        Boolean(safeFilters.min_price) ||
+        Boolean(safeFilters.max_price) ||
+        Boolean(filterSearch);
+
+    const filterBadgeCount = [filterStockStatus, safeFilters.min_price || safeFilters.max_price, filterSearch].filter(
+        Boolean
+    ).length;
+
+    const applyFilters = (updated: Record<string, any>) => {
+        const query: Record<string, any> = { ...safeFilters, ...updated };
+        Object.keys(query).forEach((key) => {
+            if (query[key] === '' || query[key] === null || query[key] === undefined) {
+                delete query[key];
+            }
+        });
+        router.get(route('products.index'), query, { preserveState: true, replace: true });
     };
+
+    useEffect(() => {
+        const mobileQuery = window.matchMedia('(max-width: 1023px)');
+        if (mobileQuery.matches && currentPerPage !== 12) {
+            applyFilters({ per_page: 12, page: 1 });
+        }
+    }, []);
+
+    const handleSortChange = (newSort: string) => {
+        applyFilters({ sort: newSort });
+    };
+
+    const handlePerPageChange = (val: number) => {
+        applyFilters({ per_page: val, page: 1 });
+    };
+
+    const handleStockStatusChange = (statusValue: string) => {
+        applyFilters({ stock_status: statusValue });
+    };
+
+    const handlePriceFilterSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        applyFilters({
+            min_price: minPriceInput ? minPriceInput.replace(/\D/g, '') : '',
+            max_price: maxPriceInput ? maxPriceInput.replace(/\D/g, '') : '',
+        });
+    };
+
+    const handleResetFilters = () => {
+        setMinPriceInput('');
+        setMaxPriceInput('');
+        router.get(route('products.index'));
+    };
+
+    const clearPriceFilters = () => {
+        applyFilters({ min_price: '', max_price: '' });
+        setMinPriceInput('');
+        setMaxPriceInput('');
+    };
+
+    const chipClass = (active: boolean) =>
+        `shrink-0 inline-flex items-center gap-1.5 px-3 sm:px-3.5 h-8 rounded-full font-bold text-[11px] sm:text-xs transition ${
+            active
+                ? 'text-white shadow-xs'
+                : 'text-gray-600 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 border border-gray-200/80'
+        }`;
+
+    const renderFilterFields = () => (
+        <div className="space-y-4 sm:space-y-6">
+            <div className="space-y-2">
+                <span className="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-wider block">
+                    Status Stok
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                    {stockOptions.map((opt) => {
+                        const isActive = filterStockStatus === opt.value;
+                        return (
+                            <button
+                                key={opt.value || 'all'}
+                                type="button"
+                                onClick={() => handleStockStatusChange(isActive ? '' : opt.value)}
+                                className={`px-2.5 sm:px-3 py-1.5 rounded-full font-semibold text-[11px] sm:text-xs transition-all ${
+                                    isActive
+                                        ? 'text-white shadow-sm'
+                                        : 'bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-900 border border-gray-100'
+                                }`}
+                                style={isActive ? primaryBtnStyle : undefined}
+                            >
+                                {opt.label}
+                            </button>
+                        );
+                    })}
+                </div>
+            </div>
+
+            <div className="space-y-2">
+                <span className="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-wider block">
+                    Rentang Harga
+                </span>
+                <form onSubmit={handlePriceFilterSubmit} className="space-y-2">
+                    <div className="grid grid-cols-2 gap-2">
+                        <div>
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 block pl-0.5">
+                                Minimum
+                            </label>
+                            <div className="relative">
+                                <span className="absolute inset-y-0 left-0 flex items-center pl-2.5 text-[10px] font-black text-gray-400">
+                                    Rp
+                                </span>
+                                <input
+                                    type="number"
+                                    placeholder="0"
+                                    value={minPriceInput}
+                                    onChange={(e) => setMinPriceInput(e.target.value)}
+                                    className="w-full text-xs pl-7 pr-2 py-2 rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400 focus:bg-white transition"
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 block pl-0.5">
+                                Maksimum
+                            </label>
+                            <div className="relative">
+                                <span className="absolute inset-y-0 left-0 flex items-center pl-2.5 text-[10px] font-black text-gray-400">
+                                    Rp
+                                </span>
+                                <input
+                                    type="number"
+                                    placeholder="∞"
+                                    value={maxPriceInput}
+                                    onChange={(e) => setMaxPriceInput(e.target.value)}
+                                    className="w-full text-xs pl-7 pr-2 py-2 rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400 focus:bg-white transition"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <button
+                        type="submit"
+                        className="w-full py-2 px-3 text-xs font-bold text-white rounded-xl transition shadow-sm active:scale-[0.98]"
+                        style={primaryBtnStyle}
+                    >
+                        Terapkan Filter Harga
+                    </button>
+                </form>
+            </div>
+        </div>
+    );
+
+    const metaDescription = 'Temukan berbagai produk berkualitas terbaik dengan harga terjangkau di toko kami.';
 
     return (
         <PublicLayout>
-            <Head>
-                <title>Katalog Layanan | {shopSettings?.shop_name || 'PaiTech'}</title>
-                <meta name="description" content={`Jelajahi berbagai layanan teknologi dari ${shopSettings?.shop_name || 'PaiTech'}: web development, mobile app, cloud infrastructure, AI/ML integration, dan konsultasi IT profesional.`} />
+            <Head title={`Katalog Produk - ${shopName}`}>
+                <meta name="description" content={metaDescription} />
             </Head>
 
-            {/* Hero Banner */}
-            <div className="bg-primary-800 py-16 sm:py-20 text-center text-white relative overflow-hidden">
+            <div
+                className="hidden sm:block py-16 sm:py-20 text-center relative overflow-hidden"
+                style={{ backgroundColor: 'var(--color-header-bg)', color: 'var(--color-header-text)' }}
+            >
+                <div className="absolute inset-0 bg-linear-to-b from-black/20 to-transparent pointer-events-none" />
                 <div className="relative max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
-                    <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight">Katalog Layanan</h1>
-                    <p className="text-sm sm:text-base text-gray-200 max-w-2xl mx-auto leading-relaxed">
-                        Pilih berbagai layanan teknologi untuk mengembangkan bisnis Anda.
+                    <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight">Katalog Produk</h1>
+                    <p className="text-sm sm:text-base opacity-70 max-w-2xl mx-auto leading-relaxed">
+                        Temukan berbagai produk berkualitas pilihan untuk memenuhi kebutuhan Anda.
                     </p>
                 </div>
             </div>
 
-            <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                <div className="flex flex-col md:flex-row gap-8 items-start">
-
-                    {/* Sidebar Filter */}
-                    <ScrollReveal direction="left" className="w-full md:w-80 shrink-0">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-6 sticky top-24">
-                            <div className="flex items-center gap-2 pb-3 border-b border-gray-200">
-                                <Search className="h-5 w-5 text-primary-600" />
-                                <h3 className="font-bold text-primary-900 text-base">FILTER & URUTKAN</h3>
-                            </div>
-
-                            <div className="space-y-4">
-                                {/* Status Stok Dropdown */}
-                                <div>
-                                    <label className="text-sm font-semibold text-primary-700 block mb-2">STATUS STOK</label>
-                                    <Listbox value={currentStockOption} onChange={(option) => handleFilterChange('stock_status', option.value)}>
-                                        <div className="relative">
-                                            <Listbox.Button className="relative w-full cursor-pointer rounded-lg bg-white py-2.5 pl-3 pr-10 text-left border-2 border-gray-300 focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 focus:outline-none transition">
-                                                <span className="block truncate text-sm text-primary-900">{currentStockOption.label}</span>
-                                                <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                                                    <ChevronDown className="h-5 w-5 text-gray-400" aria-hidden="true" />
-                                                </span>
-                                            </Listbox.Button>
-                                            <Transition
-                                                as={Fragment}
-                                                leave="transition ease-in duration-100"
-                                                leaveFrom="opacity-100"
-                                                leaveTo="opacity-0"
-                                            >
-                                                <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none">
-                                                    {stockOptions.map((option) => (
-                                                        <Listbox.Option
-                                                            key={option.value}
-                                                            className={({ active }) =>
-                                                                `relative cursor-pointer select-none py-2.5 pl-10 pr-4 ${
-                                                                    active ? 'bg-accent-500/10 text-primary-900' : 'text-gray-700'
-                                                                }`
-                                                            }
-                                                            value={option}
-                                                        >
-                                                            {({ selected }) => (
-                                                                <>
-                                                                    <span className={`block truncate text-sm ${selected ? 'font-semibold' : 'font-normal'}`}>
-                                                                        {option.label}
-                                                                    </span>
-                                                                    {selected && (
-                                                                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-accent-500">
-                                                                            <Check className="h-4 w-4" aria-hidden="true" />
-                                                                        </span>
-                                                                    )}
-                                                                </>
-                                                            )}
-                                                        </Listbox.Option>
-                                                    ))}
-                                                </Listbox.Options>
-                                            </Transition>
-                                        </div>
-                                    </Listbox>
+            <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-3 pb-8 sm:py-8">
+                <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 items-start">
+                    <aside className="hidden lg:block w-64 xl:w-72 shrink-0">
+                        <div className="bg-white rounded-2xl border border-gray-200 shadow-xs p-5 space-y-6">
+                            <div className="flex items-center justify-between gap-2 pb-3.5 border-b border-gray-100">
+                                <div className="flex items-center gap-2">
+                                    <SlidersHorizontal className="h-4 w-4 text-gray-500" />
+                                    <h2 className="font-bold text-gray-900 text-sm tracking-wide uppercase">Filter</h2>
                                 </div>
-
-                                {/* Urutkan Dropdown */}
-                                <div>
-                                    <label className="text-sm font-semibold text-primary-700 block mb-2">URUTKAN</label>
-                                    <Listbox value={currentSortOption} onChange={(option) => handleFilterChange('sort', option.value)}>
-                                        <div className="relative">
-                                            <Listbox.Button className="relative w-full cursor-pointer rounded-lg bg-white py-2.5 pl-3 pr-10 text-left border-2 border-gray-300 focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 focus:outline-none transition">
-                                                <span className="block truncate text-sm text-primary-900">{currentSortOption.label}</span>
-                                                <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                                                    <ChevronDown className="h-5 w-5 text-gray-400" aria-hidden="true" />
-                                                </span>
-                                            </Listbox.Button>
-                                            <Transition
-                                                as={Fragment}
-                                                leave="transition ease-in duration-100"
-                                                leaveFrom="opacity-100"
-                                                leaveTo="opacity-0"
-                                            >
-                                                <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none">
-                                                    {sortOptions.map((option) => (
-                                                        <Listbox.Option
-                                                            key={option.value}
-                                                            className={({ active }) =>
-                                                                `relative cursor-pointer select-none py-2.5 pl-10 pr-4 ${
-                                                                    active ? 'bg-accent-500/10 text-primary-900' : 'text-gray-700'
-                                                                }`
-                                                            }
-                                                            value={option}
-                                                        >
-                                                            {({ selected }) => (
-                                                                <>
-                                                                    <span className={`block truncate text-sm ${selected ? 'font-semibold' : 'font-normal'}`}>
-                                                                        {option.label}
-                                                                    </span>
-                                                                    {selected && (
-                                                                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-accent-500">
-                                                                            <Check className="h-4 w-4" aria-hidden="true" />
-                                                                        </span>
-                                                                    )}
-                                                                </>
-                                                            )}
-                                                        </Listbox.Option>
-                                                    ))}
-                                                </Listbox.Options>
-                                            </Transition>
-                                        </div>
-                                    </Listbox>
-                                </div>
+                                {(filterStockStatus || safeFilters.min_price || safeFilters.max_price) && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setMinPriceInput('');
+                                            setMaxPriceInput('');
+                                            applyFilters({ stock_status: '', min_price: '', max_price: '' });
+                                        }}
+                                        className="text-[11px] font-bold hover:opacity-80 transition shrink-0"
+                                        style={primaryTextStyle}
+                                    >
+                                        Reset
+                                    </button>
+                                )}
                             </div>
-
+                            {renderFilterFields()}
                             {hasActiveFilters && (
-                                <button
-                                    onClick={() => router.get(route('products.index'))}
-                                    className="w-full py-2.5 px-4 rounded-lg bg-gray-100 text-primary-900 hover:bg-gray-200 text-sm font-semibold transition flex items-center justify-center gap-2"
-                                >
-                                    <RefreshCcw className="h-4 w-4" />
-                                    Bersihkan Filter
-                                </button>
+                                <div className="pt-4 border-t border-gray-100">
+                                    <button
+                                        type="button"
+                                        onClick={handleResetFilters}
+                                        className="w-full py-2 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5"
+                                    >
+                                        <RefreshCcw className="w-3.5 h-3.5" />
+                                        Hapus semua filter
+                                    </button>
+                                </div>
                             )}
                         </div>
-                    </ScrollReveal>
+                    </aside>
 
-                    {/* Grid Produk */}
-                    <div className="grow w-full">
+                    {mobileFilterOpen && (
+                        <div className="fixed inset-0 z-50 lg:hidden">
+                            <button
+                                type="button"
+                                className="absolute inset-0 bg-black/40"
+                                aria-label="Tutup filter"
+                                onClick={() => setMobileFilterOpen(false)}
+                            />
+                            <div className="absolute inset-x-0 bottom-0 max-h-[85vh] flex flex-col rounded-t-2xl bg-white shadow-lg">
+                                <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
+                                    <div className="flex items-center gap-2">
+                                        <SlidersHorizontal className="w-4 h-4 text-gray-500" />
+                                        <h2 className="font-bold text-gray-900 text-sm tracking-wide uppercase">
+                                            Filter
+                                        </h2>
+                                        {hasFilterBadges && (
+                                            <span
+                                                className="w-4 h-4 rounded-full text-[9px] font-black text-white flex items-center justify-center"
+                                                style={primaryBtnStyle}
+                                            >
+                                                {filterBadgeCount}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => setMobileFilterOpen(false)}
+                                        aria-label="Tutup filter"
+                                        className="w-8 h-8 -mr-1 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center transition shrink-0"
+                                    >
+                                        <X className="w-4 h-4" />
+                                    </button>
+                                </div>
+                                <div className="overflow-y-auto px-4 py-4">{renderFilterFields()}</div>
+                                <div className="border-t border-gray-100 px-4 py-3 flex gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            handleResetFilters();
+                                            setMobileFilterOpen(false);
+                                        }}
+                                        className="flex-1 py-2.5 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5"
+                                    >
+                                        <RefreshCcw className="w-3.5 h-3.5" />
+                                        Reset
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setMobileFilterOpen(false)}
+                                        className="flex-[1.5] py-2.5 px-3 text-white rounded-xl text-xs font-bold transition shadow-sm"
+                                        style={primaryBtnStyle}
+                                    >
+                                        Lihat {totalProducts} Produk
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="grow w-full min-w-0">
+                        <div className="sticky top-16 z-30 -mx-4 mb-4 border-b border-gray-100 bg-white/95 px-4 py-2 backdrop-blur-sm sm:mb-6 lg:static lg:mx-0 lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
+                            <div className="flex items-center gap-2 min-w-0">
+                                <button
+                                    type="button"
+                                    onClick={() => setMobileFilterOpen(true)}
+                                    className={`lg:hidden shrink-0 inline-flex items-center gap-1.5 rounded-full px-3 h-8 text-[11px] font-bold transition ${
+                                        hasFilterBadges
+                                            ? 'text-white shadow-xs'
+                                            : 'border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'
+                                    }`}
+                                    style={hasFilterBadges ? primaryBtnStyle : undefined}
+                                    aria-label="Buka filter produk"
+                                >
+                                    <SlidersHorizontal className="h-3.5 w-3.5 shrink-0" />
+                                    <span>Filter</span>
+                                    {hasFilterBadges && (
+                                        <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-white text-[9px] font-black text-gray-900">
+                                            {filterBadgeCount}
+                                        </span>
+                                    )}
+                                </button>
+
+                                <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto pb-0.5 [&::-webkit-scrollbar]:hidden scrollbar-hide">
+                                    {sortOptions.map((opt) => {
+                                        const isActive = filterSort === opt.value;
+                                        return (
+                                            <button
+                                                key={opt.value}
+                                                type="button"
+                                                onClick={() => handleSortChange(opt.value)}
+                                                className={chipClass(isActive)}
+                                                style={isActive ? primaryBtnStyle : undefined}
+                                            >
+                                                {opt.icon === 'down' && (
+                                                    <ArrowDown
+                                                        className={`w-3 h-3 ${isActive ? 'text-white' : 'text-gray-400'}`}
+                                                    />
+                                                )}
+                                                {opt.icon === 'up' && (
+                                                    <ArrowUp
+                                                        className={`w-3 h-3 ${isActive ? 'text-white' : 'text-gray-400'}`}
+                                                    />
+                                                )}
+                                                <span>{opt.label}</span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+
+                                <Listbox
+                                    value={
+                                        perPageOptions.find((o) => Number(o.value) === Number(currentPerPage)) ||
+                                        perPageOptions[1]
+                                    }
+                                    onChange={(opt) => handlePerPageChange(opt.value)}
+                                >
+                                    <div className="relative hidden shrink-0 sm:block">
+                                        <Listbox.Button className="inline-flex items-center gap-1.5 px-3 h-8 rounded-full font-bold text-[11px] sm:text-xs cursor-pointer transition bg-gray-50 text-gray-700 hover:bg-gray-100 hover:text-gray-900 border border-gray-200/80">
+                                            <LayoutGrid className="w-3 h-3 text-gray-400 shrink-0" />
+                                            <span>{currentPerPage} produk</span>
+                                            <ChevronDown className="w-3 h-3 text-gray-400 shrink-0" />
+                                        </Listbox.Button>
+                                        <Transition
+                                            as={Fragment}
+                                            leave="transition ease-in duration-100"
+                                            leaveFrom="opacity-100"
+                                            leaveTo="opacity-0"
+                                        >
+                                            <Listbox.Options className="absolute right-0 top-full z-50 mt-1.5 w-36 bg-white rounded-xl shadow-lg border border-gray-100 py-1.5 text-xs focus:outline-none">
+                                                {perPageOptions.map((opt) => (
+                                                    <Listbox.Option
+                                                        key={opt.value}
+                                                        value={opt}
+                                                        className={({ active }) =>
+                                                            `cursor-pointer px-3 py-2 flex items-center justify-between rounded-lg mx-1 transition-colors ${
+                                                                active ? 'bg-gray-50 text-gray-900' : 'text-gray-700'
+                                                            }`
+                                                        }
+                                                    >
+                                                        {({ selected }) => (
+                                                            <>
+                                                                <span
+                                                                    className={`text-[11px] sm:text-xs ${
+                                                                        selected ? 'font-bold' : 'font-medium'
+                                                                    }`}
+                                                                    style={selected ? primaryTextStyle : undefined}
+                                                                >
+                                                                    {opt.value} produk
+                                                                </span>
+                                                                {selected && (
+                                                                    <Check
+                                                                        className="w-3.5 h-3.5"
+                                                                        style={primaryTextStyle}
+                                                                    />
+                                                                )}
+                                                            </>
+                                                        )}
+                                                    </Listbox.Option>
+                                                ))}
+                                            </Listbox.Options>
+                                        </Transition>
+                                    </div>
+                                </Listbox>
+                            </div>
+
+                            {hasFilterBadges && (
+                                <div className="flex items-center gap-1.5 flex-wrap mt-2">
+                                    {filterStockStatus && (
+                                        <span className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-50 text-gray-700 text-[11px] font-bold border border-gray-200">
+                                            <Package className="w-2.5 h-2.5 shrink-0 opacity-80" />
+                                            <span>
+                                                {stockOptions.find((o) => o.value === filterStockStatus)?.label}
+                                            </span>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleStockStatusChange('')}
+                                                className="hover:bg-gray-200 rounded-full p-0.5 transition -mr-0.5"
+                                                title="Hapus filter status stok"
+                                            >
+                                                <X className="w-2.5 h-2.5" />
+                                            </button>
+                                        </span>
+                                    )}
+                                    {(safeFilters.min_price || safeFilters.max_price) && (
+                                        <span className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-50 text-gray-700 text-[11px] font-bold border border-gray-200">
+                                            <Banknote className="w-2.5 h-2.5 shrink-0 opacity-80" />
+                                            <span>
+                                                Rp{safeFilters.min_price || '0'}–{safeFilters.max_price || '∞'}
+                                            </span>
+                                            <button
+                                                type="button"
+                                                onClick={clearPriceFilters}
+                                                className="hover:bg-gray-200 rounded-full p-0.5 transition -mr-0.5"
+                                                title="Hapus filter harga"
+                                            >
+                                                <X className="w-2.5 h-2.5" />
+                                            </button>
+                                        </span>
+                                    )}
+                                    {filterSearch && (
+                                        <span className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-50 text-gray-700 text-[11px] font-bold border border-gray-200">
+                                            <Search className="w-2.5 h-2.5 shrink-0 opacity-80" />
+                                            <span className="truncate max-w-[7rem] sm:max-w-none">"{filterSearch}"</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => applyFilters({ search: '' })}
+                                                className="hover:bg-gray-200 rounded-full p-0.5 transition -mr-0.5"
+                                                title="Hapus pencarian"
+                                            >
+                                                <X className="w-2.5 h-2.5" />
+                                            </button>
+                                        </span>
+                                    )}
+                                    <button
+                                        type="button"
+                                        onClick={handleResetFilters}
+                                        className="shrink-0 ml-auto inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-bold text-gray-500 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 border border-gray-200 transition"
+                                        title="Bersihkan semua filter"
+                                    >
+                                        <RefreshCcw className="w-2.5 h-2.5" />
+                                        <span>Bersihkan</span>
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
                         {productsData.length > 0 ? (
                             <>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                                    {productsData.map((product, index) => (
+                                <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
+                                    {productsData.map((product, index) =>
                                         product ? (
-                                            <ScrollReveal key={product.id ?? index} delay={(index % 3) * 150} direction="up">
+                                            <ScrollReveal
+                                                key={product.id ?? index}
+                                                delay={(index % 2) * 80}
+                                                direction="up"
+                                            >
                                                 <ProductCard
                                                     product={product}
                                                     whatsappNumber={waNumber}
@@ -207,23 +566,102 @@ export default function Index({ products, shopSettings, filters }: ProductsIndex
                                                 />
                                             </ScrollReveal>
                                         ) : null
-                                    ))}
+                                    )}
                                 </div>
-                                <Pagination links={productsLinks} />
+
+                                <div className="mt-6 sm:mt-8 pt-3 sm:pt-4 border-t border-gray-100 space-y-2.5 sm:space-y-3">
+                                    <div className="flex justify-center sm:justify-end">
+                                        <span className="text-[10px] sm:text-[11px] text-gray-400 font-medium">
+                                            Menampilkan{' '}
+                                            <strong className="text-gray-600 font-bold">
+                                                {products?.from || (productsData.length > 0 ? 1 : 0)}
+                                            </strong>
+                                            <span className="mx-0.5">–</span>
+                                            <strong className="text-gray-600 font-bold">
+                                                {products?.to || productsData.length}
+                                            </strong>
+                                            <span className="mx-1 text-gray-300">dari</span>
+                                            {totalProducts}
+                                        </span>
+                                    </div>
+
+                                    {lastPage > 1 && (
+                                        <nav className="flex items-center justify-center gap-1 flex-wrap" aria-label="Pagination">
+                                            {productsLinks.map((link, key) => {
+                                                const rawLabel = link.label;
+                                                const isPrev =
+                                                    rawLabel.includes('Previous') || rawLabel.includes('&laquo;');
+                                                const isNext =
+                                                    rawLabel.includes('Next') || rawLabel.includes('&raquo;');
+                                                const label = rawLabel
+                                                    .replace(/&laquo;/g, '')
+                                                    .replace(/&raquo;/g, '')
+                                                    .replace(/Previous/g, '')
+                                                    .replace(/Next/g, '')
+                                                    .trim();
+
+                                                if (!link.url) {
+                                                    return (
+                                                        <span
+                                                            key={key}
+                                                            className="inline-flex items-center justify-center min-w-8 h-8 sm:min-w-9 sm:h-9 px-2 text-[11px] sm:text-xs text-gray-300 bg-gray-50 rounded-full cursor-not-allowed select-none"
+                                                        >
+                                                            {isPrev ? (
+                                                                <ChevronLeft className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                                                            ) : isNext ? (
+                                                                <ChevronRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                                                            ) : (
+                                                                label
+                                                            )}
+                                                        </span>
+                                                    );
+                                                }
+
+                                                return (
+                                                    <Link
+                                                        key={key}
+                                                        href={link.url}
+                                                        preserveState
+                                                        className={`inline-flex items-center justify-center min-w-8 h-8 sm:min-w-9 sm:h-9 px-2 text-[11px] sm:text-xs font-bold rounded-full transition-all duration-200 ${
+                                                            link.active
+                                                                ? 'text-white shadow-sm border-transparent'
+                                                                : 'bg-white text-gray-600 border border-gray-100 hover:text-gray-900 hover:bg-gray-50'
+                                                        }`}
+                                                        style={link.active ? primaryBtnStyle : undefined}
+                                                    >
+                                                        {isPrev ? (
+                                                            <ChevronLeft className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                                                        ) : isNext ? (
+                                                            <ChevronRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                                                        ) : (
+                                                            label
+                                                        )}
+                                                    </Link>
+                                                );
+                                            })}
+                                        </nav>
+                                    )}
+                                </div>
                             </>
                         ) : (
-                            <ScrollReveal direction="none">
-                                <div className="bg-white p-16 text-center rounded-2xl border border-mahogany-100 shadow-sm max-w-md mx-auto space-y-4">
-                                    <Sofa className="mx-auto h-12 w-12 text-mahogany-700" />
-                                    <h3 className="text-lg font-bold text-stone-900">Produk Tidak Ditemukan</h3>
-                                    <p className="text-stone-500 text-sm leading-relaxed">
-                                        Maaf, tidak ada produk yang sesuai dengan filter Anda. Coba ubah atau bersihkan filter.
+                            <ScrollReveal direction="up">
+                                <div className="bg-white p-12 sm:p-16 text-center rounded-2xl border border-gray-200 shadow-xs max-w-md mx-auto space-y-4">
+                                    <Package className="mx-auto h-12 w-12 text-gray-400" />
+                                    <h3 className="text-base sm:text-lg font-bold text-gray-900">
+                                        Produk Tidak Ditemukan
+                                    </h3>
+                                    <p className="text-gray-500 text-xs sm:text-sm leading-relaxed">
+                                        Tidak ada produk yang sesuai dengan filter yang Anda tentukan. Coba ubah atau
+                                        bersihkan kriteria pencarian.
                                     </p>
                                     <button
-                                        onClick={() => router.get(route('products.index'))}
-                                        className="px-5 py-2.5 bg-mahogany-800 hover:bg-mahogany-700 text-white font-bold rounded-xl shadow-sm transition text-xs"
+                                        type="button"
+                                        onClick={handleResetFilters}
+                                        className="px-5 py-2.5 text-white font-bold rounded-xl shadow-xs transition text-xs inline-flex items-center gap-1.5"
+                                        style={primaryBtnStyle}
                                     >
-                                        Lihat Semua Produk
+                                        <RefreshCcw className="w-3.5 h-3.5" />
+                                        Reset Filter
                                     </button>
                                 </div>
                             </ScrollReveal>

@@ -3,13 +3,16 @@ import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import GuestLayout from '@/Layouts/GuestLayout';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
+import { PageProps } from '@/types';
 
 export default function ConfirmPassword() {
     const { data, setData, post, processing, errors, reset } = useForm({
         password: '',
     });
+    const { shopSettings } = usePage<PageProps>().props;
+    const shopName = shopSettings?.shop_name ?? '';
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -21,7 +24,7 @@ export default function ConfirmPassword() {
 
     return (
         <GuestLayout>
-            <Head title="Confirm Password" />
+            <Head title={shopName} />
 
             <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
                 This is a secure area of the application. Please confirm your

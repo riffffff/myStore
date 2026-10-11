@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useForm } from '@inertiajs/react';
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
-import { LogIn, UserPlus, Mail, Lock, User, X, Loader2, CheckCircle2 } from 'lucide-react';
+import { LogIn, UserPlus, Mail, Lock, User, Phone, X, Loader2 } from 'lucide-react';
 
 interface AuthModalProps {
     isOpen: boolean;
@@ -14,7 +14,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
 
     // Form Login
     const loginForm = useForm({
-        email: '',
+        login: '',
         password: '',
         remember: true,
     });
@@ -22,6 +22,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
     // Form Register
     const registerForm = useForm({
         name: '',
+        phone: '',
         email: '',
         password: '',
         password_confirmation: '',
@@ -124,22 +125,22 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                         <form onSubmit={handleLoginSubmit} className="space-y-4">
                             <div>
                                 <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
-                                    Alamat Email
+                                    Nomor Handphone / Email
                                 </label>
                                 <div className="relative">
-                                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400" />
+                                    <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400" />
                                     <input
-                                        type="email"
+                                        type="text"
                                         required
-                                        value={loginForm.data.email}
-                                        onChange={(e) => loginForm.setData('email', e.target.value)}
-                                        placeholder="nama@email.com"
+                                        value={loginForm.data.login}
+                                        onChange={(e) => loginForm.setData('login', e.target.value)}
+                                        placeholder="08123456789 atau nama@email.com"
                                         className="w-full pl-10 pr-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm text-stone-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-900/20 focus:border-amber-900 transition"
                                     />
                                 </div>
-                                {loginForm.errors.email && (
+                                {(loginForm.errors.login || (loginForm.errors as any).email) && (
                                     <p className="mt-1.5 text-xs text-rose-600 font-medium">
-                                        {loginForm.errors.email}
+                                        {loginForm.errors.login || (loginForm.errors as any).email}
                                     </p>
                                 )}
                             </div>
@@ -223,13 +224,34 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
 
                             <div>
                                 <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
-                                    Alamat Email
+                                    Nomor Handphone (WhatsApp)
+                                </label>
+                                <div className="relative">
+                                    <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400" />
+                                    <input
+                                        type="tel"
+                                        required
+                                        value={registerForm.data.phone}
+                                        onChange={(e) => registerForm.setData('phone', e.target.value)}
+                                        placeholder="081234567890"
+                                        className="w-full pl-10 pr-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm text-stone-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-900/20 focus:border-amber-900 transition"
+                                    />
+                                </div>
+                                {registerForm.errors.phone && (
+                                    <p className="mt-1.5 text-xs text-rose-600 font-medium">
+                                        {registerForm.errors.phone}
+                                    </p>
+                                )}
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
+                                    Alamat Email <span className="text-stone-400 font-normal lowercase">(opsional)</span>
                                 </label>
                                 <div className="relative">
                                     <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400" />
                                     <input
                                         type="email"
-                                        required
                                         value={registerForm.data.email}
                                         onChange={(e) => registerForm.setData('email', e.target.value)}
                                         placeholder="nama@email.com"

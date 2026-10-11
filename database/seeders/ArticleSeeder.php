@@ -13,60 +13,60 @@ class ArticleSeeder extends Seeder
      */
     public function run(): void
     {
-        if (Article::count() > 0) {
+        if (Article::count('*') > 0) {
             return;
         }
 
         $articlesData = [
             [
-                'title' => 'Tren Teknologi 2026: AI Generatif dan Dampaknya pada Bisnis',
-                'content' => '<h2>Revolusi AI Generatif di Dunia Bisnis</h2><p>Artificial Intelligence generatif seperti GPT-4, DALL-E, dan Midjourney telah mengubah landscape bisnis secara fundamental. Dari content creation hingga product design, AI kini menjadi co-pilot yang meningkatkan produktivitas tim hingga 10x lipat.</p><p>Artikel ini membahas bagaimana bisnis Indonesia bisa memanfaatkan AI untuk:</p><ul><li>Automasi customer service dengan chatbot cerdas yang memahami konteks</li><li>Personalisasi marketing campaign berdasarkan behavioral data</li><li>Optimasi supply chain dengan predictive analytics</li><li>Percepatan product development dengan AI-assisted design</li></ul><p>PaiTech menyediakan konsultasi dan implementasi AI custom untuk transformasi digital bisnis Anda.</p>',
-                'excerpt' => 'Bagaimana AI Generatif mengubah cara bisnis beroperasi dan meningkatkan efisiensi hingga 10x lipat.',
+                'title' => 'Lorem Ipsum Dolor Sit Amet Consectetur',
+                'content' => '<h2>Lorem Ipsum Dolor Sit Amet</h2><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum:</p><ul><li>Sed ut perspiciatis unde omnis iste natus error sit voluptatem</li><li>Accusantium doloremque laudantium totam rem aperiam eaque ipsa</li><li>Quae ab illo inventore veritatis et quasi architecto beatae vitae dicta</li><li>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit</li></ul><p>Sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.</p>',
+                'excerpt' => 'Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
                 'image' => 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200',
                 'is_hero' => true,
                 'is_published' => true,
                 'published_at' => now(),
             ],
             [
-                'title' => 'Cloud Migration: Kapan Waktu yang Tepat untuk Bisnis Anda?',
-                'content' => '<h2>Menentukan Timing Cloud Migration</h2><p>Cloud computing bukan lagi pilihan, melainkan kebutuhan untuk bisnis yang ingin scale dengan cepat. Namun, timing migration sangat krusial untuk meminimalkan downtime dan memaksimalkan ROI.</p><p>Indikator bisnis Anda siap migrasi ke cloud:</p><ul><li>Traffic website yang semakin meningkat dan unpredictable</li><li>Biaya maintenance server on-premise yang membengkak</li><li>Team yang bekerja secara remote dan butuh akses everywhere</li><li>Kebutuhan backup dan disaster recovery yang lebih robust</li></ul><p>AWS, Google Cloud, atau Azure? Kami bantu analisis kebutuhan dan implementasi sesuai budget Anda.</p>',
-                'excerpt' => 'Panduan lengkap menentukan waktu yang tepat untuk migrasi infrastruktur ke cloud.',
+                'title' => 'Adipiscing Elit Sed Do Eiusmod Tempor',
+                'content' => '<h2>Consectetur Adipiscing Elit</h2><p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p><p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Indicators lorem ipsum dolor sit amet:</p><ul><li>Consectetur adipiscing elit sed do eiusmod tempor incididunt</li><li>Ut labore et dolore magna aliqua enim ad minim veniam</li><li>Quis nostrud exercitation ullamco laboris nisi ut aliquip</li><li>Ex ea commodo consequat duis aute irure dolor in reprehenderit</li></ul><p>In voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat cupidatat non proident.</p>',
+                'excerpt' => 'Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
                 'image' => 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200',
                 'is_hero' => true,
                 'is_published' => true,
                 'published_at' => now()->subDay(),
             ],
             [
-                'title' => 'Cybersecurity Essential: Proteksi Data di Era Digital',
-                'content' => '<h2>Melindungi Aset Digital Bisnis</h2><p>Serangan cyber meningkat 300% di tahun 2025. Ransomware, phishing, dan data breach bukan lagi ancaman jauh, melainkan risiko nyata yang bisa menghancurkan bisnis dalam semalam.</p><p>Best practices cybersecurity yang wajib diimplementasikan:</p><ul><li>Multi-factor authentication (MFA) untuk semua akses sistem</li><li>Regular security audit dan penetration testing</li><li>Employee training tentang social engineering</li><li>Data encryption at rest dan in transit</li><li>Incident response plan yang ter-dokumentasi</li></ul><p>Investasi di cybersecurity bukan cost, melainkan insurance untuk continuity bisnis Anda.</p>',
-                'excerpt' => 'Langkah-langkah esensial melindungi bisnis dari ancaman cyber di era digital.',
+                'title' => 'Incididunt Ut Labore Et Dolore Magna Aliqua',
+                'content' => '<h2>Sed Do Eiusmod Tempor Incididunt</h2><p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Best practices lorem ipsum dolor sit amet:</p><ul><li>Lorem ipsum dolor sit amet consectetur adipiscing elit sed do</li><li>Eiusmod tempor incididunt ut labore et dolore magna aliqua enim</li><li>Ad minim veniam quis nostrud exercitation ullamco laboris nisi ut</li><li>Aliquip ex ea commodo consequat duis aute irure dolor in</li><li>Reprehenderit in voluptate velit esse cillum dolore eu fugiat</li></ul><p>Nulla pariatur excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum.</p>',
+                'excerpt' => 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
                 'image' => 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200',
                 'is_hero' => true,
                 'is_published' => true,
                 'published_at' => now()->subDays(2),
             ],
             [
-                'title' => 'Mobile-First Development: Mengapa Aplikasi Mobile Penting untuk Bisnis',
-                'content' => '<h2>Era Mobile-First Business</h2><p>80% pengguna internet di Indonesia mengakses web melalui smartphone. Bisnis tanpa strategi mobile-first akan tertinggal jauh di kompetisi digital.</p><p>Keunggulan memiliki aplikasi mobile native:</p><ul><li>User engagement 3x lebih tinggi dibanding mobile web</li><li>Push notification untuk re-engagement yang efektif</li><li>Offline capability untuk akses tanpa internet</li><li>Better performance dan user experience</li><li>Akses ke native features: camera, GPS, sensors</li></ul><p>PaiTech spesialisasi dalam React Native dan Flutter development untuk hasil optimal dengan budget efisien.</p>',
-                'excerpt' => 'Mengapa bisnis modern harus prioritaskan mobile app development untuk customer engagement.',
+                'title' => 'Ut Enim Ad Minim Veniam Quis Nostrud',
+                'content' => '<h2>Ut Labore Et Dolore Magna Aliqua</h2><p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p><p>Keunggulan lorem ipsum dolor sit amet consectetur adipiscing elit:</p><ul><li>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</li><li>Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi</li><li>Ut aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit</li><li>In voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur</li><li>Sint occaecat cupidatat non proident sunt in culpa qui officia deserunt</li></ul><p>Mollit anim id est laborum sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque.</p>',
+                'excerpt' => 'Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor.',
                 'image' => 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=1200',
                 'is_hero' => false,
                 'is_published' => true,
                 'published_at' => now()->subDays(3),
             ],
             [
-                'title' => 'UX Design yang Baik = Konversi yang Tinggi',
-                'content' => '<h2>Investasi UX Design untuk ROI Maksimal</h2><p>User Experience bukan sekedar "make it pretty". UX yang baik adalah hasil dari user research, data analytics, dan iterative testing yang menghasilkan produk yang intuitive dan enjoyable to use.</p><p>Impact UX design yang baik pada bisnis:</p><ul><li>Conversion rate meningkat hingga 400%</li><li>Reduced customer support cost (self-service yang clear)</li><li>Brand loyalty yang lebih kuat</li><li>Lower bounce rate di website/app</li></ul><p>Kami menggunakan design thinking methodology untuk menciptakan pengalaman digital yang user-centered dan business-oriented.</p>',
-                'excerpt' => 'Bagaimana investasi di UX design menghasilkan conversion rate yang jauh lebih tinggi.',
+                'title' => 'Exercitation Ullamco Laboris Nisi Ut Aliquip',
+                'content' => '<h2>Quis Nostrud Exercitation Ullamco</h2><p>Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p><p>Impact lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor:</p><ul><li>Incididunt ut labore et dolore magna aliqua enim ad minim veniam quis</li><li>Nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo</li><li>Consequat duis aute irure dolor in reprehenderit in voluptate velit</li><li>Esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat cupidatat</li></ul><p>Non proident sunt in culpa qui officia deserunt mollit anim id est laborum. Design thinking methodology lorem ipsum dolor sit amet.</p>',
+                'excerpt' => 'Ex ea commodo consequat duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.',
                 'image' => 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200',
                 'is_hero' => false,
                 'is_published' => true,
                 'published_at' => now()->subDays(4),
             ],
             [
-                'title' => 'DevOps Culture: Percepat Time-to-Market Produk Digital',
-                'content' => '<h2>Transformasi dengan DevOps</h2><p>DevOps bukan sekedar tools, melainkan culture shift yang menggabungkan development dan operations untuk delivery yang lebih cepat dan reliable.</p><p>Manfaat implementasi DevOps:</p><ul><li>Deployment frequency meningkat hingga 200x</li><li>Lead time for changes berkurang dari minggu menjadi jam</li><li>Mean time to recovery (MTTR) lebih cepat</li><li>Change failure rate yang lebih rendah</li></ul><p>CI/CD pipeline, containerization dengan Docker/Kubernetes, dan monitoring automation adalah fondasi DevOps modern.</p>',
-                'excerpt' => 'Mengimplementasikan DevOps culture untuk delivery produk yang lebih cepat dan reliable.',
+                'title' => 'Ex Ea Commodo Consequat Duis Aute Irure',
+                'content' => '<h2>Duis Aute Irure Dolor In Reprehenderit</h2><p>Ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p><p>Manfaat implementasi lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod:</p><ul><li>Tempor incididunt ut labore et dolore magna aliqua enim ad minim veniam</li><li>Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo</li><li>Consequat duis aute irure dolor in reprehenderit in voluptate velit</li><li>Esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat</li></ul><p>Cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum. CI/CD pipeline lorem ipsum dolor sit amet consectetur.</p>',
+                'excerpt' => 'Voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat cupidatat non proident.',
                 'image' => 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=1200',
                 'is_hero' => false,
                 'is_published' => true,
