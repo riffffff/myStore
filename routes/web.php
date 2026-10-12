@@ -10,6 +10,7 @@ use App\Http\Controllers\{
     ReviewController,
     OrderController
 };
+use App\Http\Controllers\Admin\AdminController;
 use App\Models\Article;
 use App\Models\Product;
 
@@ -139,10 +140,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/', 'store')->name('store');
     });
 
-    // Dashboard redirect
+    // Dashboard & Admin redirect
     Route::get('/dashboard', function (\Illuminate\Http\Request $request) {
         if ($request->user()?->is_admin) {
-            return \Inertia\Inertia::location(url('/admin'));
+            return redirect()->route('admin.dashboard');
         }
         return redirect('/');
     })->name('dashboard');
@@ -168,6 +169,44 @@ Route::middleware('auth')->group(function () {
         Route::post('/cart/add', [CartController::class, 'store'])->name('cart.store.alt');
     });
 });
+
+// ===== ADMIN ROUTES =====
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/',           [AdminController::class, 'dashboard'])->name('dashboard');
+    
+    // Produk
+    Route::get('/produk',             [AdminController::class, 'products'])->name('products');
+    Route::get('/produk/tambah',      [AdminController::class, 'productCreate'])->name('products.create');
+    Route::post('/produk',            [AdminController::class, 'productStore'])->name('products.store');
+    Route::get('/produk/{product}/edit', [AdminController::class, 'productEdit'])->name('products.edit');
+    Route::post('/produk/{product}',  [AdminController::class, 'productUpdate'])->name('products.update');
+    Route::delete('/produk/{product}', [AdminController::class, 'productDestroy'])->name('products.destroy');
+    Route::post('/produk/{product}/publish', [AdminController::class, 'productTogglePublish'])->name('products.toggle-publish');
+    Route::post('/produk/{product}/stok',    [AdminController::class, 'productUpdateStock'])->name('products.update-stock');
+
+    // Artikel
+    Route::get('/artikel',            [AdminController::class, 'articles'])->name('articles');
+    Route::get('/artikel/tambah',     [AdminController::class, 'articleCreate'])->name('articles.create');
+    Route::post('/artikel',           [AdminController::class, 'articleStore'])->name('articles.store');
+    Route::get('/artikel/{article}/edit', [AdminController::class, 'articleEdit'])->name('articles.edit');
+    Route::post('/artikel/{article}', [AdminController::class, 'articleUpdate'])->name('articles.update');
+    Route::delete('/artikel/{article}', [AdminController::class, 'articleDestroy'])->name('articles.destroy');
+    Route::post('/artikel/{article}/publish', [AdminController::class, 'articleTogglePublish'])->name('articles.toggle-publish');
+
+    // Ulasan
+    Route::get('/ulasan',             [AdminController::class, 'reviews'])->name('reviews');
+    Route::post('/ulasan/{review}/approve',  [AdminController::class, 'reviewApprove'])->name('reviews.approve');
+    Route::delete('/ulasan/{review}',        [AdminController::class, 'reviewReject'])->name('reviews.reject');
+
+    // Pengaturan Toko
+    Route::get('/pengaturan',         [AdminController::class, 'settings'])->name('settings');
+    Route::post('/pengaturan',        [AdminController::class, 'settingsUpdate'])->name('settings.update');
+});
+
+// Fallback redirect dari /mobile-admin ke /admin
+Route::get('/mobile-admin/{any?}', function ($any = null) {
+    return redirect('/admin' . ($any ? '/' . $any : ''));
+})->where('any', '.*');
 
 // ===== AUTH ROUTES (Laravel Breeze) =====
 require __DIR__.'/auth.php';

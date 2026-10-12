@@ -99,7 +99,22 @@ export default function Edit({
                                     />
                                 </div>
 
-
+                                {Boolean((user as any).is_admin) && (
+                                    <div className="space-y-1 py-3">
+                                        <p className="px-3 pt-2 text-[11px] font-bold tracking-wider text-teal-600 uppercase">
+                                            Administrasi Toko
+                                        </p>
+                                        <Link href="/admin" className="block">
+                                            <ProfileMenuItem
+                                                icon={Shield}
+                                                iconBg="bg-teal-50"
+                                                iconColor="text-teal-600"
+                                                title="Admin Panel"
+                                                subtitle="Kelola produk, artikel, & toko"
+                                            />
+                                        </Link>
+                                    </div>
+                                )}
 
                                 <div className="space-y-1 py-3">
                                     <p className="px-3 pt-2 text-[11px] font-bold tracking-wider text-gray-400 uppercase">

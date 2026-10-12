@@ -66,7 +66,6 @@ class Review extends Model
             }
 
             // Review dari publik selalu butuh persetujuan admin
-            // (review yang dibuat langsung dari Filament tetap bisa di-override oleh form)
             if (! isset($review->is_approved)) {
                 $review->is_approved = false;
             }

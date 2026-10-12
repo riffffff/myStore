@@ -60,7 +60,7 @@ class RegisteredUserController extends Controller
         $request->session()->regenerate();
 
         if ($user->is_admin) {
-            return Inertia::location(url('/admin'));
+            return redirect()->route('admin.dashboard');
         }
 
         return redirect()->intended('/');

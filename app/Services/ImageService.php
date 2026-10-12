@@ -68,7 +68,7 @@ class ImageService
 
         $size = @filesize($absPath);
         if ($size !== false && $size < 1024) {
-            Log::warning('ImageService: file uploaded filament size terlalu kecil, dianggap corrupt; skip process keep path.', [
+            Log::warning('ImageService: file upload size terlalu kecil, dianggap corrupt; skip process keep path.', [
                 'path' => $cleanPath,
                 'size' => $size,
             ]);
