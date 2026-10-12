@@ -52,9 +52,10 @@ class EditShopSetting extends EditRecord
     {
         return [
             Actions\Action::make('reset_colors')
-                ->label('Reset Warna ke Default')
+                ->label('Reset Warna')
                 ->icon('heroicon-o-arrow-path')
-                ->color('warning')
+                ->color('gray')
+                ->outlined()
                 ->requiresConfirmation()
                 ->modalHeading('Reset Semua Warna ke Default?')
                 ->modalDescription('Semua pengaturan warna komponen (Header, Footer, Hero, Card Produk, Card Artikel, Tombol) akan dikembalikan ke nilai bawaan. Pengaturan lain tidak terpengaruh.')
@@ -79,6 +80,8 @@ class EditShopSetting extends EditRecord
             Actions\Action::make('back_to_list')
                 ->label('Kembali')
                 ->icon('heroicon-o-arrow-left')
+                ->color('gray')
+                ->outlined()
                 ->url(fn () => ShopSettingResource::getUrl('index')),
         ];
     }
