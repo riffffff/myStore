@@ -2,7 +2,10 @@
 set -e
 
 # Pastikan direktori storage dan cache tersedia
-mkdir -p /var/www/html/storage/framework/{sessions,views,cache} /var/www/html/storage/logs /var/www/html/bootstrap/cache
+mkdir -p /var/www/html/storage/framework/{sessions,views,cache} \
+         /var/www/html/storage/logs \
+         /var/www/html/bootstrap/cache \
+         /var/www/html/storage/app/public/{qris,payment_proofs,branding}
 
 # Pastikan file SQLite ada
 if [ ! -f /var/www/html/database/database.sqlite ]; then
@@ -11,7 +14,7 @@ fi
 
 # Set permissions
 chown -R www-data:www-data /var/www/html/database /var/www/html/storage /var/www/html/bootstrap/cache
-chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Jika .env belum ada, copy dari .env.example
 if [ ! -f /var/www/html/.env ]; then

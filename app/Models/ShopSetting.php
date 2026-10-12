@@ -544,11 +544,14 @@ class ShopSetting extends Model
     public function getQrisImageUrl(): ?string
     {
         if (! empty($this->qris_image)) {
-            return asset('storage/' . $this->qris_image);
+            if (str_starts_with($this->qris_image, 'http')) {
+                return $this->qris_image;
+            }
+            return '/storage/' . ltrim($this->qris_image, '/');
         }
 
         if (file_exists(public_path('storage/qris/qris.png'))) {
-            return asset('storage/qris/qris.png');
+            return '/storage/qris/qris.png';
         }
 
         return null;

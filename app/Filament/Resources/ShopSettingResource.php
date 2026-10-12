@@ -160,7 +160,31 @@ class ShopSettingResource extends Resource
                                     ])->columns(2),
                             ]),
 
-                        // ── Tab 4: Theme Colors (Component-Based) ───────────
+                        // ── Tab 4: Pembayaran & QRIS ─────────────────────────
+                        Forms\Components\Tabs\Tab::make('Pembayaran & QRIS')
+                            ->icon('heroicon-o-qr-code')
+                            ->schema([
+                                Forms\Components\Section::make('Konfigurasi QRIS Toko')
+                                    ->description('Upload barcode QRIS toko Anda agar pelanggan dapat melakukan pembayaran non-tunai saat checkout (mendukung semua m-Banking & e-Wallet).')
+                                    ->schema([
+                                        Forms\Components\FileUpload::make('qris_image')
+                                            ->label('Gambar Barcode QRIS')
+                                            ->image()
+                                            ->disk('public')
+                                            ->directory('qris')
+                                            ->visibility('public')
+                                            ->maxSize(5120)
+                                            ->helperText('Upload foto barcode QRIS toko Anda (JPG, PNG, WebP). Maks: 5MB.'),
+
+                                        Forms\Components\TextInput::make('qris_account_name')
+                                            ->label('Nama Akun / Merchant QRIS (Atas Nama)')
+                                            ->maxLength(255)
+                                            ->placeholder('Contoh: PAITECH STORE / RIFQI')
+                                            ->helperText('Nama merchant / pemilik rekening QRIS yang tampil di bawah barcode QRIS.'),
+                                    ])->columns(2),
+                            ]),
+
+                        // ── Tab 5: Theme Colors (Component-Based) ───────────
                         Forms\Components\Tabs\Tab::make('Theme Colors')
                             ->icon('heroicon-o-swatch')
                             ->schema([

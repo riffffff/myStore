@@ -24,6 +24,7 @@ import {
     Loader2,
     ShieldCheck,
     Truck,
+    Download,
 } from 'lucide-react';
 
 interface OrderItemInput {
@@ -185,15 +186,47 @@ export default function Create({ initialItems, allProducts, customer }: OrderCre
         setProofPreview(null);
     };
 
+    const [isDownloadingQris, setIsDownloadingQris] = useState(false);
+
+    // Download QRIS image
+    const handleDownloadQris = async () => {
+        if (!qrisDisplayUrl) return;
+        setIsDownloadingQris(true);
+        try {
+            const response = await fetch(qrisDisplayUrl);
+            const blob = await response.blob();
+            const blobUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = blobUrl;
+            const safeName = (qrisAccount || shopName || 'QRIS').replace(/[^a-zA-Z0-9_-]/g, '_');
+            a.download = `QRIS-${safeName}.png`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(blobUrl);
+        } catch {
+            // Fallback jika direct fetch terhalang (misal external CORS)
+            const a = document.createElement('a');
+            a.href = qrisDisplayUrl;
+            a.target = '_blank';
+            a.download = `QRIS-Pembayaran.png`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        } finally {
+            setTimeout(() => setIsDownloadingQris(false), 500);
+        }
+    };
+
     // Submit pesanan
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Pastikan items terbaru tersinkronisasi
-        form.setData(
-            'items',
-            items.map((i) => ({ product_id: i.product_id, quantity: i.quantity }))
-        );
+        // Pastikan items terbaru tersinkronisasi saat submit
+        form.transform((data) => ({
+            ...data,
+            items: items.map((i) => ({ product_id: i.product_id, quantity: i.quantity })),
+        }));
 
         form.post(route('orders.store'), {
             forceFormData: true,
@@ -411,15 +444,45 @@ export default function Create({ initialItems, allProducts, customer }: OrderCre
                                                     Scan kode QRIS di bawah ini melalui aplikasi m-Banking atau e-Wallet Anda:
                                                 </p>
 
-                                                {/* QR Image */}
-                                                <div className="inline-block p-3 bg-white rounded-xl border border-stone-200 shadow-xs">
-                                                    <img
-                                                        src={qrisDisplayUrl}
-                                                        alt="QRIS Pembayaran"
-                                                        className="w-48 h-48 sm:w-52 sm:h-52 object-contain rounded-lg mx-auto"
-                                                    />
-                                                    <p className="text-xs font-bold text-stone-800 mt-2">
-                                                        {qrisAccount}
+                                                {/* QR Image & Download */}
+                                                <div className="inline-block p-4 bg-white rounded-2xl border border-stone-200 shadow-sm max-w-xs mx-auto">
+                                                    <div className="bg-stone-50 p-2.5 rounded-xl border border-stone-100 flex items-center justify-center">
+                                                        <img
+                                                            src={qrisDisplayUrl}
+                                                            alt="QRIS Pembayaran"
+                                                            className="w-48 h-48 sm:w-56 sm:h-56 object-contain rounded-lg mx-auto"
+                                                        />
+                                                    </div>
+                                                    <div className="mt-3 text-center">
+                                                        <span className="text-[10px] uppercase font-bold tracking-wider text-stone-400 block">
+                                                            Atas Nama / Merchant
+                                                        </span>
+                                                        <p className="text-xs sm:text-sm font-extrabold text-stone-800">
+                                                            {qrisAccount}
+                                                        </p>
+                                                    </div>
+
+                                                    {/* Tombol Download QRIS */}
+                                                    <button
+                                                        type="button"
+                                                        onClick={handleDownloadQris}
+                                                        disabled={isDownloadingQris}
+                                                        className="mt-3 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-stone-900 hover:bg-black text-white text-xs font-bold rounded-xl shadow-xs transition active:scale-[0.98] cursor-pointer disabled:opacity-75"
+                                                    >
+                                                        {isDownloadingQris ? (
+                                                            <>
+                                                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                                                <span>Menyimpan QRIS...</span>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <Download className="w-4 h-4 text-emerald-400" />
+                                                                <span>Unduh / Simpan QRIS</span>
+                                                            </>
+                                                        )}
+                                                    </button>
+                                                    <p className="text-[10px] text-stone-500 mt-2 text-center leading-relaxed">
+                                                        💡 Simpan gambar QRIS ke galeri HP untuk bayar via m-Banking atau e-Wallet.
                                                     </p>
                                                 </div>
 
