@@ -81,6 +81,14 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
+            ->renderHook(
+                \Filament\View\PanelsRenderHook::HEAD_END,
+                fn () => new \Illuminate\Support\HtmlString('<link rel="stylesheet" href="' . asset('css/filament-admin.css') . '?v=' . (file_exists(public_path('css/filament-admin.css')) ? filemtime(public_path('css/filament-admin.css')) : time()) . '">')
+            )
+            ->renderHook(
+                \Filament\View\PanelsRenderHook::BODY_END,
+                fn () => view('filament.components.mobile-bottom-nav')
+            )
             ->authMiddleware([
                 Authenticate::class,
             ]);

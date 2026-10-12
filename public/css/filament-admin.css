@@ -1,5 +1,5 @@
 /* ====================================================
-   Store Admin — SaaS Dashboard Custom CSS
+   Store Admin — SaaS Dashboard & Mobile App-Like Overhaul
    ==================================================== */
 
 /* --- Global Font Polish --- */
@@ -8,7 +8,7 @@
 .fi-sidebar-nav-group-label { font-weight: 700 !important; font-size: 0.6rem !important; letter-spacing: 0.1em !important; }
 .fi-section-header-heading { font-weight: 700 !important; letter-spacing: -0.02em !important; }
 
-/* --- Sidebar Nav Items --- */
+/* --- Sidebar Nav Items (Desktop) --- */
 .fi-sidebar-item-button { border-radius: 10px !important; transition: all 0.15s ease !important; }
 .fi-sidebar-item-button:hover { background: rgba(245,158,11,0.08) !important; }
 .fi-sidebar-item-button.fi-active { background: rgba(245,158,11,0.15) !important; }
@@ -31,7 +31,7 @@
 .fi-wi { border-radius: 14px !important; }
 .fi-section { border-radius: 14px !important; overflow: hidden; }
 
-/* --- Tables cleaner --- */
+/* --- Tables Cleaner --- */
 .fi-ta-header-cell-label { font-weight: 700 !important; font-size: 0.67rem !important; text-transform: uppercase !important; letter-spacing: 0.07em !important; }
 .fi-ta-row { transition: background 0.12s ease !important; }
 
@@ -69,3 +69,247 @@
 /* --- Top bar --- */
 .fi-topbar { border-bottom: 1px solid rgba(0,0,0,0.05) !important; }
 .dark .fi-topbar { border-bottom: 1px solid rgba(255,255,255,0.05) !important; }
+
+
+/* ==========================================================================
+   📱 MOBILE OVERHAUL: App-Like Experience (Screens < 768px)
+   ========================================================================== */
+@media (max-width: 768px) {
+
+    /* 1. Ruang Aman Konten untuk Bottom Navigation Bar */
+    .fi-main,
+    .fi-page,
+    .fi-layout-content {
+        padding-bottom: 5.8rem !important;
+    }
+
+    /* 2. Topbar Ringkas & Bersih */
+    .fi-topbar {
+        height: 3.5rem !important;
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+    .fi-topbar-item-btn {
+        min-height: 40px !important;
+        min-width: 40px !important;
+    }
+
+    /* 3. Header Halaman Mobile */
+    .fi-header {
+        margin-bottom: 1rem !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 0.75rem !important;
+    }
+    .fi-header-heading {
+        font-size: 1.25rem !important;
+    }
+    .fi-header-actions {
+        width: 100% !important;
+        display: flex !important;
+        justify-content: stretch !important;
+        gap: 0.5rem !important;
+    }
+    .fi-header-actions .fi-btn {
+        flex: 1 !important;
+        min-height: 42px !important;
+        border-radius: 12px !important;
+        justify-content: center !important;
+        font-weight: 700 !important;
+    }
+
+    /* 4. Transformasi Tabel Menjadi "Card Feed" yang Ramah Sentuhan */
+    .fi-ta-content {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+    .fi-ta-table {
+        display: block !important;
+        width: 100% !important;
+        border: none !important;
+    }
+    .fi-ta-table thead {
+        display: none !important; /* Sembunyikan header tabel di HP */
+    }
+    .fi-ta-table tbody {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0.85rem !important;
+        width: 100% !important;
+    }
+    .fi-ta-row {
+        display: flex !important;
+        flex-direction: column !important;
+        background: #FFFFFF !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        border-radius: 16px !important;
+        padding: 0.9rem !important;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03) !important;
+        gap: 0.4rem !important;
+        position: relative !important;
+    }
+    .dark .fi-ta-row {
+        background: #1c1917 !important;
+        border-color: rgba(255, 255, 255, 0.08) !important;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3) !important;
+    }
+    .fi-ta-cell {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        padding: 0.2rem 0 !important;
+        border: none !important;
+        width: 100% !important;
+    }
+    .fi-ta-cell > * {
+        width: 100% !important;
+    }
+    /* Tombol Aksi di Kartu Tabel */
+    .fi-ta-actions-cell {
+        margin-top: 0.6rem !important;
+        padding-top: 0.65rem !important;
+        border-top: 1px dashed rgba(0, 0, 0, 0.08) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        gap: 0.6rem !important;
+        width: 100% !important;
+    }
+    .dark .fi-ta-actions-cell {
+        border-top-color: rgba(255, 255, 255, 0.08) !important;
+    }
+    .fi-ta-actions-cell .fi-btn {
+        min-height: 38px !important;
+        border-radius: 10px !important;
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+
+    /* 5. Sticky Bottom Action Bar pada Formulir Edit / Create */
+    .fi-form-actions,
+    .fi-ac {
+        position: sticky !important;
+        bottom: 4.25rem !important;
+        z-index: 35 !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(14px) !important;
+        -webkit-backdrop-filter: blur(14px) !important;
+        padding: 0.75rem 1rem !important;
+        margin: 1.5rem -1rem -1rem -1rem !important;
+        border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.07) !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 0.5rem !important;
+        border-radius: 16px 16px 0 0 !important;
+    }
+    .dark .fi-form-actions,
+    .dark .fi-ac {
+        background: rgba(28, 25, 23, 0.95) !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4) !important;
+    }
+    .fi-form-actions button,
+    .fi-form-actions .fi-btn,
+    .fi-ac button,
+    .fi-ac .fi-btn {
+        flex: 1 !important;
+        min-height: 44px !important;
+        border-radius: 12px !important;
+        font-weight: 700 !important;
+        justify-content: center !important;
+    }
+
+    /* 6. Tabs Formulir Menjadi Swipeable Pill Chips */
+    .fi-tabs {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none !important;
+        display: flex !important;
+        gap: 0.45rem !important;
+        padding: 0.25rem 0.25rem 0.65rem 0.25rem !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+        margin-bottom: 1rem !important;
+    }
+    .fi-tabs::-webkit-scrollbar {
+        display: none !important;
+    }
+    .fi-tabs-item {
+        flex-shrink: 0 !important;
+        border-radius: 9999px !important;
+        padding: 0.45rem 0.95rem !important;
+        font-size: 0.78rem !important;
+        font-weight: 700 !important;
+        white-space: nowrap !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        background: #FFFFFF !important;
+        color: #57534e !important;
+        transition: all 0.15s ease !important;
+    }
+    .dark .fi-tabs-item {
+        background: #292524 !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+        color: #a8a29e !important;
+    }
+    .fi-tabs-item.fi-active {
+        background: #f59e0b !important;
+        color: #FFFFFF !important;
+        border-color: #f59e0b !important;
+        box-shadow: 0 3px 10px rgba(245, 158, 11, 0.35) !important;
+    }
+    .dark .fi-tabs-item.fi-active {
+        background: #d97706 !important;
+        color: #FFFFFF !important;
+        border-color: #d97706 !important;
+    }
+
+    /* 7. Input & Touch Targets (Anti Salah Sentuh) */
+    .fi-input,
+    .fi-select-input,
+    input[type="text"],
+    input[type="number"],
+    input[type="email"],
+    input[type="password"],
+    select {
+        min-height: 44px !important;
+        font-size: 0.92rem !important;
+        border-radius: 12px !important;
+    }
+    textarea.fi-input {
+        border-radius: 12px !important;
+    }
+
+    /* 8. File Upload Zone Ramah HP */
+    .fi-fo-file-upload {
+        border-radius: 14px !important;
+    }
+    .fi-fo-file-upload-dropzone {
+        padding: 1.5rem 1rem !important;
+        border-radius: 14px !important;
+        min-height: 110px !important;
+    }
+
+    /* 9. Filter & Search Bar Tabel */
+    .fi-ta-filter-indicators {
+        overflow-x: auto !important;
+        padding-bottom: 0.25rem !important;
+    }
+    .fi-ta-search-field input {
+        min-height: 42px !important;
+        border-radius: 12px !important;
+    }
+
+    /* 10. Stat Overview Grid di Mobile */
+    .fi-wi-stats-overview {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 0.65rem !important;
+    }
+    .fi-wi-stats-overview-stat {
+        padding: 0.85rem !important;
+    }
+    .fi-wi-stats-overview-stat-value {
+        font-size: 1.35rem !important;
+    }
+}
