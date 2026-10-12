@@ -278,64 +278,59 @@ export default function Home({ heroArticles, topProducts, reviews, shopSettings 
                         </ScrollReveal>
 
                         {/*
-                          Mobile: overflow-x-auto langsung (tanpa -mx / pl pr tambahan).
-                          Padding kiri berasal dari parent container px-3 → SAMA PERSIS dengan card produk grid.
+                          Mobile: overflow-x-auto overflow-y-hidden untuk mencegah card bisa digeser ke atas / terpotong.
+                          ScrollReveal dipasang di container utama agar tidak memicu translate-y internal pada tiap card.
                         */}
-                        <div className="overflow-x-auto md:overflow-visible snap-x snap-mandatory md:snap-none scrollbar-none pt-2 pb-2">
-                            <div className="flex md:grid md:grid-cols-3 gap-3 sm:gap-6 transition-all duration-300 ease-out w-max md:w-auto">
-                                {safeReviews.map((rev, index) => {
-                                    const revName   = rev?.name ?? 'Pelanggan';
-                                    const revCity   = rev?.city ?? '';
-                                    const revRating = typeof rev?.rating === 'number' && rev.rating >= 1 && rev.rating <= 5 ? rev.rating : 5;
-                                    const revReview = rev?.review ?? '';
-                                    const revId     = rev?.id ?? index;
-                                    const isHiddenOnDesktop = !showAllReviews && index >= 3;
-                                    const revealDelay = (index % 3) * 120;
+                        <ScrollReveal direction="up" delay={100}>
+                            <div className="overflow-x-auto overflow-y-hidden md:overflow-visible snap-x snap-mandatory md:snap-none scrollbar-none py-2.5 overscroll-x-contain">
+                                <div className="flex md:grid md:grid-cols-3 gap-3 sm:gap-6 transition-all duration-300 ease-out w-max md:w-auto items-stretch">
+                                    {safeReviews.map((rev, index) => {
+                                        const revName   = rev?.name ?? 'Pelanggan';
+                                        const revCity   = rev?.city ?? '';
+                                        const revRating = typeof rev?.rating === 'number' && rev.rating >= 1 && rev.rating <= 5 ? rev.rating : 5;
+                                        const revReview = rev?.review ?? '';
+                                        const revId     = rev?.id ?? index;
+                                        const isHiddenOnDesktop = !showAllReviews && index >= 3;
 
-                                    const cardContent = (
-                                        <div className="bg-white px-5 py-4 sm:p-6 rounded-2xl border border-gray-200 shadow-xs flex flex-col justify-between h-full hover:-translate-y-1.5 hover:border-accent-400 transition-all duration-300 ease-out">
-                                            <div className="space-y-2 sm:space-y-3">
-                                                <div className="flex gap-1">
-                                                    {Array.from({ length: 5 }).map((_, i) => (
-                                                        <Star
-                                                            key={i}
-                                                            className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${i < revRating ? 'fill-accent-500 text-accent-500' : 'text-gray-200'}`}
-                                                        />
-                                                    ))}
+                                        return (
+                                            <div
+                                                key={revId}
+                                                className={`shrink-0 w-[72vw] sm:w-[48vw] md:w-auto snap-start md:snap-align-none transition-all duration-300 ease-out flex flex-col ${
+                                                    isHiddenOnDesktop ? 'md:hidden' : ''
+                                                }`}
+                                            >
+                                                <div className="bg-white px-5 py-4 sm:p-6 rounded-2xl border border-gray-200 shadow-xs flex flex-col justify-between h-full md:hover:-translate-y-1.5 hover:border-accent-400 transition-all duration-300 ease-out">
+                                                    <div className="space-y-2 sm:space-y-3">
+                                                        <div className="flex gap-1">
+                                                            {Array.from({ length: 5 }).map((_, i) => (
+                                                                <Star
+                                                                    key={i}
+                                                                    className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${i < revRating ? 'fill-accent-500 text-accent-500' : 'text-gray-200'}`}
+                                                                />
+                                                            ))}
+                                                        </div>
+                                                        {revReview && (
+                                                            <p className="text-primary-600 text-xs leading-relaxed italic line-clamp-4">
+                                                                "{revReview}"
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                    <div className="mt-4 pt-3 sm:mt-6 sm:pt-4 border-t border-gray-100 flex items-center gap-2.5 sm:gap-3">
+                                                        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-accent-500/20 flex items-center justify-center font-bold text-primary-900 border border-accent-500/30 text-xs">
+                                                            {revName.charAt(0)}
+                                                        </div>
+                                                        <div>
+                                                            <h4 className="text-xs font-bold text-primary-900">{revName}</h4>
+                                                            {revCity && <span className="text-[10px] text-primary-500 block">{revCity}</span>}
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                {revReview && (
-                                                    <p className="text-primary-600 text-xs leading-relaxed italic line-clamp-4">
-                                                        "{revReview}"
-                                                    </p>
-                                                )}
                                             </div>
-                                            <div className="mt-4 pt-3 sm:mt-6 sm:pt-4 border-t border-gray-100 flex items-center gap-2.5 sm:gap-3">
-                                                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-accent-500/20 flex items-center justify-center font-bold text-primary-900 border border-accent-500/30 text-xs">
-                                                    {revName.charAt(0)}
-                                                </div>
-                                                <div>
-                                                    <h4 className="text-xs font-bold text-primary-900">{revName}</h4>
-                                                    {revCity && <span className="text-[10px] text-primary-500 block">{revCity}</span>}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    );
-
-                                    return (
-                                        <div
-                                            key={revId}
-                                            className={`shrink-0 w-[72vw] sm:w-[48vw] md:w-auto snap-start md:snap-align-none transition-all duration-300 ease-out ${
-                                                isHiddenOnDesktop ? 'md:hidden' : ''
-                                            }`}
-                                        >
-                                            <ScrollReveal delay={revealDelay} direction="up" className="h-full">
-                                                <div className="h-full">{cardContent}</div>
-                                            </ScrollReveal>
-                                        </div>
-                                    );
-                                })}
+                                        );
+                                    })}
+                                </div>
                             </div>
-                        </div>
+                        </ScrollReveal>
 
                         {hasMoreReviews && (
                             <div className="hidden md:flex justify-center mt-10">
