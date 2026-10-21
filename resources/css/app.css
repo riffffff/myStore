@@ -1,0 +1,182 @@
+@import "tailwindcss";
+
+@theme {
+    /* ─── Dynamic Component Colors (Linked directly to ShopSetting Component Variables) ─── */
+    /* Header */
+    --color-header-bg:            var(--header-bg, #333333);
+    --color-header-text:          var(--header-text, #FFFFFF);
+    --color-header-active:        var(--header-active, #0D9488);
+
+    /* Footer */
+    --color-footer-bg:            var(--footer-bg, #262626);
+    --color-footer-text:          var(--footer-text, #9CA3AF);
+    --color-footer-accent:        var(--footer-accent, #0D9488);
+
+    /* Hero Section */
+    --color-hero-bg:              var(--hero-bg, #F1F1F1);
+    --color-hero-text:            var(--hero-text, #262626);
+    --color-hero-btn:             var(--hero-btn, #0D9488);
+    --color-hero-btn-text:        var(--hero-btn-text, #FFFFFF);
+
+    /* Card Product & Commerce Price (#E63854) */
+    --color-card-product-bg:      var(--card-product-bg, #FFFFFF);
+    --color-card-product-border:  var(--card-product-border, #E5E7EB);
+    --color-card-product-text:    var(--card-product-text, #262626);
+    --color-card-product-price:   var(--card-product-price, #E63854);
+    --color-card-product-btn:     var(--card-product-btn, #0D9488);
+    --color-price:                var(--price-color, #E63854);
+    --color-price-hover:          #CC2843;
+    --color-price-subtle:         #FFF1F3;
+
+    /* Card Article */
+    --color-card-article-bg:      var(--card-article-bg, #FFFFFF);
+    --color-card-article-border:  var(--card-article-border, #E5E7EB);
+    --color-card-article-tag:     var(--card-article-tag, #0D9488);
+    --color-card-article-title:   var(--card-article-title, #262626);
+    --color-card-article-text:    var(--card-article-text, #4B5563);
+
+    /* Page & Global Buttons */
+    --color-page-bg:              var(--page-bg, #FFFFFF);
+    --color-page-text:            var(--page-text, #262626);
+    --color-primary-btn:          var(--primary-btn, #0D9488);
+    --color-primary-btn-text:     var(--primary-btn-text, #FFFFFF);
+
+    /* ─── Dynamic Accent / Interactive Palette (Default: #0D9488) ─── */
+    --color-accent-50:            color-mix(in srgb, var(--header-active, #0D9488) 8%, white);
+    --color-accent-100:           color-mix(in srgb, var(--header-active, #0D9488) 15%, white);
+    --color-accent-200:           color-mix(in srgb, var(--header-active, #0D9488) 30%, white);
+    --color-accent-300:           color-mix(in srgb, var(--header-active, #0D9488) 55%, white);
+    --color-accent-400:           color-mix(in srgb, var(--header-active, #0D9488) 80%, white);
+    --color-accent-500:           var(--header-active, #0D9488);
+    --color-accent-600:           color-mix(in srgb, var(--header-active, #0D9488) 85%, black);
+    --color-accent-700:           color-mix(in srgb, var(--header-active, #0D9488) 70%, black);
+    --color-accent-800:           color-mix(in srgb, var(--header-active, #0D9488) 55%, black);
+    --color-accent-900:           color-mix(in srgb, var(--header-active, #0D9488) 40%, black);
+    --color-accent-950:           color-mix(in srgb, var(--header-active, #0D9488) 25%, black);
+
+    /* Primary: Dark Charcoal for dark header and dark structural surfaces */
+    --color-primary-50:  #f7f7f7;
+    --color-primary-100: #e8e8e8;
+    --color-primary-200: #d1d1d1;
+    --color-primary-300: #ababab;
+    --color-primary-400: #7d7d7d;
+    --color-primary-500: #5c5c5c;
+    --color-primary-600: #4a4a4a;
+    --color-primary-700: #3d3d3d;
+    --color-primary-800: #333333;
+    --color-primary-900: #262626;
+    --color-primary-950: #1a1a1a;
+
+    /* Background: Light Gray (#F1F1F1) */
+    --color-bg-light: #F1F1F1;
+    --color-bg-white: #FFFFFF;
+
+    /* WhatsApp brand colors */
+    --color-whatsapp:        #25D366;
+    --color-whatsapp-dark:   #128C7E;
+    --color-whatsapp-darker: #075E54;
+
+    /* Legacy aliases (backward compatibility) */
+    --color-mahogany-50:  var(--color-primary-50);
+    --color-mahogany-100: var(--color-primary-100);
+    --color-mahogany-200: var(--color-primary-200);
+    --color-mahogany-300: var(--color-primary-300);
+    --color-mahogany-400: var(--color-primary-400);
+    --color-mahogany-500: var(--color-primary-500);
+    --color-mahogany-600: var(--color-primary-600);
+    --color-mahogany-700: var(--color-primary-700);
+    --color-mahogany-800: var(--color-primary-800);
+    --color-mahogany-900: var(--color-primary-900);
+    --color-mahogany-950: var(--color-primary-950);
+
+    /* ─── Border Radius & Font ─── */
+    --radius-theme: var(--border-radius, 0.5rem);
+    --font-theme: var(--font-family, 'Inter', system-ui, sans-serif);
+}
+
+/* ─── Base Resets ─── */
+
+:root {
+    /* Component fallbacks */
+    --header-bg:              #333333;
+    --header-text:            #FFFFFF;
+    --header-active:          #0D9488;
+    --footer-bg:              #333333;
+    --footer-text:            #FFFFFF;
+    --footer-accent:          #0D9488;
+    --hero-bg:                #F1F1F1;
+    --hero-text:              #262626;
+    --hero-btn:               #0D9488;
+    --hero-btn-text:          #FFFFFF;
+    --card-product-bg:        #FFFFFF;
+    --card-product-border:    #E5E7EB;
+    --card-product-text:      #262626;
+    --card-product-price:     #E63854;
+    --price-color:            #E63854;
+    --card-product-btn:       #0D9488;
+    --card-article-bg:        #FFFFFF;
+    --card-article-border:    #E5E7EB;
+    --card-article-tag:       #0D9488;
+    --card-article-title:     #262626;
+    --card-article-text:      #4B5563;
+    --page-bg:                #FFFFFF;
+    --page-text:              #262626;
+    --primary-btn:            #0D9488;
+    --primary-btn-text:       #FFFFFF;
+
+    /* Base tokens */
+    --color-primary:          #0D9488;
+    --color-primary-contrast: #ffffff;
+    --color-secondary:        #8B5CF6;
+    --color-accent:           #F59E0B;
+    --color-bg:               #FFFFFF;
+    --color-bg-dark:          #111827;
+    --color-text:             #1F2937;
+    --color-text-light:       #6B7280;
+    --border-radius:          0.5rem;
+    --font-family:            'Inter', system-ui, sans-serif;
+}
+
+/* ─── Premium SaaS Animation Utilities ─── */
+@keyframes saas-shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(200%); }
+}
+
+@keyframes saas-glow {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.08); }
+}
+
+@keyframes saas-float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-6px); }
+}
+
+@keyframes saas-slide-up {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.animate-saas-shimmer {
+    animation: saas-shimmer 2.5s infinite;
+}
+
+.animate-saas-glow {
+    animation: saas-glow 6s ease-in-out infinite;
+}
+
+.animate-saas-float {
+    animation: saas-float 4s ease-in-out infinite;
+}
+
+.animate-saas-entrance {
+    animation: saas-slide-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+

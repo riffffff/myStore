@@ -1,0 +1,71 @@
+/* ====================================================
+   Store Admin — SaaS Dashboard Custom CSS
+   ==================================================== */
+
+/* --- Global Font Polish --- */
+.fi-body { letter-spacing: -0.01em; }
+.fi-header-heading { font-weight: 800 !important; letter-spacing: -0.03em !important; font-size: 1.5rem !important; }
+.fi-sidebar-nav-group-label { font-weight: 700 !important; font-size: 0.6rem !important; letter-spacing: 0.1em !important; }
+.fi-section-header-heading { font-weight: 700 !important; letter-spacing: -0.02em !important; }
+
+/* --- Sidebar Nav Items --- */
+.fi-sidebar-item-button { border-radius: 10px !important; transition: all 0.15s ease !important; }
+.fi-sidebar-item-button:hover { background: rgba(245,158,11,0.08) !important; }
+.fi-sidebar-item-button.fi-active { background: rgba(245,158,11,0.15) !important; }
+
+/* --- Stat Card Hover Lift --- */
+.fi-wi-stats-overview-stat {
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    border-radius: 14px !important;
+}
+.fi-wi-stats-overview-stat:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 16px 40px -8px rgba(245,158,11,0.18) !important;
+}
+.fi-wi-stats-overview-stat-description-icon {
+    width: 1.1rem !important;
+    height: 1.1rem !important;
+}
+
+/* --- Widget Cards --- */
+.fi-wi { border-radius: 14px !important; }
+.fi-section { border-radius: 14px !important; overflow: hidden; }
+
+/* --- Tables cleaner --- */
+.fi-ta-header-cell-label { font-weight: 700 !important; font-size: 0.67rem !important; text-transform: uppercase !important; letter-spacing: 0.07em !important; }
+.fi-ta-row { transition: background 0.12s ease !important; }
+
+/* --- Custom Widget Rows --- */
+.aw-product-row { transition: background-color 0.15s ease; border-radius: 10px; }
+.aw-product-row:hover { background-color: rgba(245,158,11,0.07) !important; }
+.dark .aw-product-row:hover { background-color: rgba(245,158,11,0.1) !important; }
+
+/* --- Review Cards --- */
+.aw-review-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 12px;
+}
+.aw-review-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px -4px rgba(0,0,0,0.1) !important;
+}
+.dark .aw-review-card:hover {
+    box-shadow: 0 8px 24px -4px rgba(0,0,0,0.4) !important;
+}
+
+/* --- Approve Button Pulse on Pending --- */
+@keyframes aw-pulse-warning {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(245,158,11,0.4); }
+    50% { box-shadow: 0 0 0 5px rgba(245,158,11,0); }
+}
+.aw-pending-badge { animation: aw-pulse-warning 2s infinite; }
+
+/* --- Breadcrumbs --- */
+.fi-breadcrumbs-item { font-size: 0.78rem !important; }
+
+/* --- Notification Toast --- */
+.fi-notifications { border-radius: 14px !important; }
+
+/* --- Top bar --- */
+.fi-topbar { border-bottom: 1px solid rgba(0,0,0,0.05) !important; }
+.dark .fi-topbar { border-bottom: 1px solid rgba(255,255,255,0.05) !important; }
