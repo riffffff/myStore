@@ -8,10 +8,11 @@
         @php
             try {
                 $settings     = \App\Models\ShopSetting::getSettings();
+                $theme        = \App\Models\ThemeSetting::getSingleton();
                 $faviconUrl   = $settings->getFaviconUrl();
                 $logoLightUrl = $settings->getLogoUrl('light');
                 $logoDarkUrl  = $settings->getLogoUrl('dark');
-                $fontUrl      = $settings->getFontUrl();
+                $fontUrl      = $theme->getFontUrl();
                 $__shopGlobal = [
                     'shop_name'     => $settings->shop_name,
                     'logo_url'      => $logoLightUrl,
@@ -20,6 +21,7 @@
                 ];
             } catch (\Throwable) {
                 $settings     = null;
+                $theme        = null;
                 $faviconUrl   = null;
                 $logoLightUrl = null;
                 $logoDarkUrl  = null;

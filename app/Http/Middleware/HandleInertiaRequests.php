@@ -39,6 +39,7 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         $settings = $this->shopSettingService->getSettings();
+        $themeSetting = $this->shopSettingService->getTheme();
 
         $shopSettings = [
             'id'                    => $settings?->id ?? null,
@@ -66,22 +67,7 @@ class HandleInertiaRequests extends Middleware
         ];
 
         // Theme data — lazily evaluated untuk performa
-        $theme = fn () => $settings?->getThemeColors() ?? [
-            'primary'         => '#3B82F6',
-            'secondary'       => '#8B5CF6',
-            'accent'          => '#F59E0B',
-            'background'      => '#FFFFFF',
-            'backgroundDark'  => '#111827',
-            'text'            => '#1F2937',
-            'textLight'       => '#6B7280',
-            'success'         => '#10B981',
-            'error'           => '#EF4444',
-            'warning'         => '#F59E0B',
-            'info'            => '#3B82F6',
-            'borderRadius'    => '0.5rem',
-            'fontFamily'      => 'Inter, system-ui, sans-serif',
-            'darkModeEnabled' => true,
-        ];
+        $theme = fn () => $themeSetting->getThemeColors();
 
         return [
             ...parent::share($request),

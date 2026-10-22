@@ -158,19 +158,9 @@ export default function HeroSection({ articles }: HeroSectionProps) {
                                     className="flex-1 uppercase tracking-wider font-bold"
                                     rightIcon={<ChevronRight className="h-3.5 w-3.5 stroke-[2.5]" />}
                                 >
-                                    Jelajahi
+                                    Selengkapnya
                                 </Button>
                             ) : null}
-
-                            <Button
-                                href={route('products.index')}
-                                variant="outline"
-                                size="sm"
-                                className="flex-1 uppercase tracking-wider font-bold bg-black/40 backdrop-blur-sm border-white/40 text-white hover:bg-white/10"
-                                rightIcon={<ArrowRight className="h-3.5 w-3.5" />}
-                            >
-                                Semua Produk
-                            </Button>
                         </div>
                     </div>
                 </div>

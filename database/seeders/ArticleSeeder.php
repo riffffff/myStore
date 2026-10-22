@@ -45,33 +45,6 @@ class ArticleSeeder extends Seeder
                 'is_published' => true,
                 'published_at' => now()->subDays(2),
             ],
-            [
-                'title' => 'Ut Enim Ad Minim Veniam Quis Nostrud',
-                'content' => '<h2>Ut Labore Et Dolore Magna Aliqua</h2><p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p><p>Keunggulan lorem ipsum dolor sit amet consectetur adipiscing elit:</p><ul><li>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</li><li>Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi</li><li>Ut aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit</li><li>In voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur</li><li>Sint occaecat cupidatat non proident sunt in culpa qui officia deserunt</li></ul><p>Mollit anim id est laborum sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque.</p>',
-                'excerpt' => 'Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor.',
-                'image' => 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=1200',
-                'is_hero' => false,
-                'is_published' => true,
-                'published_at' => now()->subDays(3),
-            ],
-            [
-                'title' => 'Exercitation Ullamco Laboris Nisi Ut Aliquip',
-                'content' => '<h2>Quis Nostrud Exercitation Ullamco</h2><p>Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p><p>Impact lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor:</p><ul><li>Incididunt ut labore et dolore magna aliqua enim ad minim veniam quis</li><li>Nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo</li><li>Consequat duis aute irure dolor in reprehenderit in voluptate velit</li><li>Esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat cupidatat</li></ul><p>Non proident sunt in culpa qui officia deserunt mollit anim id est laborum. Design thinking methodology lorem ipsum dolor sit amet.</p>',
-                'excerpt' => 'Ex ea commodo consequat duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.',
-                'image' => 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200',
-                'is_hero' => false,
-                'is_published' => true,
-                'published_at' => now()->subDays(4),
-            ],
-            [
-                'title' => 'Ex Ea Commodo Consequat Duis Aute Irure',
-                'content' => '<h2>Duis Aute Irure Dolor In Reprehenderit</h2><p>Ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p><p>Manfaat implementasi lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod:</p><ul><li>Tempor incididunt ut labore et dolore magna aliqua enim ad minim veniam</li><li>Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo</li><li>Consequat duis aute irure dolor in reprehenderit in voluptate velit</li><li>Esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat</li></ul><p>Cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum. CI/CD pipeline lorem ipsum dolor sit amet consectetur.</p>',
-                'excerpt' => 'Voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat cupidatat non proident.',
-                'image' => 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=1200',
-                'is_hero' => false,
-                'is_published' => true,
-                'published_at' => now()->subDays(5),
-            ],
         ];
 
         foreach ($articlesData as $art) {

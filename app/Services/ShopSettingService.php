@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\ShopSetting;
+use App\Models\ThemeSetting;
 
 /**
  * Service for managing shop settings and caching.
@@ -13,6 +14,7 @@ use App\Models\ShopSetting;
 class ShopSettingService
 {
     private ?ShopSetting $settings = null;
+    private ?ThemeSetting $theme = null;
 
     /**
      * Get shop settings (cached).
@@ -27,12 +29,26 @@ class ShopSettingService
     }
 
     /**
+     * Get theme settings (cached).
+     */
+    public function getTheme(): ThemeSetting
+    {
+        if ($this->theme === null) {
+            $this->theme = ThemeSetting::getSingleton();
+        }
+
+        return $this->theme;
+    }
+
+    /**
      * Clear shop settings cache.
      */
     public function clearCache(): void
     {
         ShopSetting::flushCache();
+        \Illuminate\Support\Facades\Cache::forget(ThemeSetting::CACHE_KEY);
         $this->settings = null;
+        $this->theme = null;
     }
 
     /**
@@ -40,7 +56,7 @@ class ShopSettingService
      */
     public function getThemeColors(): array
     {
-        return $this->getSettings()->getThemeColors();
+        return $this->getTheme()->getThemeColors();
     }
 
     /**

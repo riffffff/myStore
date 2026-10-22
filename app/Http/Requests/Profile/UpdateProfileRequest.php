@@ -31,7 +31,7 @@ class UpdateProfileRequest extends FormRequest
                 'string',
                 'max:20',
                 Rule::unique(User::class)->ignore($this->user()->id),
-            ],
+            ]
         ];
     }
 }
