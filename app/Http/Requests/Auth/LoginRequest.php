@@ -55,8 +55,17 @@ class LoginRequest extends FormRequest
             'password' => $this->input('password'),
         ];
 
-        if (filter_var($loginInput, FILTER_VALIDATE_EMAIL)) {
-            $credentials['email'] = strtolower($loginInput);
+        if (str_contains($loginInput, '@') || filter_var($loginInput, FILTER_VALIDATE_EMAIL)) {
+            $email = strtolower($loginInput);
+            // Toleransi jika user memasukkan email tanpa .com atau sebaliknya
+            if (! \App\Models\User::where('email', $email)->exists()) {
+                if (\App\Models\User::where('email', $email . '.com')->exists()) {
+                    $email = $email . '.com';
+                } elseif (str_ends_with($email, '.com') && \App\Models\User::where('email', substr($email, 0, -4))->exists()) {
+                    $email = substr($email, 0, -4);
+                }
+            }
+            $credentials['email'] = $email;
         } else {
             // Cek nomor telepon (dengan atau tanpa sanitasi angka)
             $cleanPhone = preg_replace('/[^0-9]/', '', $loginInput);

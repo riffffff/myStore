@@ -80,9 +80,9 @@ APP_NAME=PaiTech
 php artisan migrate --seed
 ```
 
-Default kredensial admin:
-- **URL**: `http://localhost:8000/admin`
-- **Email**: `admin@paitech.id`
+Default kredensial seeder:
+- **Admin**: `admin@example.com` (atau `admin@example`)
+- **Pelanggan**: `user@example.com` (atau no hp `081234567890`)
 - **Password**: `password123`
 
 ### 4. Menjalankan Aplikasi
