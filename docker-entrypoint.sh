@@ -14,27 +14,28 @@ fi
 
 # Set permissions
 chown -R www-data:www-data /var/www/html/database /var/www/html/storage /var/www/html/bootstrap/cache
-chmod -R 777 /var/www/html/database /var/www/html/storage /var/www/html/bootstrap/cache
+chmod -R 775 /var/www/html/database /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Jika .env belum ada, copy dari .env.example
-if [ ! -f /var/www/html/.env ]; then
-    cp /var/www/html/.env.example /var/www/html/.env
-fi
-
-# Generate app key jika belum ada
-if ! grep -q "APP_KEY=base64" /var/www/html/.env; then
-    php artisan key:generate --force || true
+# Cek APP_KEY (harus terisi di environment atau .env server)
+if [ -z "$APP_KEY" ] && (! [ -f /var/www/html/.env ] || ! grep -q "APP_KEY=base64" /var/www/html/.env); then
+    echo "ERROR: APP_KEY belum di-set di environment server!"
+    echo "Silakan tambahkan APP_KEY=base64:... pada file .env Anda."
+    exit 1
 fi
 
 # Link storage jika belum ada
 php artisan storage:link --force || true
 
 # Jalankan migrasi database
-php artisan migrate --force || true
+php artisan migrate --force
+
+# Cache konfigurasi untuk performa optimal di production
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
 
 echo "=========================================="
-echo "🚀 Store Application running on port 8002!"
-echo "🌐 URL: http://localhost:8002"
+echo "🚀 Store Application running on FrankenPHP port 8002!"
 echo "=========================================="
 
-exec php artisan serve --host=0.0.0.0 --port=8002
+exec frankenphp php-server --listen :8002 --root /var/www/html/public

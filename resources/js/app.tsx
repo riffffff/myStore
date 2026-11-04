@@ -1,12 +1,20 @@
 import '../css/app.css';
 import './bootstrap';
 
-import { createInertiaApp } from '@inertiajs/react';
+import { createInertiaApp, router } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot, hydrateRoot } from 'react-dom/client';
 import ErrorBoundary from './Components/ErrorBoundary';
 import { ToastProvider } from './Contexts/ToastContext';
 import Toaster from './Components/UI/Toaster';
+
+router.on('invalid', (event) => {
+    if (event.detail.response.status === 419) {
+        event.preventDefault();
+        alert('Sesi Anda telah berakhir. Halaman akan dimuat ulang, silakan coba lagi.');
+        window.location.reload();
+    }
+});
 
 createInertiaApp({
     resolve: (name) =>

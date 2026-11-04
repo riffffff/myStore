@@ -173,4 +173,65 @@ class OrderTest extends TestCase
         $response2 = $this->get(route('orders.track', ['search' => '089988776655']));
         $response2->assertStatus(200);
     }
+
+    public function test_order_phone_is_normalized_to_standard_format(): void
+    {
+        $response = $this->actingAs($this->user)->post(route('orders.store'), [
+            'customer_name'    => 'Rina',
+            'customer_phone'   => '0812-3344-5566',
+            'customer_address' => 'Surabaya',
+            'payment_method'   => 'cod',
+            'items'            => [
+                [
+                    'product_id' => $this->product->id,
+                    'quantity'   => 1,
+                ],
+            ],
+        ]);
+
+        $order = Order::latest()->first();
+        $this->assertEquals('6281233445566', $order->customer_phone);
+    }
+
+    public function test_payment_proof_exceeding_3mb_is_rejected(): void
+    {
+        Storage::fake('public');
+
+        // Create fake file of 3.5 MB (3584 KB > 3072 KB)
+        $largeProof = UploadedFile::fake()->create('bukti_besar.jpg', 3584, 'image/jpeg');
+
+        $response = $this->actingAs($this->user)->post(route('orders.store'), [
+            'customer_name'    => 'Siti Aminah',
+            'customer_phone'   => '081298765432',
+            'customer_address' => 'Jl. Sudirman No. 10',
+            'payment_method'   => 'qris',
+            'payment_proof'    => $largeProof,
+            'items'            => [
+                [
+                    'product_id' => $this->product->id,
+                    'quantity'   => 1,
+                ],
+            ],
+        ]);
+
+        $response->assertSessionHasErrors('payment_proof');
+    }
+
+    public function test_tracking_order_with_phone_variation_works(): void
+    {
+        Order::create([
+            'order_number'     => 'ORD-TRACK-NORM',
+            'customer_name'    => 'Bambang',
+            'customer_phone'   => '6287711223344',
+            'customer_address' => 'Semarang',
+            'payment_method'   => 'cod',
+            'total_price'      => 25000,
+            'status'           => 'processing',
+        ]);
+
+        // Search using 08... format should find order stored with 628...
+        $response = $this->get(route('orders.track', ['search' => '087711223344']));
+        $response->assertStatus(200);
+        $response->assertSee('ORD-TRACK-NORM');
+    }
 }

@@ -1,6 +1,8 @@
 import MobileAdminLayout from '@/Layouts/MobileAdminLayout';
 import { usePage, useForm } from '@inertiajs/react';
 import { Store, QrCode, Image as ImageIcon, UploadCloud } from 'lucide-react';
+import { useState } from 'react';
+import { validateImageFile } from '@/lib/imageUpload';
 
 interface Settings {
     shop_name: string;
@@ -17,7 +19,7 @@ interface Props { settings: Settings; }
 export default function SettingsPage({ settings }: Props) {
     const flash = (usePage().props as any).flash ?? {};
 
-    const { data, setData, post, processing } = useForm({
+    const { data, setData, post, processing, errors, clearErrors } = useForm({
         shop_name:    settings.shop_name    ?? '',
         shop_tagline: settings.shop_tagline ?? '',
         shop_phone:   settings.shop_phone   ?? '',
@@ -26,6 +28,41 @@ export default function SettingsPage({ settings }: Props) {
         logo: null as File | null,
         qris_image: null as File | null,
     });
+
+    const [logoError, setLogoError] = useState<string | null>(null);
+    const [qrisError, setQrisError] = useState<string | null>(null);
+
+    const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const error = validateImageFile(file);
+            if (error) {
+                setLogoError(error);
+                setData('logo', null);
+                e.target.value = '';
+                return;
+            }
+            setLogoError(null);
+            clearErrors('logo');
+            setData('logo', file);
+        }
+    };
+
+    const handleQrisChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const error = validateImageFile(file);
+            if (error) {
+                setQrisError(error);
+                setData('qris_image', null);
+                e.target.value = '';
+                return;
+            }
+            setQrisError(null);
+            clearErrors('qris_image');
+            setData('qris_image', file);
+        }
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -66,9 +103,13 @@ export default function SettingsPage({ settings }: Props) {
                             <label className="mt-2 flex items-center justify-center gap-2 h-9 rounded-lg border border-stone-200 text-xs font-semibold text-stone-600 hover:bg-stone-50 cursor-pointer">
                                 <UploadCloud className="w-3.5 h-3.5" />
                                 Ganti Logo
-                                <input type="file" accept="image/*" className="hidden"
-                                    onChange={e => setData('logo', e.target.files?.[0] ?? null)} />
+                                <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden"
+                                    onChange={handleLogoChange} />
                             </label>
+                            <p className="text-[10px] text-stone-400 text-center mt-1">Maks. 3 MB (JPG/PNG/WebP)</p>
+                            {(logoError || errors.logo) && (
+                                <p className="text-[11px] text-rose-500 mt-1">{logoError || errors.logo}</p>
+                            )}
                         </div>
 
                         {/* QRIS Preview */}
@@ -87,9 +128,13 @@ export default function SettingsPage({ settings }: Props) {
                             <label className="mt-2 flex items-center justify-center gap-2 h-9 rounded-lg border border-stone-200 text-xs font-semibold text-stone-600 hover:bg-stone-50 cursor-pointer">
                                 <UploadCloud className="w-3.5 h-3.5" />
                                 Ganti QRIS
-                                <input type="file" accept="image/*" className="hidden"
-                                    onChange={e => setData('qris_image', e.target.files?.[0] ?? null)} />
+                                <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden"
+                                    onChange={handleQrisChange} />
                             </label>
+                            <p className="text-[10px] text-stone-400 text-center mt-1">Maks. 3 MB (JPG/PNG/WebP)</p>
+                            {(qrisError || errors.qris_image) && (
+                                <p className="text-[11px] text-rose-500 mt-1">{qrisError || errors.qris_image}</p>
+                            )}
                         </div>
                     </div>
                 </div>

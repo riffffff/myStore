@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import MapAddressPickerModal from '@/Components/Public/MapAddressPickerModal';
 import ScrollReveal from '@/Components/Public/ScrollReveal';
+import { validateImageFile } from '@/lib/imageUpload';
 
 interface OrderItemInput {
     product_id: number;
@@ -101,6 +102,8 @@ export default function Create({ initialItems, allProducts, customer }: OrderCre
         0
     );
 
+    const [fileError, setFileError] = useState<string | null>(null);
+
     const handleCopy = (text: string) => {
         navigator.clipboard.writeText(text);
         setCopied(true);
@@ -110,6 +113,16 @@ export default function Create({ initialItems, allProducts, customer }: OrderCre
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
+            const error = validateImageFile(file);
+            if (error) {
+                setFileError(error);
+                form.setData('payment_proof', null);
+                setProofPreview(null);
+                e.target.value = '';
+                return;
+            }
+            setFileError(null);
+            form.clearErrors('payment_proof');
             form.setData('payment_proof', file);
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -120,6 +133,7 @@ export default function Create({ initialItems, allProducts, customer }: OrderCre
     };
 
     const handleRemoveProof = () => {
+        setFileError(null);
         form.setData('payment_proof', null);
         setProofPreview(null);
     };
@@ -480,19 +494,22 @@ export default function Create({ initialItems, allProducts, customer }: OrderCre
                                                     </button>
                                                 </div>
                                             ) : (
-                                                <label className="flex items-center justify-center gap-2 p-3 border border-dashed border-stone-300 hover:border-stone-500 rounded-xl bg-white cursor-pointer transition text-center group">
-                                                    <Upload className="w-4 h-4 text-stone-400 group-hover:text-stone-700" />
-                                                    <span className="text-xs font-medium text-stone-700">Pilih screenshot bukti bayar</span>
-                                                    <input
-                                                        type="file"
-                                                        accept="image/jpeg,image/png,image/jpg,image/webp"
-                                                        onChange={handleFileChange}
-                                                        className="hidden"
-                                                    />
-                                                </label>
+                                                <div>
+                                                    <label className="flex items-center justify-center gap-2 p-3 border border-dashed border-stone-300 hover:border-stone-500 rounded-xl bg-white cursor-pointer transition text-center group">
+                                                        <Upload className="w-4 h-4 text-stone-400 group-hover:text-stone-700" />
+                                                        <span className="text-xs font-medium text-stone-700">Pilih screenshot bukti bayar</span>
+                                                        <input
+                                                            type="file"
+                                                            accept="image/jpeg,image/png,image/webp"
+                                                            onChange={handleFileChange}
+                                                            className="hidden"
+                                                        />
+                                                    </label>
+                                                    <p className="text-[11px] text-stone-400 text-center mt-1">Maks. 3 MB (JPG, PNG, WebP)</p>
+                                                </div>
                                             )}
-                                            {form.errors.payment_proof && (
-                                                <p className="mt-1 text-xs text-rose-600 font-medium">{form.errors.payment_proof}</p>
+                                            {(fileError || form.errors.payment_proof) && (
+                                                <p className="mt-1 text-xs text-rose-600 font-medium">{fileError || form.errors.payment_proof}</p>
                                             )}
                                         </div>
                                     </div>

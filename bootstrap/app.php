@@ -86,6 +86,18 @@ $app = Application::configure(basePath: $basePath)
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*'),
         );
+
+        $exceptions->render(function (\Illuminate\Http\Exceptions\PostTooLargeException $e, Request $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Total ukuran file terlalu besar (maks 3 MB per foto).',
+                ], 413);
+            }
+
+            return back()->withErrors([
+                'error' => 'Total ukuran file terlalu besar (maks 3 MB per foto).',
+            ]);
+        });
     })->create();
 
 // ============================================================

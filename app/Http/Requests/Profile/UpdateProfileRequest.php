@@ -9,6 +9,15 @@ use Illuminate\Validation\Rule;
 
 class UpdateProfileRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('phone')) {
+            $this->merge([
+                'phone' => \App\Support\PhoneNumber::normalize($this->input('phone')),
+            ]);
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -29,9 +38,17 @@ class UpdateProfileRequest extends FormRequest
             'phone' => [
                 'nullable',
                 'string',
-                'max:20',
+                'regex:' . \App\Support\PhoneNumber::REGEX,
                 Rule::unique(User::class)->ignore($this->user()->id),
             ]
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'phone.regex' => 'Format nomor HP tidak valid. Contoh: 081234567890.',
+            'phone.unique' => 'Nomor HP ini sudah terdaftar.',
         ];
     }
 }

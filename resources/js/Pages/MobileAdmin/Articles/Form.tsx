@@ -3,6 +3,7 @@ import { router, usePage } from '@inertiajs/react';
 import { useState, useRef } from 'react';
 import { UploadCloud, Trash2, Check } from 'lucide-react';
 import RichTextEditor from '@/Components/Admin/RichTextEditor';
+import { validateImageFile } from '@/lib/imageUpload';
 
 interface ArticleData {
     id: number;
@@ -32,11 +33,21 @@ export default function ArticleForm({ article }: Props) {
         article?.image ? (article.image.startsWith('http') || article.image.startsWith('/') ? article.image : `/storage/${article.image}`) : null
     );
     const [loading, setLoading] = useState(false);
+    const [fileError, setFileError] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
+            const error = validateImageFile(file);
+            if (error) {
+                setFileError(error);
+                setImageFile(null);
+                setPreviewUrl(null);
+                e.target.value = '';
+                return;
+            }
+            setFileError(null);
             setImageFile(file);
             setPreviewUrl(URL.createObjectURL(file));
         }
@@ -169,18 +180,18 @@ export default function ArticleForm({ article }: Props) {
                                         <UploadCloud className="w-6 h-6" />
                                     </div>
                                     <span className="text-xs font-bold text-stone-700">Unggah gambar sampul</span>
-                                    <span className="text-[11px] text-stone-400 mt-0.5">PNG, JPG, WebP max 5MB</span>
+                                    <span className="text-[11px] text-stone-400 mt-0.5">PNG, JPG, WebP maks 3MB</span>
                                 </div>
                             )}
                             <input
                                 ref={fileInputRef}
                                 type="file"
-                                accept="image/*"
+                                accept="image/jpeg,image/png,image/webp"
                                 onChange={handleFileChange}
                                 className="hidden"
                             />
                         </div>
-                        {errors.image && <p className="text-rose-500 text-xs mt-1.5">{errors.image}</p>}
+                        {(fileError || errors.image) && <p className="text-rose-500 text-xs mt-1.5">{fileError || errors.image}</p>}
                     </div>
 
                     {/* Publish Status Card */}

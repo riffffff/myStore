@@ -217,9 +217,13 @@ class OrderController extends Controller
         $query = Order::with(['items.product.images', 'items.product.primaryImage'])->latest();
 
         if ($search !== '') {
-            $query->where(function ($q) use ($search) {
+            $normPhone = \App\Support\PhoneNumber::normalize($search);
+            $query->where(function ($q) use ($search, $normPhone) {
                 $q->where('order_number', 'like', "%{$search}%")
                   ->orWhere('customer_phone', 'like', "%{$search}%");
+                if ($normPhone) {
+                    $q->orWhere('customer_phone', 'like', "%{$normPhone}%");
+                }
             });
             $orders = $query->limit(50)->get();
         } elseif ($user) {

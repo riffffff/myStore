@@ -1,0 +1,1 @@
+var e=[`image/jpeg`,`image/png`,`image/webp`];function t(t){return e.includes(t.type)?t.size>3145728?`Ukuran file terlalu besar (${(t.size/(1024*1024)).toFixed(1)} MB). Maksimal 3 MB per file.`:null:`Format file harus berupa JPG, PNG, atau WebP.`}export{t};

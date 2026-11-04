@@ -67,16 +67,16 @@ class LoginRequest extends FormRequest
             }
             $credentials['email'] = $email;
         } else {
-            // Cek nomor telepon (dengan atau tanpa sanitasi angka)
-            $cleanPhone = preg_replace('/[^0-9]/', '', $loginInput);
-            $user = \App\Models\User::where('phone', $loginInput)
-                ->orWhere('phone', $cleanPhone)
+            // Cek nomor telepon dengan normalisasi PhoneNumber
+            $normalizedPhone = \App\Support\PhoneNumber::normalize($loginInput);
+            $user = \App\Models\User::where('phone', $normalizedPhone)
+                ->orWhere('phone', $loginInput)
                 ->first();
 
             if ($user) {
                 $credentials['id'] = $user->id;
             } else {
-                $credentials['phone'] = $loginInput;
+                $credentials['phone'] = $normalizedPhone ?: $loginInput;
             }
         }
 

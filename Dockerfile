@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM php:8.3-cli-alpine AS app
+FROM dunglas/frankenphp:1-php8.3-alpine AS app
 
 # Install necessary system libraries
 RUN apk add --no-cache \
@@ -29,6 +29,9 @@ RUN install-php-extensions \
     opcache \
     pcntl
 
+# Copy custom php.ini configuration
+COPY docker/php.ini $PHP_INI_DIR/conf.d/zz-app.ini
+
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
@@ -48,8 +51,6 @@ RUN composer dump-autoload --optimize --no-dev
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-# Environment settings
-ENV PHP_CLI_SERVER_WORKERS=4
 EXPOSE 8002
 
 ENTRYPOINT ["docker-entrypoint.sh"]

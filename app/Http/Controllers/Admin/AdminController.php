@@ -157,10 +157,14 @@ class AdminController extends Controller
         $query = Order::with(['items.product.images', 'items.product.primaryImage'])->latest();
 
         if ($search !== '') {
-            $query->where(function ($q) use ($search) {
+            $normPhone = \App\Support\PhoneNumber::normalize($search);
+            $query->where(function ($q) use ($search, $normPhone) {
                 $q->where('order_number', 'like', "%{$search}%")
                   ->orWhere('customer_name', 'like', "%{$search}%")
                   ->orWhere('customer_phone', 'like', "%{$search}%");
+                if ($normPhone) {
+                    $q->orWhere('customer_phone', 'like', "%{$normPhone}%");
+                }
             });
         }
 
@@ -344,7 +348,7 @@ class AdminController extends Controller
     public function productStore(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'name'         => 'required|string|max:255|min:3',
+            'name'           => 'required|string|max:255|min:3',
             'price'          => 'required|numeric|min:0',
             'original_price' => 'nullable|numeric|min:0',
             'stock_status'   => 'required|in:available,preorder,out_of_stock',
@@ -352,7 +356,18 @@ class AdminController extends Controller
             'description'    => 'nullable|string',
             'is_published'   => 'boolean',
             'images'         => 'nullable|array|max:10',
-            'images.*'       => 'image|max:5120',
+            'images.*'       => 'image|mimes:jpeg,jpg,png,webp|max:3072',
+        ], [
+            'name.required'     => 'Nama produk wajib diisi.',
+            'name.min'          => 'Nama produk minimal 3 karakter.',
+            'price.required'    => 'Harga produk wajib diisi.',
+            'price.numeric'     => 'Harga produk harus berupa angka.',
+            'stock_status.required' => 'Status stok wajib dipilih.',
+            'images.max'        => 'Maksimal 10 gambar yang dapat diunggah sekaligus.',
+            'images.*.image'    => 'File harus berupa gambar JPG, PNG, atau WebP.',
+            'images.*.mimes'    => 'File harus berupa gambar JPG, PNG, atau WebP.',
+            'images.*.uploaded' => 'Ukuran foto maksimal 3 MB per file.',
+            'images.*.max'      => 'Ukuran foto maksimal 3 MB per file.',
         ]);
 
         $product = Product::create([
@@ -420,7 +435,18 @@ class AdminController extends Controller
             'description'    => 'nullable|string',
             'is_published'   => 'boolean',
             'images'         => 'nullable|array|max:10',
-            'images.*'       => 'image|max:5120',
+            'images.*'       => 'image|mimes:jpeg,jpg,png,webp|max:3072',
+        ], [
+            'name.required'     => 'Nama produk wajib diisi.',
+            'name.min'          => 'Nama produk minimal 3 karakter.',
+            'price.required'    => 'Harga produk wajib diisi.',
+            'price.numeric'     => 'Harga produk harus berupa angka.',
+            'stock_status.required' => 'Status stok wajib dipilih.',
+            'images.max'        => 'Maksimal 10 gambar yang dapat diunggah sekaligus.',
+            'images.*.image'    => 'File harus berupa gambar JPG, PNG, atau WebP.',
+            'images.*.mimes'    => 'File harus berupa gambar JPG, PNG, atau WebP.',
+            'images.*.uploaded' => 'Ukuran foto maksimal 3 MB per file.',
+            'images.*.max'      => 'Ukuran foto maksimal 3 MB per file.',
         ]);
 
         $product->update([
@@ -530,7 +556,14 @@ class AdminController extends Controller
             'content'      => 'required|string',
             'is_published' => 'boolean',
             'is_hero'      => 'boolean',
-            'image'        => 'nullable|image|max:5120',
+            'image'        => 'nullable|image|mimes:jpeg,jpg,png,webp|max:3072',
+        ], [
+            'title.required'   => 'Judul artikel wajib diisi.',
+            'content.required' => 'Konten artikel wajib diisi.',
+            'image.image'      => 'File harus berupa gambar JPG, PNG, atau WebP.',
+            'image.mimes'      => 'File harus berupa gambar JPG, PNG, atau WebP.',
+            'image.uploaded'   => 'Ukuran foto maksimal 3 MB.',
+            'image.max'        => 'Ukuran foto maksimal 3 MB.',
         ]);
 
         $imagePath = null;
@@ -577,7 +610,14 @@ class AdminController extends Controller
             'content'      => 'required|string',
             'is_published' => 'boolean',
             'is_hero'      => 'boolean',
-            'image'        => 'nullable|image|max:5120',
+            'image'        => 'nullable|image|mimes:jpeg,jpg,png,webp|max:3072',
+        ], [
+            'title.required'   => 'Judul artikel wajib diisi.',
+            'content.required' => 'Konten artikel wajib diisi.',
+            'image.image'      => 'File harus berupa gambar JPG, PNG, atau WebP.',
+            'image.mimes'      => 'File harus berupa gambar JPG, PNG, atau WebP.',
+            'image.uploaded'   => 'Ukuran foto maksimal 3 MB.',
+            'image.max'        => 'Ukuran foto maksimal 3 MB.',
         ]);
 
         $updateData = [
@@ -690,14 +730,31 @@ class AdminController extends Controller
     // ── Update Shop Settings ─────────────────────────────────
     public function settingsUpdate(Request $request): RedirectResponse
     {
+        if ($request->has('shop_phone')) {
+            $request->merge([
+                'shop_phone' => \App\Support\PhoneNumber::normalize($request->input('shop_phone')),
+            ]);
+        }
+
         $data = $request->validate([
             'shop_name'    => 'required|string|max:255',
             'shop_tagline' => 'nullable|string|max:500',
-            'shop_phone'   => 'nullable|string|max:20',
+            'shop_phone'   => ['nullable', 'string', 'regex:' . \App\Support\PhoneNumber::REGEX],
             'shop_email'   => 'nullable|email|max:255',
             'shop_address' => 'nullable|string|max:1000',
-            'logo'         => 'nullable|image|max:5120',
-            'qris_image'   => 'nullable|image|max:5120',
+            'logo'         => 'nullable|image|mimes:jpeg,jpg,png,webp|max:3072',
+            'qris_image'   => 'nullable|image|mimes:jpeg,jpg,png,webp|max:3072',
+        ], [
+            'shop_name.required'  => 'Nama toko wajib diisi.',
+            'shop_phone.regex'    => 'Format nomor HP toko tidak valid. Contoh: 081234567890.',
+            'logo.image'          => 'Logo harus berupa gambar JPG, PNG, atau WebP.',
+            'logo.mimes'          => 'Logo harus berupa gambar JPG, PNG, atau WebP.',
+            'logo.uploaded'       => 'Ukuran logo maksimal 3 MB.',
+            'logo.max'            => 'Ukuran logo maksimal 3 MB.',
+            'qris_image.image'    => 'Gambar QRIS harus berupa gambar JPG, PNG, atau WebP.',
+            'qris_image.mimes'    => 'Gambar QRIS harus berupa gambar JPG, PNG, atau WebP.',
+            'qris_image.uploaded' => 'Ukuran gambar QRIS maksimal 3 MB.',
+            'qris_image.max'      => 'Ukuran gambar QRIS maksimal 3 MB.',
         ]);
 
         $settings = ShopSetting::getSettings();

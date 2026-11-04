@@ -7,7 +7,6 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Symfony\Component\Process\Process;
 
 class ImageService
 {
@@ -142,17 +141,10 @@ class ImageService
         $webpTempPath = tempnam(sys_get_temp_dir(), 'img_').'.webp';
 
         try {
-            $success = $this->convertWithPython($realPath, $webpTempPath);
+            $success = $this->convertWithPhpGd($realPath, $webpTempPath, $file->getMimeType());
 
             if (! $success) {
-                Log::debug('ImageService: konversi Python gagal, mencoba GD.', [
-                    'file' => $file->getClientOriginalName(),
-                ]);
-                $success = $this->convertWithPhpGd($realPath, $webpTempPath, $file->getMimeType());
-            }
-
-            if (! $success) {
-                Log::warning('ImageService: semua metode konversi WebP gagal.', [
+                Log::warning('ImageService: konversi WebP gagal via GD.', [
                     'file' => $file->getClientOriginalName(),
                     'mime' => $file->getMimeType(),
                 ]);
@@ -196,60 +188,6 @@ class ImageService
         }
     }
 
-    private function convertWithPython(string $realPath, string $webpTempPath): bool
-    {
-        try {
-            if (! function_exists('shell_exec') || ! function_exists('escapeshellarg')) {
-                Log::debug('ImageService: shell_exec atau escapeshellarg tidak tersedia, skip Python converter.');
-
-                return false;
-            }
-
-            $pythonBin = trim((string) @shell_exec('which python3 2>/dev/null || which python 2>/dev/null'));
-            if (empty($pythonBin)) {
-                Log::debug('ImageService: Python tidak ditemukan di server, skip Python converter.');
-
-                return false;
-            }
-
-            $processorPath = __DIR__.'/image_processor.py';
-            if (! file_exists($processorPath)) {
-                Log::warning('ImageService: image_processor.py tidak ditemukan.', [
-                    'expected_path' => $processorPath,
-                ]);
-
-                return false;
-            }
-
-            $process = new Process([
-                $pythonBin,
-                $processorPath,
-                $realPath,
-                $webpTempPath,
-            ]);
-            $process->setTimeout(60);
-            $process->run();
-
-            if (! $process->isSuccessful()) {
-                Log::warning('ImageService: Python converter gagal.', [
-                    'exit_code' => $process->getExitCode(),
-                    'stderr' => $process->getErrorOutput(),
-                ]);
-
-                return false;
-            }
-
-            return file_exists($webpTempPath) && filesize($webpTempPath) > 0;
-        } catch (\Throwable $e) {
-            Log::error('ImageService: exception di convertWithPython.', [
-                'message' => $e->getMessage(),
-            ]);
-            report($e);
-
-            return false;
-        }
-    }
-
     private function convertWithPhpGd(string $realPath, string $webpTempPath, string $mime): bool
     {
         try {
@@ -257,6 +195,20 @@ class ImageService
                 Log::warning('ImageService: ekstensi GD tidak tersedia atau imagewebp tidak didukung.');
 
                 return false;
+            }
+
+            // Proteksi kehabisan RAM: jika gambar > 25 Megapiksel, skip konversi GD
+            $imageInfo = @getimagesize($realPath);
+            if ($imageInfo) {
+                [$width, $height] = $imageInfo;
+                if ($width * $height > 25_000_000) {
+                    Log::warning('ImageService: resolusi gambar melebihi 25MP, lewati konversi WebP untuk hemat memori.', [
+                        'width' => $width,
+                        'height' => $height,
+                    ]);
+
+                    return false;
+                }
             }
 
             $source = null;
@@ -293,7 +245,7 @@ class ImageService
             imagepalettetotruecolor($source);
             $width = imagesx($source);
             $height = imagesy($source);
-            $maxDim = 2400;
+            $maxDim = 1600;
 
             if ($width > $maxDim || $height > $maxDim) {
                 $ratio = min($maxDim / $width, $maxDim / $height);

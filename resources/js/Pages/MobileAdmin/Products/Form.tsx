@@ -3,6 +3,51 @@ import { router, usePage } from '@inertiajs/react';
 import { useState, useRef } from 'react';
 import { UploadCloud, Image as ImageIcon, Trash2, Check, ArrowLeft } from 'lucide-react';
 
+const MAX_IMAGE_SIZE = 3 * 1024 * 1024;
+const MAX_IMAGE_DIMENSION = 1920;
+const SUPPORTED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
+
+const compressImageForUpload = (file: File): Promise<File> => {
+    if (!SUPPORTED_IMAGE_TYPES.has(file.type)) {
+        return Promise.reject(new Error(`Format "${file.name}" tidak didukung. Gunakan JPG, PNG, atau WebP.`));
+    }
+
+    if (file.size <= MAX_IMAGE_SIZE) {
+        return Promise.resolve(file);
+    }
+
+    return new Promise((resolve, reject) => {
+        const objectUrl = URL.createObjectURL(file);
+        const image = new Image();
+
+        image.onload = () => {
+            URL.revokeObjectURL(objectUrl);
+            const scale = Math.min(1, MAX_IMAGE_DIMENSION / Math.max(image.naturalWidth, image.naturalHeight));
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+            canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+            canvas.getContext('2d')?.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+            canvas.toBlob((blob) => {
+                if (!blob || blob.size > MAX_IMAGE_SIZE) {
+                    reject(new Error(`"${file.name}" terlalu besar. Pilih foto maksimal 3 MB.`));
+                    return;
+                }
+
+                resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), {
+                    type: 'image/jpeg',
+                    lastModified: file.lastModified,
+                }));
+            }, 'image/jpeg', 0.82);
+        };
+        image.onerror = () => {
+            URL.revokeObjectURL(objectUrl);
+            reject(new Error(`Foto "${file.name}" tidak dapat diproses. Gunakan JPG, PNG, atau WebP.`));
+        };
+        image.src = objectUrl;
+    });
+};
+
 interface Category {
     id: string;
     name: string;
@@ -40,15 +85,17 @@ export default function ProductForm({ product, categories }: Props) {
     const [existingImages, setExistingImages] = useState(product?.images ?? []);
     const [newPreviewUrls, setNewPreviewUrls] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
+    const [uploadError, setUploadError] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(e.target.files ?? []);
+        e.target.value = '';
         if (files.length) {
+            setUploadError(null);
             setImageFiles(previous => [...previous, ...files]);
             setNewPreviewUrls(previous => [...previous, ...files.map(file => URL.createObjectURL(file))]);
         }
-        e.target.value = '';
     };
 
     const imageUrl = (url: string) => url.startsWith('http') || url.startsWith('/') ? url : `/storage/${url}`;
@@ -67,9 +114,10 @@ export default function ProductForm({ product, categories }: Props) {
         });
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
+        setUploadError(null);
 
         const formData = new FormData();
         formData.append('name', name);
@@ -79,7 +127,14 @@ export default function ProductForm({ product, categories }: Props) {
         formData.append('category', category);
         formData.append('description', description);
         formData.append('is_published', isPublished ? '1' : '0');
-        imageFiles.forEach(file => formData.append('images[]', file));
+        try {
+            const uploadFiles = await Promise.all(imageFiles.map(compressImageForUpload));
+            uploadFiles.forEach(file => formData.append('images[]', file));
+        } catch (error) {
+            setUploadError(error instanceof Error ? error.message : 'Foto gagal diproses. Silakan coba lagi.');
+            setLoading(false);
+            return;
+        }
 
         if (isEdit) {
             router.post(`/admin/produk/${product.id}`, formData, {
@@ -233,7 +288,7 @@ export default function ProductForm({ product, categories }: Props) {
                                     <UploadCloud className="w-6 h-6" />
                                 </div>
                                 <span className="text-xs font-bold text-stone-700">Tambah gambar</span>
-                                <span className="text-[11px] text-stone-400 mt-0.5">Pilih satu atau beberapa file sekaligus</span>
+                                <span className="text-[11px] text-stone-400 mt-0.5">Pilih foto produk (maks. 3 MB per file, JPG/PNG/WebP)</span>
                             </div>
                         </div>
                         <button
@@ -247,7 +302,7 @@ export default function ProductForm({ product, categories }: Props) {
                         <input
                             ref={fileInputRef}
                             type="file"
-                            accept="image/*"
+                            accept="image/jpeg,image/png,image/webp"
                             multiple
                             onChange={handleFileChange}
                             className="hidden"
@@ -287,8 +342,12 @@ export default function ProductForm({ product, categories }: Props) {
                                 )}
                             </div>
                         )}
-                        {errors.images && <p className="text-rose-500 text-xs mt-1.5">{errors.images}</p>}
-                        {errors['images.0'] && <p className="text-rose-500 text-xs mt-1.5">{errors['images.0']}</p>}
+                        {uploadError && <p className="text-rose-500 text-xs mt-1.5">{uploadError}</p>}
+                        {Object.entries(errors)
+                            .filter(([key]) => key === 'images' || key.startsWith('images.'))
+                            .map(([key, message]) => (
+                                <p key={key} className="text-rose-500 text-xs mt-1.5">{String(message)}</p>
+                            ))}
                     </div>
 
                     {/* Stock Status & Visibility Card */}
