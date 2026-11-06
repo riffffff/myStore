@@ -3,7 +3,7 @@ import { Link } from '@inertiajs/react';
 import { ChevronRight, LucideIcon } from 'lucide-react';
 
 interface ProfileMenuItemProps {
-    icon: LucideIcon;
+    icon: LucideIcon | React.ComponentType<any>;
     iconColor?: string;
     iconBg?: string;
     title: string;
@@ -12,6 +12,7 @@ interface ProfileMenuItemProps {
     href?: string;
     onClick?: () => void;
     active?: boolean;
+    isExpanded?: boolean;
     className?: string;
 }
 
@@ -25,6 +26,7 @@ export default function ProfileMenuItem({
     href,
     onClick,
     active = false,
+    isExpanded = false,
     className = '',
 }: ProfileMenuItemProps) {
     const content = (
@@ -65,7 +67,13 @@ export default function ProfileMenuItem({
                         {badge}
                     </span>
                 )}
-                <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-transform group-hover:translate-x-0.5" />
+                <ChevronRight
+                    className={`w-4 h-4 transition-transform duration-200 ${
+                        isExpanded
+                            ? 'rotate-90 text-accent-700'
+                            : 'text-gray-400 group-hover:text-gray-600 group-hover:translate-x-0.5'
+                    }`}
+                />
             </div>
         </div>
     );

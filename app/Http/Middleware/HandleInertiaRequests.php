@@ -64,6 +64,7 @@ class HandleInertiaRequests extends Middleware
             'qris_image'            => $settings?->qris_image ?? null,
             'qris_image_url'        => $this->shopSettingService->getQrisImageUrl(),
             'qris_account_name'     => $this->shopSettingService->getQrisAccountName() ?? ($settings?->shop_name ?? 'PaiTech'),
+            'store_features'        => $settings?->getStoreFeatures() ?? \App\Models\ShopSetting::DEFAULT_STORE_FEATURES,
         ];
 
         // Theme data — lazily evaluated untuk performa

@@ -85,7 +85,7 @@ class OrderController extends Controller
         $allProducts = Product::where('is_published', true)
             ->with(['primaryImage', 'images'])
             ->get()
-            ->map(function (Product $p) {
+            ->map(function ($p) {
                 $primaryImg = $p->primaryImage ?? $p->images->first();
                 $imgUrl = null;
                 if ($primaryImg?->url) {
@@ -237,7 +237,7 @@ class OrderController extends Controller
             $orders = collect();
         }
 
-        $formattedOrders = $orders->map(fn (Order $o) => $this->formatOrder($o));
+        $formattedOrders = $orders->map(fn ($o) => $this->formatOrder($o));
 
         return Inertia::render('Order/Track', [
             'orders' => $formattedOrders,

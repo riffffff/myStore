@@ -59,7 +59,13 @@ export default function PublicLayout({
 
     return (
         <ThemeProvider>
-            <div className="min-h-screen flex flex-col bg-white text-primary-900 font-theme selection:bg-accent-500 selection:text-primary-900">
+            <div
+                className="min-h-screen flex flex-col font-theme selection:bg-accent-500 selection:text-primary-900"
+                style={{
+                    backgroundColor: 'var(--color-bg, var(--page-bg, #FFFFFF))',
+                    color: 'var(--color-text, var(--page-text, #1F2937))',
+                }}
+            >
                 {customHeader ? (
                     customHeader
                 ) : !hideHeader ? (

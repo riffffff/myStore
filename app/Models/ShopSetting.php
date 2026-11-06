@@ -145,6 +145,7 @@ class ShopSetting extends Model
         'qris_image',
         'qris_account_name',
         'operating_hours',
+        'store_features',
         'hero_banner_text_1',
         'hero_banner_text_2',
         'hero_banner_bg',
@@ -152,11 +153,41 @@ class ShopSetting extends Model
         'shipping_estimate_days',
     ];
 
+    // ─── Default Store Features ───────────────────────────────────────────────
+
+    public const DEFAULT_STORE_FEATURES = [
+        [
+            'title'       => 'Kualitas Terjamin',
+            'description' => 'Produk dibuat dengan material pilihan berkualitas tinggi dan standar pengerjaan terbaik.',
+            'icon'        => 'zap',
+        ],
+        [
+            'title'       => 'Transaksi Aman',
+            'description' => 'Pilihan pembayaran mudah dan aman, didukung layanan pemesanan yang responsif.',
+            'icon'        => 'shield',
+        ],
+        [
+            'title'       => 'Pengiriman Cepat',
+            'description' => 'Pesanan Anda dikemas rapi dan dikirim dengan aman langsung ke alamat tujuan.',
+            'icon'        => 'truck',
+        ],
+    ];
+
     // ─── Casts ───────────────────────────────────────────────────────────────
 
     protected $casts = [
-        'shipping_areas'          => 'array',
+        'shipping_areas' => 'array',
+        'store_features' => 'array',
     ];
+
+    public function getStoreFeatures(): array
+    {
+        if (is_array($this->store_features) && count($this->store_features) > 0) {
+            return $this->store_features;
+        }
+
+        return self::DEFAULT_STORE_FEATURES;
+    }
 
     // ─── Mutators ─────────────────────────────────────────────────────────────
 

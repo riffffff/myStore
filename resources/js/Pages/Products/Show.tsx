@@ -8,9 +8,11 @@ import { formatRupiah, getImageUrl, getPrimaryImageUrl, buildWhatsAppProductUrl,
 import { isFirstPageLoad } from '@/lib/navigation';
 import AuthModal from '@/Components/Public/AuthModal';
 import Button from '@/Components/Button';
+import WhatsAppIcon from '@/Components/Icons/WhatsAppIcon';
 import ProductCornerRibbon from '@/Components/Public/ProductCornerRibbon';
 import {
     ShoppingCart,
+    ShoppingBag,
     MessageCircle,
     Star,
     ShieldCheck,
@@ -201,8 +203,8 @@ export default function Show({ product, shopSettings }: ProductShowProps) {
             </Head>
 
             {/* ══════════ MAIN CONTENT ══════════ */}
-            <div className="bg-[#F5F6F8] min-h-screen pb-24 md:pb-12 pt-4">
-                <div className="max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 sm:py-4">
+            <div className="min-h-screen pb-24 md:pb-12 pt-2 sm:pt-4">
+                <div className="max-w-360 mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
 
                     {/* Breadcrumbs (Mobile & Desktop) */}
                     <nav className="text-xs sm:text-sm text-gray-400 mb-4 sm:mb-6 flex items-center gap-2" aria-label="Breadcrumb">
@@ -214,7 +216,7 @@ export default function Show({ product, shopSettings }: ProductShowProps) {
                             Katalog
                         </Link>
                         <span>/</span>
-                        <span className="text-gray-900 font-bold truncate max-w-[200px] sm:max-w-none">{productData.name}</span>
+                        <span className="text-gray-900 font-bold truncate max-w-50 sm:max-w-none">{productData.name}</span>
                     </nav>
 
 
@@ -224,13 +226,19 @@ export default function Show({ product, shopSettings }: ProductShowProps) {
                         }`}
                     >
                         {/* ─── KOLOM KIRI: Galeri Gambar (Tokopedia 1:1) ─── */}
-                        <div className="lg:col-span-7 space-y-3 bg-white sm:rounded-2xl sm:p-5 sm:border sm:border-gray-200/80 sm:shadow-xs">
+                        <div
+                            className="lg:col-span-7 space-y-3 sm:rounded-2xl sm:p-5 sm:border sm:shadow-xs"
+                            style={{
+                                backgroundColor: 'var(--color-card-product-bg, #FFFDF7)',
+                                borderColor: 'var(--color-card-product-border, #EBD9AC)',
+                            }}
+                        >
                             {/* Gambar Utama 1:1 */}
                             <div className="relative aspect-square w-full">
                                 {/* Ribbon HANYA tampil jika produk memiliki diskon */}
                                 <ProductCornerRibbon
                                     discount={discountPercent ? `${discountPercent}% OFF` : null}
-                                    className="w-[96px] h-[96px] sm:w-[110px] sm:h-[110px] z-20"
+                                    className="w-24 h-24 sm:w-27.5 sm:h-27.5 z-20"
                                 />
 
                                 <div className="w-full h-full bg-gray-50 overflow-hidden sm:rounded-xl">
@@ -290,7 +298,13 @@ export default function Show({ product, shopSettings }: ProductShowProps) {
                         <div className="lg:col-span-5 space-y-3">
                             
                             {/* Card 1: Harga, Judul, & Rating (Tokopedia Style) */}
-                            <div className="bg-white p-4 sm:p-6 sm:rounded-2xl border-b sm:border border-gray-200/80 sm:shadow-xs space-y-3">
+                            <div
+                                className="p-4 sm:p-6 sm:rounded-2xl border-b sm:border sm:shadow-xs space-y-3"
+                                style={{
+                                    backgroundColor: 'var(--color-card-product-bg, #FFFDF7)',
+                                    borderColor: 'var(--color-card-product-border, #EBD9AC)',
+                                }}
+                            >
                                 {/* Harga Besar */}
                                 <div className="space-y-1">
                                     {hasDiscount && (
@@ -298,7 +312,14 @@ export default function Show({ product, shopSettings }: ProductShowProps) {
                                             <span className="text-sm sm:text-base text-gray-400 line-through">
                                                 {formattedOriginalPrice}
                                             </span>
-                                            <span className="px-2 py-0.5 rounded text-[11px] font-black bg-[#FFF1F3] text-[#E63854] border border-[#E63854]/20">
+                                            <span
+                                                className="px-2 py-0.5 rounded text-[11px] font-black border"
+                                                style={{
+                                                    color: 'var(--price-color, #E63854)',
+                                                    backgroundColor: 'color-mix(in srgb, var(--price-color, #E63854) 8%, white)',
+                                                    borderColor: 'color-mix(in srgb, var(--price-color, #E63854) 20%, transparent)',
+                                                }}
+                                            >
                                                 Hemat {discountPercent}%
                                             </span>
                                         </div>
@@ -337,14 +358,26 @@ export default function Show({ product, shopSettings }: ProductShowProps) {
                             </div>
 
                             {/* Card 2: Atur Jumlah & Subtotal (Desktop & Mobile) */}
-                            <div className="bg-white p-4 sm:p-5 sm:rounded-2xl border-b sm:border border-gray-200/80 sm:shadow-xs space-y-3">
+                            <div
+                                className="p-4 sm:p-5 sm:rounded-2xl border-b sm:border sm:shadow-xs space-y-3"
+                                style={{
+                                    backgroundColor: 'var(--color-card-product-bg, #FFFDF7)',
+                                    borderColor: 'var(--color-card-product-border, #EBD9AC)',
+                                }}
+                            >
                                 <span className="text-xs font-bold text-gray-700 uppercase tracking-wider block">
                                     Atur Jumlah
                                 </span>
 
                                 <div className="flex items-center justify-between gap-4">
                                     {/* Stepper Jumlah */}
-                                    <div className="inline-flex items-center border border-gray-300 rounded-xl overflow-hidden bg-white shadow-2xs h-10">
+                                    <div
+                                        className="inline-flex items-center border rounded-xl overflow-hidden shadow-2xs h-10"
+                                        style={{
+                                            backgroundColor: 'var(--color-card-product-bg, #FFFDF7)',
+                                            borderColor: 'var(--color-card-product-border, #EBD9AC)',
+                                        }}
+                                    >
                                         <button
                                             type="button"
                                             onClick={decrementQty}
@@ -387,7 +420,7 @@ export default function Show({ product, shopSettings }: ProductShowProps) {
                                         disabled={isOutOfStock}
                                         isLoading={isAddingToCart}
                                         loadingText="Menambahkan..."
-                                        className={isAddedSuccess ? '!bg-teal-600 !text-white !border-teal-600 shadow-md transition-all duration-300' : ''}
+                                        className={isAddedSuccess ? 'bg-emerald-600! text-white! border-emerald-600! shadow-md transition-all duration-300' : ''}
                                         leftIcon={isAddedSuccess ? <Check className="h-4 w-4" /> : <ShoppingCart className="h-4 w-4" />}
                                     >
                                         {isAddedSuccess ? 'Masuk Keranjang!' : inCartQty > 0 ? `+ Keranjang (${inCartQty})` : '+ Keranjang'}
@@ -406,7 +439,13 @@ export default function Show({ product, shopSettings }: ProductShowProps) {
                             </div>
 
                             {/* Card 6: Deskripsi Produk */}
-                            <div className="bg-white p-4 sm:p-5 sm:rounded-2xl border-b sm:border border-gray-200/80 sm:shadow-xs space-y-3">
+                            <div
+                                className="p-4 sm:p-5 sm:rounded-2xl border-b sm:border sm:shadow-xs space-y-3"
+                                style={{
+                                    backgroundColor: 'var(--color-card-product-bg, #FFFDF7)',
+                                    borderColor: 'var(--color-card-product-border, #EBD9AC)',
+                                }}
+                            >
                                 <span className="text-xs font-bold text-gray-700 uppercase tracking-wider block">
                                     Deskripsi Produk
                                 </span>
@@ -435,8 +474,12 @@ export default function Show({ product, shopSettings }: ProductShowProps) {
 
             {/* ══════════ TOKOPEDIA MOBILE STICKY BOTTOM ACTION NAVBAR ══════════ */}
             <div
-                className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white border-t border-gray-200/90 shadow-[0_-4px_24px_rgba(0,0,0,0.09)] px-3 py-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] flex items-center gap-2"
-                style={{ bottom: '-1px' }}
+                className="md:hidden fixed bottom-0 inset-x-0 z-50 border-t shadow-[0_-4px_24px_rgba(0,0,0,0.09)] px-3 py-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0))] flex items-center gap-2 backdrop-blur-md"
+                style={{
+                    bottom: '-1px',
+                    backgroundColor: 'color-mix(in srgb, var(--color-bg, var(--page-bg, #FCF6E5)) 94%, transparent)',
+                    borderColor: 'var(--color-card-product-border, #EBD9AC)',
+                }}
             >
                 {/* 1. Tombol Chat WhatsApp */}
                 <a
@@ -446,34 +489,11 @@ export default function Show({ product, shopSettings }: ProductShowProps) {
                     className="flex flex-col items-center justify-center w-12 h-11 rounded-xl text-gray-600 hover:text-emerald-600 hover:bg-gray-50 active:bg-gray-100 transition shrink-0"
                     aria-label="Chat Penjual"
                 >
-                    <MessageCircle className="h-5 w-5" />
+                    <WhatsAppIcon className="h-5 w-5 text-whatsapp" />
                     <span className="text-[10px] font-semibold tracking-tight mt-0.5">Chat</span>
                 </a>
 
-                {/* 2. Tombol Keranjang */}
-                <Link
-                    href={route('cart.index')}
-                    className="flex flex-col items-center justify-center w-12 h-11 rounded-xl text-gray-600 hover:text-primary-900 hover:bg-gray-50 active:bg-gray-100 transition shrink-0 relative"
-                    aria-label={`Keranjang Belanja ${cartCount > 0 ? `(${cartCount} item)` : ''}`}
-                >
-                    <div className="relative">
-                        <ShoppingCart className="h-5 w-5" />
-                        {cartCount > 0 && (
-                            <span
-                                className="absolute -top-1.5 -right-2.5 min-w-[17px] h-[17px] px-1 rounded-full text-[10px] font-black text-white flex items-center justify-center shadow-xs leading-none animate-in zoom-in-75 duration-200"
-                                style={{ backgroundColor: 'var(--price-color, #E63854)' }}
-                            >
-                                {cartCount > 99 ? '99+' : cartCount}
-                            </span>
-                        )}
-                    </div>
-                    <span className="text-[10px] font-semibold tracking-tight mt-0.5">Keranjang</span>
-                </Link>
-
-                {/* Divider halus */}
-                <div className="h-7 w-px bg-gray-200 shrink-0 mx-0.5" />
-
-                {/* 3. Tombol "+ Keranjang" (Secondary Outlined/Tint) */}
+                {/* 2. Tombol "+ Keranjang" dengan Ikon */}
                 <Button
                     type="button"
                     variant={isAddedSuccess ? 'primary' : 'secondary'}
@@ -482,20 +502,21 @@ export default function Show({ product, shopSettings }: ProductShowProps) {
                     disabled={isOutOfStock}
                     isLoading={isAddingToCart}
                     loadingText="Menambahkan..."
-                    className={`flex-1 h-11 text-xs transition-all duration-300 ${isAddedSuccess ? '!bg-teal-600 !text-white !border-teal-600 shadow-sm' : ''}`}
-                    leftIcon={isAddedSuccess ? <Check className="h-3.5 w-3.5" /> : undefined}
+                    className={`flex-1 h-11 text-xs sm:text-sm transition-all duration-300 font-bold ${isAddedSuccess ? 'bg-emerald-600! text-white! border-emerald-600! shadow-sm' : ''}`}
+                    leftIcon={isAddedSuccess ? <Check className="h-4 w-4" /> : <ShoppingCart className="h-4 w-4" />}
                 >
                     {isOutOfStock ? 'Habis' : isAddedSuccess ? 'Masuk!' : inCartQty > 0 ? `+ Keranjang (${inCartQty})` : '+ Keranjang'}
                 </Button>
 
-                {/* 4. Tombol "Beli Langsung" (Primary Solid) */}
+                {/* 3. Tombol "Beli Langsung" dengan Ikon */}
                 <Button
                     type="button"
                     variant="primary"
                     size="md"
                     onClick={handleBuyNow}
                     disabled={isOutOfStock}
-                    className="flex-1 h-11 text-xs"
+                    className="flex-1 h-11 text-xs sm:text-sm font-bold shadow-xs hover:shadow-md transition-all duration-200"
+                    leftIcon={<ShoppingBag className="h-4 w-4" />}
                 >
                     {isOutOfStock ? 'Stok Habis' : 'Beli Langsung'}
                 </Button>

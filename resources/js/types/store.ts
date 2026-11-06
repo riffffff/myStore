@@ -81,6 +81,12 @@ export interface Review {
     created_at?: string;
 }
 
+export interface StoreFeature {
+    title: string;
+    description: string;
+    icon?: string;
+}
+
 export interface ShopSetting {
     id?: number;
     shop_name?: string | null;
@@ -99,6 +105,7 @@ export interface ShopSetting {
     whatsapp_number: string;
     whatsapp_template: string;
     operating_hours?: string | null;
+    store_features?: StoreFeature[];
     hero_banner_text_1?: string | null;
     hero_banner_text_2?: string | null;
     hero_banner_bg?: string | null;

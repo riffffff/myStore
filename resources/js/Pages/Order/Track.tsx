@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Head, Link, usePage } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import ScrollReveal from '@/Components/Public/ScrollReveal';
 import { PageProps } from '@/types';
 import { Order, OrderStatus } from '@/types/store';
 import { formatRupiah, getSafeShopSettings, buildWhatsAppUrl } from '@/lib/utils';
+import WhatsAppIcon from '@/Components/Icons/WhatsAppIcon';
 import {
     Package,
     CheckCircle2,
@@ -16,22 +17,25 @@ import {
     ChevronDown,
     Copy,
     Check,
+    XCircle,
 } from 'lucide-react';
 
 interface OrderTrackProps {
     orders: Order[];
 }
 
-// Status bar — 4 ikon persis seperti timeline lama
-const STATUS_BAR: Array<{
+// Status tabs untuk filter interaktif ala e-commerce
+const STATUS_TABS: Array<{
+    id: string;
     keys: OrderStatus[];
     label: string;
     icon: React.ElementType;
 }> = [
-    { keys: ['pending'],                label: 'Menunggu',    icon: Clock        },
-    { keys: ['confirmed', 'processing'], label: 'Disiapkan',   icon: ChefHat      },
-    { keys: ['shipped'],                label: 'Pesanan Siap', icon: ShoppingBag  },
-    { keys: ['completed'],              label: 'Selesai',     icon: CheckCircle2 },
+    { id: 'all',        keys: [],                                label: 'Semua',        icon: Package      },
+    { id: 'pending',    keys: ['pending'],                       label: 'Menunggu',     icon: Clock        },
+    { id: 'processing', keys: ['confirmed', 'processing'],       label: 'Disiapkan',    icon: ChefHat      },
+    { id: 'shipped',    keys: ['shipped'],                       label: 'Pesanan Siap', icon: ShoppingBag  },
+    { id: 'completed',  keys: ['completed'],                     label: 'Selesai',      icon: CheckCircle2 },
 ];
 
 const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; border: string; dot: string }> = {
@@ -49,6 +53,7 @@ export default function Track({ orders = [] }: OrderTrackProps) {
     const shopName = safeSettings.shop_name ?? 'Toko';
     const waNumber = safeSettings.whatsapp_number;
 
+    const [activeTab, setActiveTab] = useState<string>('all');
     const [expandedIds, setExpandedIds] = useState<Record<number, boolean>>({});
     const [copiedId, setCopiedId] = useState<string | null>(null);
 
@@ -62,10 +67,32 @@ export default function Track({ orders = [] }: OrderTrackProps) {
     };
 
     // Hitung jumlah per status
-    const countByStatus: Partial<Record<OrderStatus, number>> = {};
-    for (const order of orders) {
-        countByStatus[order.status] = (countByStatus[order.status] ?? 0) + 1;
-    }
+    const countByStatus = useMemo(() => {
+        const counts: Partial<Record<OrderStatus, number>> = {};
+        for (const order of orders) {
+            counts[order.status] = (counts[order.status] ?? 0) + 1;
+        }
+        return counts;
+    }, [orders]);
+
+    // Tab yang tersedia (sertakan Dibatalkan jika ada pesanan batal)
+    const availableTabs = useMemo(() => {
+        const tabs = [...STATUS_TABS];
+        if ((countByStatus['cancelled'] ?? 0) > 0) {
+            tabs.push({ id: 'cancelled', keys: ['cancelled'], label: 'Dibatalkan', icon: XCircle });
+        }
+        return tabs;
+    }, [countByStatus]);
+
+    // Filter pesanan sesuai activeTab
+    const filteredOrders = useMemo(() => {
+        if (activeTab === 'all') return orders;
+        const currentTab = availableTabs.find(t => t.id === activeTab);
+        if (!currentTab) return orders;
+        return orders.filter(order => currentTab.keys.includes(order.status));
+    }, [orders, activeTab, availableTabs]);
+
+    const activeTabLabel = availableTabs.find(t => t.id === activeTab)?.label ?? 'Status';
 
     return (
         <PublicLayout>
@@ -85,14 +112,20 @@ export default function Track({ orders = [] }: OrderTrackProps) {
                 </div>
             </div>
 
-            <div className="bg-[#F5F6F8] min-h-[calc(100vh-56px)] pb-16 pt-4">
-                <div className="max-w-360 mx-auto px-3 sm:px-6 lg:px-8">
+            <div className="min-h-[calc(100vh-56px)] transition-colors">
+                <div className="max-w-360 mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-24 sm:pb-16">
 
                     {orders.length === 0 ? (
                         <ScrollReveal direction="up" delay={80}>
-                            <div className="bg-white rounded-2xl border border-gray-200 p-10 text-center">
-                                <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
-                                    <Package className="w-7 h-7 text-gray-300 stroke-[1.5]" />
+                            <div
+                                className="rounded-2xl border p-10 text-center shadow-xs"
+                                style={{
+                                    backgroundColor: 'var(--color-card-product-bg, #FFFDF7)',
+                                    borderColor: 'var(--color-card-product-border, #EBD9AC)',
+                                }}
+                            >
+                                <div className="w-16 h-16 rounded-full bg-accent-500/20 flex items-center justify-center mx-auto mb-4">
+                                    <Package className="w-7 h-7 text-primary-900 stroke-[1.5]" />
                                 </div>
                                 <h2 className="text-base font-semibold text-gray-900 mb-1">Belum ada pesanan</h2>
                                 <p className="text-xs text-gray-500 mb-5 max-w-xs mx-auto">
@@ -101,7 +134,7 @@ export default function Track({ orders = [] }: OrderTrackProps) {
                                 <Link
                                     href={route('products.index')}
                                     className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-full text-white text-xs font-bold transition shadow-xs"
-                                    style={{ backgroundColor: 'var(--color-primary-btn, #0D9488)' }}
+                                    style={{ backgroundColor: 'var(--color-primary-btn, var(--color-primary, #6E4F78))' }}
                                 >
                                     <span>Mulai Belanja</span>
                                     <ArrowRight className="w-4 h-4" />
@@ -110,45 +143,126 @@ export default function Track({ orders = [] }: OrderTrackProps) {
                         </ScrollReveal>
                     ) : (
                         <>
-                            {/* ── Status Bar (ikon progress + badge hitungan) ── */}
+                            {/* ── Status Filter Tabs ── */}
                             <ScrollReveal direction="up" delay={60}>
-                                <div className="bg-white rounded-2xl border border-gray-200 shadow-2xs mb-4 px-2 py-3">
-                                    <div className="flex items-stretch divide-x divide-gray-100">
-                                        {STATUS_BAR.map((bar) => {
-                                            const count = bar.keys.reduce(
-                                                (acc, k) => acc + (countByStatus[k] ?? 0), 0
-                                            );
-                                            const Icon = bar.icon;
+                                <div
+                                    className="rounded-2xl border shadow-2xs mb-4 p-1 sm:p-1.5"
+                                    style={{
+                                        backgroundColor: 'var(--color-card-product-bg, #FFFDF7)',
+                                        borderColor: 'var(--color-card-product-border, #EBD9AC)',
+                                    }}
+                                >
+                                    <div className="flex items-stretch divide-x divide-gray-100/80">
+                                        {availableTabs.map((tab) => {
+                                            const count = tab.id === 'all'
+                                                ? orders.length
+                                                : tab.keys.reduce(
+                                                    (acc, k) => acc + (countByStatus[k] ?? 0), 0
+                                                );
+                                            const Icon = tab.icon;
+                                            const isActive = activeTab === tab.id;
                                             const hasCount = count > 0;
+
                                             return (
-                                                <div key={bar.label} className="flex-1 flex flex-col items-center gap-1.5 py-1.5 px-1">
+                                                <button
+                                                    key={tab.id}
+                                                    type="button"
+                                                    onClick={() => setActiveTab(tab.id)}
+                                                    className={`flex-1 flex flex-col items-center justify-center gap-1.5 py-2 px-1 rounded-xl transition-all cursor-pointer relative select-none ${
+                                                        isActive
+                                                            ? 'shadow-xs font-bold'
+                                                            : 'hover:bg-black/5 font-medium'
+                                                    }`}
+                                                    style={{
+                                                        backgroundColor: isActive
+                                                            ? 'color-mix(in srgb, var(--color-primary, #6E4F78) 12%, transparent)'
+                                                            : 'transparent',
+                                                    }}
+                                                >
                                                     <div className="relative">
                                                         <Icon
-                                                            className={`w-6 h-6 transition-opacity ${hasCount ? 'opacity-100' : 'opacity-20'}`}
-                                                            style={{ color: hasCount ? 'var(--color-primary-btn, #0D9488)' : undefined }}
+                                                            className={`w-5 h-5 sm:w-6 sm:h-6 transition-all ${
+                                                                isActive
+                                                                    ? 'scale-110 opacity-100'
+                                                                    : hasCount
+                                                                    ? 'opacity-85'
+                                                                    : 'opacity-30'
+                                                            }`}
+                                                            style={{
+                                                                color: (isActive || hasCount)
+                                                                    ? 'var(--color-primary-btn, var(--color-primary, #6E4F78))'
+                                                                    : undefined,
+                                                            }}
                                                         />
                                                         {hasCount && (
                                                             <span
-                                                                className="absolute -top-1.5 -right-2 min-w-4 h-4 px-1 rounded-full text-[10px] font-extrabold flex items-center justify-center text-white"
-                                                                style={{ backgroundColor: 'var(--color-primary-btn, #0D9488)' }}
+                                                                className="absolute -top-1.5 -right-2.5 min-w-4 h-4 px-1 rounded-full text-[10px] font-extrabold flex items-center justify-center text-white shadow-2xs"
+                                                                style={{ backgroundColor: 'var(--color-primary-btn, var(--color-primary, #6E4F78))' }}
                                                             >
                                                                 {count}
                                                             </span>
                                                         )}
                                                     </div>
-                                                    <span className={`text-[10px] font-semibold leading-tight text-center ${hasCount ? 'text-gray-700' : 'text-gray-300'}`}>
-                                                        {bar.label}
+                                                    <span
+                                                        className={`text-[10px] sm:text-xs leading-tight text-center transition-colors ${
+                                                            isActive
+                                                                ? 'font-bold'
+                                                                : hasCount
+                                                                ? 'text-gray-700'
+                                                                : 'text-gray-400'
+                                                        }`}
+                                                        style={{
+                                                            color: isActive
+                                                                ? 'var(--color-primary-btn, var(--color-primary, #6E4F78))'
+                                                                : undefined,
+                                                        }}
+                                                    >
+                                                        {tab.label}
                                                     </span>
-                                                </div>
+                                                    {isActive && (
+                                                        <span
+                                                            className="absolute bottom-0 left-2 right-2 h-0.5 rounded-full"
+                                                            style={{ backgroundColor: 'var(--color-primary-btn, var(--color-primary, #6E4F78))' }}
+                                                        />
+                                                    )}
+                                                </button>
                                             );
                                         })}
                                     </div>
                                 </div>
                             </ScrollReveal>
 
-                            {/* ── Daftar Order (card simpel expandable) ── */}
-                            <div className="space-y-2">
-                                {orders.map((order, orderIndex) => {
+                            {/* ── Daftar Order (filtered) ── */}
+                            {filteredOrders.length === 0 ? (
+                                <div
+                                    className="rounded-2xl border p-8 sm:p-10 text-center shadow-2xs"
+                                    style={{
+                                        backgroundColor: 'var(--color-card-product-bg, #FFFDF7)',
+                                        borderColor: 'var(--color-card-product-border, #EBD9AC)',
+                                    }}
+                                >
+                                    <div className="w-12 h-12 rounded-full bg-black/5 flex items-center justify-center mx-auto mb-3">
+                                        <Package className="w-6 h-6 text-gray-400 stroke-[1.5]" />
+                                    </div>
+                                    <h3 className="text-sm font-bold text-gray-900 mb-1">
+                                        Tidak ada pesanan dengan status "{activeTabLabel}"
+                                    </h3>
+                                    <p className="text-xs text-gray-500 mb-4 max-w-xs mx-auto">
+                                        Saat ini tidak ada pesanan Anda yang berada pada status ini.
+                                    </p>
+                                    <button
+                                        type="button"
+                                        onClick={() => setActiveTab('all')}
+                                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-white text-xs font-bold transition shadow-xs cursor-pointer hover:opacity-90"
+                                        style={{ backgroundColor: 'var(--color-primary-btn, var(--color-primary, #6E4F78))' }}
+                                    >
+                                        <span>Tampilkan Semua Pesanan</span>
+                                        <ArrowRight className="w-3.5 h-3.5" />
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="space-y-2">
+                                    {filteredOrders.map((order, orderIndex) => {
                                     const cfg = STATUS_CONFIG[order.status] ?? STATUS_CONFIG.pending;
                                     const isExpanded = !!expandedIds[order.id];
                                     const waHelpUrl = buildWhatsAppUrl({
@@ -158,16 +272,22 @@ export default function Track({ orders = [] }: OrderTrackProps) {
 
                                     return (
                                         <ScrollReveal key={order.id} direction="up" delay={Math.min(orderIndex * 80, 400)}>
-                                            <div className={`bg-white rounded-xl border shadow-2xs overflow-hidden transition-all duration-150 ${
-                                            order.status === 'cancelled'
-                                                ? 'border-rose-200 bg-rose-50/40 hover:border-rose-300'
-                                                : 'border-gray-200 hover:border-gray-300'
-                                        }`}>
+                                            <div
+                                                className={`rounded-xl border shadow-2xs overflow-hidden transition-all duration-150 ${
+                                                    order.status === 'cancelled'
+                                                        ? 'border-rose-200 bg-rose-50/40 hover:border-rose-300'
+                                                        : 'hover:shadow-xs'
+                                                }`}
+                                                style={{
+                                                    backgroundColor: 'var(--color-card-product-bg, #FFFDF7)',
+                                                    borderColor: 'var(--color-card-product-border, #EBD9AC)',
+                                                }}
+                                            >
 
                                                 {/* Card header — klik untuk expand */}
                                                 <div
                                                     onClick={() => toggleExpand(order.id)}
-                                                    className="p-3.5 sm:px-4 sm:py-3 cursor-pointer hover:bg-gray-50/70 transition select-none"
+                                                    className="p-3.5 sm:px-4 sm:py-3 cursor-pointer hover:bg-black/5 transition select-none"
                                                 >
                                                     {/* Baris 1: No. Pesanan & Tanggal | Status Badge */}
                                                     <div className="flex items-center justify-between gap-2">
@@ -203,11 +323,23 @@ export default function Track({ orders = [] }: OrderTrackProps) {
 
                                                 {/* Detail expand */}
                                                 {isExpanded && (
-                                                    <div className="border-t border-gray-100 bg-gray-50/60 p-3.5 sm:p-4 space-y-3 text-xs">
+                                                    <div
+                                                        className="border-t p-3.5 sm:p-4 space-y-3 text-xs"
+                                                        style={{
+                                                            backgroundColor: 'color-mix(in srgb, var(--color-bg, var(--page-bg, #FCF6E5)) 85%, var(--color-card-product-bg, #FFFDF7) 15%)',
+                                                            borderColor: 'color-mix(in srgb, var(--color-card-product-border, #EBD9AC) 50%, transparent)',
+                                                        }}
+                                                    >
                                                         {/* Rincian item */}
                                                         <div>
                                                             <div className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Rincian Item</div>
-                                                            <div className="bg-white rounded-lg border border-gray-200 divide-y divide-gray-100">
+                                                            <div
+                                                                className="rounded-lg border divide-y divide-gray-100"
+                                                                style={{
+                                                                    backgroundColor: 'var(--color-card-product-bg, #FFFDF7)',
+                                                                    borderColor: 'var(--color-card-product-border, #EBD9AC)',
+                                                                }}
+                                                            >
                                                                 {order.items.map((item) => (
                                                                     <div key={item.id} className="p-3 flex items-start justify-between gap-3">
                                                                         <div className="min-w-0 flex-1">
@@ -232,7 +364,13 @@ export default function Track({ orders = [] }: OrderTrackProps) {
                                                         )}
 
                                                         {/* Alamat */}
-                                                        <div className="bg-white rounded-lg border border-gray-200 p-3 space-y-1">
+                                                        <div
+                                                            className="rounded-lg border p-3 space-y-1"
+                                                            style={{
+                                                                backgroundColor: 'var(--color-card-product-bg, #FFFDF7)',
+                                                                borderColor: 'var(--color-card-product-border, #EBD9AC)',
+                                                            }}
+                                                        >
                                                             <div className="flex items-center justify-between">
                                                                 <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alamat Pengiriman</span>
                                                                 <button
@@ -264,7 +402,7 @@ export default function Track({ orders = [] }: OrderTrackProps) {
                                                                 rel="noopener noreferrer"
                                                                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition"
                                                             >
-                                                                <MessageCircle className="w-3.5 h-3.5" />
+                                                                <WhatsAppIcon className="w-3.5 h-3.5 shrink-0" />
                                                                 <span>Chat Toko</span>
                                                             </a>
                                                         </div>
@@ -275,8 +413,9 @@ export default function Track({ orders = [] }: OrderTrackProps) {
                                     );
                                 })}
                             </div>
-                        </>
-                    )}
+                        )}
+                    </>
+                )}
                 </div>
             </div>
         </PublicLayout>

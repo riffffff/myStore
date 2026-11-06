@@ -61,11 +61,11 @@ export type ButtonProps = ButtonAsButton | ButtonAsLink | ButtonAsExternalLink;
 
 const variantClasses: Record<ButtonVariant, string> = {
     primary:
-        'bg-accent-600 text-white hover:bg-accent-700 active:bg-accent-800 shadow-xs focus-visible:ring-accent-600',
+        'bg-brand text-brand-contrast hover:bg-brand-600 active:bg-brand-700 shadow-xs focus-visible:ring-brand-500',
     secondary:
         'border border-accent-200 bg-accent-50 text-accent-800 hover:bg-accent-100 hover:border-accent-300 active:bg-accent-200/80 shadow-xs focus-visible:ring-accent-500',
     outline:
-        'border border-stone-300 bg-white text-stone-700 hover:bg-stone-50 hover:text-stone-900 hover:border-stone-400 active:bg-stone-100 shadow-2xs focus-visible:ring-stone-400',
+        'border border-stone-400/40 bg-transparent text-stone-800 hover:bg-stone-900/5 hover:text-stone-950 hover:border-stone-400/80 active:bg-stone-900/10 shadow-2xs focus-visible:ring-stone-400',
     ghost:
         'bg-transparent text-stone-700 hover:bg-stone-100 hover:text-stone-900 active:bg-stone-200 focus-visible:ring-stone-400',
     danger:

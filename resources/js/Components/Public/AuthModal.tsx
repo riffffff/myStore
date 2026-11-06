@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useForm } from '@inertiajs/react';
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import { LogIn, UserPlus, Mail, Lock, User, Phone, X, Loader2 } from 'lucide-react';
@@ -12,6 +12,7 @@ interface AuthModalProps {
 
 export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: AuthModalProps) {
     const [mode, setMode] = useState<'login' | 'register'>(initialMode);
+    const panelRef = useRef<HTMLDivElement>(null);
 
     // Form Login
     const loginForm = useForm({
@@ -56,12 +57,22 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
     };
 
     return (
-        <Dialog open={isOpen} onClose={onClose} className="relative z-50">
+        <Dialog
+            open={isOpen}
+            onClose={onClose}
+            autoFocus={false}
+            initialFocus={panelRef}
+            className="relative z-50"
+        >
             {/* Backdrop */}
             <div className="fixed inset-0 bg-stone-950/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-200" />
 
             <div className="fixed inset-0 z-10 w-screen overflow-y-auto p-4 sm:p-6 md:p-20 flex items-center justify-center">
-                <DialogPanel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 sm:p-8 text-left align-middle shadow-2xl transition-all border border-stone-200/80 animate-in zoom-in-95 duration-200">
+                <DialogPanel
+                    ref={panelRef}
+                    tabIndex={-1}
+                    className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 sm:p-8 text-left align-middle shadow-2xl transition-all border border-stone-200/80 animate-in zoom-in-95 duration-200 focus:outline-none"
+                >
                     {/* Header Modal */}
                     <div className="flex items-center justify-between border-b border-stone-100 pb-4 mb-6">
                         <div className="flex items-center gap-2">

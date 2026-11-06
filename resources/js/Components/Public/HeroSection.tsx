@@ -54,12 +54,12 @@ export default function HeroSection({ articles }: HeroSectionProps) {
     };
 
     return (
-        <section className="w-full max-w-[1440px] mx-auto">
+        <section className="w-full max-w-360 mx-auto">
 
             {/* ══════════ MOBILE — Gambar Menyatu dengan Judul & Deskripsi ══════════ */}
-            <div className="md:hidden px-3 pt-2 pb-3 w-full">
+            <div className="md:hidden px-4 sm:px-6 pt-3 pb-3 w-full">
                 <div
-                    className="relative w-full overflow-hidden rounded-[28px] border border-white/10 shadow-2xl select-none h-[410px] sm:h-[440px] flex flex-col justify-between"
+                    className="relative w-full overflow-hidden rounded-[28px] border border-white/10 shadow-2xl select-none h-102.5 sm:h-110 flex flex-col justify-between"
                     style={{
                         background: 'color-mix(in srgb, var(--color-header-bg, #0B132B) 90%, black)',
                     }}
@@ -81,7 +81,7 @@ export default function HeroSection({ articles }: HeroSectionProps) {
                                 className="w-full h-full object-cover object-center"
                             />
                             {/* Dark gradient overlay agar teks terbaca sangat jelas */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-black/40" />
+                            <div className="absolute inset-0 bg-linear-to-t from-black/95 via-black/60 to-black/40" />
                         </div>
                     ))}
 
@@ -90,13 +90,13 @@ export default function HeroSection({ articles }: HeroSectionProps) {
                         {count > 1 && (
                             <div className="flex gap-1.5">
                                 {validArticles.map((_, i) => (
-                                    <div key={i} className="flex-1 h-[3px] rounded-full overflow-hidden bg-white/20">
+                                    <div key={i} className="flex-1 h-0.75 rounded-full overflow-hidden bg-white/20">
                                         <div
                                             className="h-full rounded-full transition-all duration-300"
                                             style={{
                                                 width: i === currentIndex ? '100%' : i < currentIndex ? '100%' : '0%',
                                                 background: i === currentIndex
-                                                    ? 'var(--header-active, #0D9488)'
+                                                    ? 'var(--header-active, var(--color-accent, #F5E8AA))'
                                                     : i < currentIndex ? 'rgba(255,255,255,0.6)' : 'transparent',
                                             }}
                                         />
@@ -135,7 +135,7 @@ export default function HeroSection({ articles }: HeroSectionProps) {
                         {/* Garis Aksen Horizontal */}
                         <div
                             className="w-10 h-1 rounded-full my-2.5 shadow-sm"
-                            style={{ background: 'var(--header-active, #0D9488)' }}
+                            style={{ background: 'var(--header-active, var(--color-accent, #F5E8AA))' }}
                         />
 
                         {/* Deskripsi / Excerpt */}
@@ -148,18 +148,16 @@ export default function HeroSection({ articles }: HeroSectionProps) {
                             </p>
                         )}
 
-                        {/* Tombol Aksi Berdampingan */}
-                        <div className="flex items-center justify-center gap-2.5 w-full max-w-xs">
+                        {/* Tombol Aksi Hero (Frosted Glassmorphism Transparan) */}
+                        <div className="flex items-center justify-center w-full max-w-xs">
                             {artSlug ? (
-                                <Button
+                                <Link
                                     href={route('articles.show', artSlug)}
-                                    variant="primary"
-                                    size="sm"
-                                    className="flex-1 uppercase tracking-wider font-bold"
-                                    rightIcon={<ChevronRight className="h-3.5 w-3.5 stroke-[2.5]" />}
+                                    className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-6 rounded-full bg-white/20 hover:bg-white/30 active:bg-white/35 text-white font-bold text-xs uppercase tracking-[0.16em] backdrop-blur-md border border-white/35 shadow-[0_4px_20px_rgba(0,0,0,0.25)] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] group"
                                 >
-                                    Selengkapnya
-                                </Button>
+                                    <span>Selengkapnya</span>
+                                    <ChevronRight className="h-3.5 w-3.5 stroke-[2.5] transition-transform duration-200 group-hover:translate-x-0.5" />
+                                </Link>
                             ) : null}
                         </div>
                     </div>
@@ -168,9 +166,13 @@ export default function HeroSection({ articles }: HeroSectionProps) {
 
 
             {/* ══════════ DESKTOP ══════════ */}
-            <div className="hidden md:block py-6 px-6 lg:px-8">
+            <div className="hidden md:block pt-4 sm:pt-6 pb-2 sm:pb-3 px-4 sm:px-6 lg:px-8">
                 <div
-                    className="relative overflow-hidden rounded-3xl border border-gray-200/80 bg-gradient-to-br from-[#F8F9FA] via-[#F1F3F5] to-[#E9ECEF] p-8 lg:p-10 shadow-xl"
+                    className="relative overflow-hidden rounded-3xl border shadow-xl p-8 lg:p-10"
+                    style={{
+                        backgroundColor: 'var(--color-card-article-bg, #FFFFFF)',
+                        borderColor: 'var(--color-card-article-border, #E5E7EB)',
+                    }}
                     onTouchStart={onTouchStart}
                     onTouchMove={onTouchMove}
                     onTouchEnd={onTouchEnd}
@@ -238,11 +240,11 @@ export default function HeroSection({ articles }: HeroSectionProps) {
                             )}
                         </div>
 
-                        <div className="col-span-7 relative h-[320px] lg:h-[440px] rounded-3xl overflow-hidden shadow-2xl border border-white/60 select-none">
+                        <div className="col-span-7 relative h-80 lg:h-110 rounded-3xl overflow-hidden shadow-2xl border border-white/60 select-none">
                             {validArticles.map((art, idx) => (
                                 <div key={art.id ?? idx} className={`absolute inset-0 transition-opacity duration-700 ${idx === currentIndex ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'}`}>
-                                    <img src={getImgUrl(art)} alt={art.title ?? ''} className={`w-full h-full object-cover transition-transform duration-[7000ms] ease-out ${idx === currentIndex ? 'scale-105' : 'scale-100'}`} />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
+                                    <img src={getImgUrl(art)} alt={art.title ?? ''} className={`w-full h-full object-cover transition-transform duration-7000 ease-out ${idx === currentIndex ? 'scale-105' : 'scale-100'}`} />
+                                    <div className="absolute inset-0 bg-linear-to-t from-black/50 via-black/10 to-transparent" />
                                 </div>
                             ))}
                         </div>

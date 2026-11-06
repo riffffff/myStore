@@ -71,8 +71,8 @@ const ProductImageGallery = memo(function ProductImageGallery({
                                 style={
                                     isActive
                                         ? {
-                                              borderColor: 'var(--color-primary-btn, #0D9488)',
-                                              '--tw-ring-color': 'color-mix(in srgb, var(--color-primary-btn, #0D9488) 25%, transparent)',
+                                              borderColor: 'var(--color-primary-btn, var(--color-primary, #6E4F78))',
+                                              '--tw-ring-color': 'color-mix(in srgb, var(--color-primary-btn, var(--color-primary, #6E4F78)) 25%, transparent)',
                                           } as React.CSSProperties
                                         : undefined
                                 }

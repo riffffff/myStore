@@ -1,10 +1,9 @@
 import React, { useState, memo, useCallback } from 'react';
 import { Link, router, usePage } from '@inertiajs/react';
 import { Product, StockStatus } from '@/types/store';
-import { ShoppingCart, Check, Banknote } from 'lucide-react';
+import { ShoppingCart, Check, ShoppingBag, Loader2 } from 'lucide-react';
 import { formatRupiah, getPrimaryImageUrl } from '@/lib/utils';
 import { PageProps } from '@/types';
-import Button from '@/Components/Button';
 import ProductCornerRibbon from '@/Components/Public/ProductCornerRibbon';
 
 const DEFAULT_PRODUCT_IMG = 'https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&q=80&w=800';
@@ -75,10 +74,10 @@ const ProductCard = memo(function ProductCard({ product }: ProductCardProps) {
 
     return (
         <div
-            className="group relative rounded-xl sm:rounded-2xl shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full border bg-white"
+            className="group relative rounded-xl sm:rounded-2xl shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full border"
             style={{
-                backgroundColor: 'var(--color-card-product-bg, #ffffff)',
-                borderColor: 'var(--color-card-product-border, #e5e7eb)',
+                backgroundColor: 'var(--color-card-product-bg, #FFFDF7)',
+                borderColor: 'var(--color-card-product-border, #EBD9AC)',
                 color: 'var(--color-card-product-text, #1c1917)',
             }}
         >
@@ -86,7 +85,7 @@ const ProductCard = memo(function ProductCard({ product }: ProductCardProps) {
                 {/* Ribbon HANYA muncul jika produk memiliki diskon */}
                 <ProductCornerRibbon
                     discount={discountPercent ? `${discountPercent}% OFF` : null}
-                    className="w-[78px] h-[78px] sm:w-[88px] sm:h-[88px]"
+                    className="w-19.5 h-19.5 sm:w-22 sm:h-22"
                 />
 
                 <div className="relative aspect-square overflow-hidden rounded-t-xl sm:rounded-t-2xl bg-gray-100">
@@ -141,44 +140,44 @@ const ProductCard = memo(function ProductCard({ product }: ProductCardProps) {
 
             <div className="px-2 sm:px-5 pb-2 sm:pb-5 mt-auto">
                 <div className="flex items-center gap-1.5 sm:gap-2">
-                    {/* TOMBOL 1: Masukkan Keranjang */}
-                    <Button
+                    {/* TOMBOL 1: Masukkan Keranjang (Kotak Ikon 1:1 Presisi) */}
+                    <button
                         type="button"
-                        variant={isAdded ? 'success' : 'secondary'}
-                        size="xs"
                         onClick={handleAddToCart}
-                        disabled={disabled}
-                        isLoading={isAdding}
-                        className="flex-1 sm:h-9 text-[10px] sm:text-xs font-bold py-1 sm:py-2 px-1 sm:px-3 rounded-lg sm:rounded-xl"
-                        title="Masukkan ke Keranjang"
-                        aria-label="Masukkan ke Keranjang"
-                        leftIcon={
-                            isAdded ? (
-                                <Check className="w-3.5 h-3.5 shrink-0" />
-                            ) : (
-                                <ShoppingCart className="w-3.5 h-3.5 shrink-0" />
-                            )
-                        }
+                        disabled={disabled || isAdding}
+                        className={`w-8 h-8 sm:w-9 sm:h-9 shrink-0 rounded-lg sm:rounded-xl border flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-90 disabled:opacity-50 disabled:cursor-not-allowed ${
+                            isAdded
+                                ? 'bg-emerald-600 border-emerald-600 text-white shadow-xs'
+                                : 'bg-accent-50/80 border-accent-300 text-primary-900 hover:bg-accent-100/90 hover:border-accent-400'
+                        }`}
+                        title={isAdded ? 'Sudah di Keranjang' : 'Tambah ke Keranjang'}
+                        aria-label={isAdded ? 'Sudah di Keranjang' : 'Tambah ke Keranjang'}
                     >
-                        <span className="truncate">
-                            {isAdded ? 'Ditambah' : 'Keranjang'}
-                        </span>
-                    </Button>
+                        {isAdding ? (
+                            <Loader2 className="w-4 h-4 animate-spin text-primary-900" />
+                        ) : isAdded ? (
+                            <Check className="w-4 h-4 text-white stroke-[2.5]" />
+                        ) : (
+                            <ShoppingCart className="w-4 h-4 stroke-2" />
+                        )}
+                    </button>
 
-                    {/* TOMBOL 2: Beli Langsung */}
-                    <Button
+                    {/* TOMBOL 2: Beli Langsung (Proporsional & Presisi Sejajar) */}
+                    <button
                         type="button"
-                        variant="primary"
-                        size="xs"
                         onClick={handleBuyNow}
                         disabled={disabled}
-                        className="flex-1 sm:h-9 text-[10px] sm:text-xs font-bold py-1 sm:py-2 px-1 sm:px-3 rounded-lg sm:rounded-xl"
+                        className="flex-1 h-8 sm:h-9 px-2 sm:px-3 rounded-lg sm:rounded-xl font-bold text-[11px] sm:text-xs flex items-center justify-center gap-1 sm:gap-1.5 shadow-xs hover:shadow-md active:scale-[0.98] transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed border border-transparent"
+                        style={{
+                            backgroundColor: 'var(--color-card-product-btn, var(--card-product-btn, var(--color-primary, #6E4F78)))',
+                            color: 'var(--card-product-btn-text, #ffffff)',
+                        }}
                         title="Beli Sekarang"
                         aria-label="Beli Sekarang"
-                        leftIcon={<Banknote className="w-3.5 h-3.5 shrink-0" />}
                     >
-                        <span className="truncate">Beli</span>
-                    </Button>
+                        <ShoppingBag className="w-3.5 h-3.5 shrink-0" />
+                        <span className="truncate">Beli Sekarang</span>
+                    </button>
                 </div>
             </div>
         </div>

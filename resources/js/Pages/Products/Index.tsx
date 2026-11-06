@@ -81,8 +81,13 @@ const sortOptions = [
     { value: 'price_high', label: 'Harga Tertinggi', icon: 'up' as const },
 ];
 
-const primaryBtnStyle = { backgroundColor: 'var(--color-primary-btn, #0D9488)' };
-const primaryTextStyle = { color: 'var(--color-primary-btn, #0D9488)' };
+const primaryBtnStyle = {
+    backgroundColor: 'var(--color-primary-btn, var(--color-primary, #6E4F78))',
+    color: 'var(--color-primary-btn-text, var(--color-primary-contrast, #ffffff))',
+};
+const primaryTextStyle = {
+    color: 'var(--color-primary-btn, var(--color-primary, #6E4F78))',
+};
 
 export default function Index({ products, shopSettings, filters }: ProductsIndexProps) {
     const safeSettings = getSafeShopSettings(shopSettings);
@@ -99,7 +104,6 @@ export default function Index({ products, shopSettings, filters }: ProductsIndex
     const filterStockStatus = typeof safeFilters.stock_status === 'string' ? safeFilters.stock_status : '';
     const filterSearch = typeof safeFilters.search === 'string' ? safeFilters.search : '';
 
-    // Inisialisasi sinkron untuk menghindari kedip (flicker) dari default ke pilihan terakhir
     const getInitialSort = () => {
         if (typeof window !== 'undefined') {
             const urlParams = new URLSearchParams(window.location.search);
@@ -108,13 +112,6 @@ export default function Index({ products, shopSettings, filters }: ProductsIndex
             if (urlParams.has('page') && !urlParams.has('sort')) {
                 return 'popular';
             }
-            try {
-                const saved = sessionStorage.getItem('store_catalog_filters');
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    if (typeof parsed?.sort === 'string' && parsed.sort) return parsed.sort;
-                }
-            } catch {}
         }
         return typeof safeFilters.sort === 'string' && safeFilters.sort ? safeFilters.sort : 'popular';
     };
@@ -199,27 +196,15 @@ export default function Index({ products, shopSettings, filters }: ProductsIndex
             }
         });
 
-        try {
-            sessionStorage.setItem('store_catalog_filters', JSON.stringify(query));
-        } catch {}
-
         router.get(route('products.index'), query, { preserveState: true, preserveScroll: true });
     };
 
-    // Pulihkan filter jika kembali ke katalog dari halaman lain tanpa query string
+    // Bersihkan storage legacy jika sebelumnya pernah tersimpan
     useEffect(() => {
-        const hasQuery = Boolean(window.location.search && window.location.search.length > 1);
-        if (!hasQuery) {
-            try {
-                const saved = sessionStorage.getItem('store_catalog_filters');
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    if (parsed && typeof parsed === 'object' && Object.keys(parsed).length > 0) {
-                        router.get(route('products.index'), parsed, { preserveState: true, replace: true });
-                    }
-                }
-            } catch {}
-        }
+        try {
+            sessionStorage.removeItem('store_catalog_filters');
+            localStorage.removeItem('store_catalog_filters');
+        } catch {}
     }, []);
 
     const handlePageChange = (targetPage: number) => {
@@ -237,10 +222,6 @@ export default function Index({ products, shopSettings, filters }: ProductsIndex
                 delete query[key];
             }
         });
-
-        try {
-            sessionStorage.setItem('store_catalog_filters', JSON.stringify(query));
-        } catch {}
 
         router.get(route('products.index'), query, { preserveState: true, preserveScroll: true });
     };
@@ -271,9 +252,6 @@ export default function Index({ products, shopSettings, filters }: ProductsIndex
         setCurrentSort('popular');
         setMinPriceInput('');
         setMaxPriceInput('');
-        try {
-            sessionStorage.removeItem('store_catalog_filters');
-        } catch {}
         router.get(route('products.index'));
     };
 
@@ -387,7 +365,7 @@ export default function Index({ products, shopSettings, filters }: ProductsIndex
                 style={{ backgroundColor: 'var(--color-header-bg)', color: 'var(--color-header-text)' }}
             >
                 <div className="absolute inset-0 bg-linear-to-b from-black/20 to-transparent pointer-events-none" />
-                <div className="relative max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
+                <div className="relative max-w-360 mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
                     <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight">Katalog Produk</h1>
                     <p className="text-sm sm:text-base opacity-70 max-w-2xl mx-auto leading-relaxed">
                         Temukan berbagai produk berkualitas pilihan untuk memenuhi kebutuhan Anda.
@@ -395,10 +373,16 @@ export default function Index({ products, shopSettings, filters }: ProductsIndex
                 </div>
             </div>
 
-            <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-3 pb-8 sm:py-8">
+            <div className="max-w-360 mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-24 sm:pb-16">
                 <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 items-start">
                     <aside className="hidden lg:block w-64 xl:w-72 shrink-0">
-                        <div className="bg-white rounded-2xl border border-gray-200 shadow-xs p-5 space-y-6">
+                        <div
+                            className="rounded-2xl border shadow-xs p-5 space-y-6"
+                            style={{
+                                backgroundColor: 'var(--color-card-product-bg, #FFFDF7)',
+                                borderColor: 'var(--color-card-product-border, #EBD9AC)',
+                            }}
+                        >
                             <div className="flex items-center justify-between gap-2 pb-3.5 border-b border-gray-100">
                                 <div className="flex items-center gap-2">
                                     <SlidersHorizontal className="h-4 w-4 text-gray-500" />
@@ -449,9 +433,13 @@ export default function Index({ products, shopSettings, filters }: ProductsIndex
                             />
                             {/* Panel */}
                             <div
-                                className={`absolute inset-x-0 bottom-0 max-h-[85vh] flex flex-col rounded-t-2xl bg-white shadow-2xl transition-transform duration-300 ease-out ${
+                                className={`absolute inset-x-0 bottom-0 max-h-[85vh] flex flex-col rounded-t-2xl shadow-2xl transition-transform duration-300 ease-out ${
                                     mobileFilterVisible ? 'translate-y-0' : 'translate-y-full'
                                 }`}
+                                style={{
+                                    backgroundColor: 'var(--color-card-product-bg, #FFFDF7)',
+                                    borderColor: 'var(--color-card-product-border, #EBD9AC)',
+                                }}
                             >
                                 {/* Handle bar */}
                                 <div className="flex justify-center pt-3 pb-1 shrink-0">
@@ -518,7 +506,13 @@ export default function Index({ products, shopSettings, filters }: ProductsIndex
                     )}
 
                     <div className="grow w-full min-w-0">
-                        <div className="sticky top-16 z-30 -mx-4 mb-4 border-b border-gray-100 bg-white/95 px-4 py-2 backdrop-blur-sm sm:mb-6 lg:static lg:mx-0 lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
+                        <div
+                            className="sticky top-16 z-30 -mx-4 mb-4 border-b px-4 py-2 backdrop-blur-sm sm:mb-6 lg:static lg:mx-0 lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none"
+                            style={{
+                                backgroundColor: 'color-mix(in srgb, var(--color-bg, var(--page-bg, #FCF6E5)) 92%, transparent)',
+                                borderColor: 'color-mix(in srgb, var(--color-card-product-border, #EBD9AC) 40%, transparent)',
+                            }}
+                        >
                             <div className="flex items-center gap-2 min-w-0">
                                 <button
                                     type="button"
@@ -660,7 +654,7 @@ export default function Index({ products, shopSettings, filters }: ProductsIndex
                                     {filterSearch && (
                                         <span className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-50 text-gray-700 text-[11px] font-bold border border-gray-200">
                                             <Search className="w-2.5 h-2.5 shrink-0 opacity-80" />
-                                            <span className="truncate max-w-[7rem] sm:max-w-none">"{filterSearch}"</span>
+                                            <span className="truncate max-w-28 sm:max-w-none">"{filterSearch}"</span>
                                             <button
                                                 type="button"
                                                 onClick={() => applyFilters({ search: '' })}
@@ -797,7 +791,13 @@ export default function Index({ products, shopSettings, filters }: ProductsIndex
                             </>
                         ) : (
                             <ScrollReveal direction="up">
-                                <div className="bg-white p-12 sm:p-16 text-center rounded-2xl border border-gray-200 shadow-xs max-w-md mx-auto space-y-4">
+                                <div
+                                    className="p-12 sm:p-16 text-center rounded-2xl border shadow-xs max-w-md mx-auto space-y-4"
+                                    style={{
+                                        backgroundColor: 'var(--color-card-product-bg, #FFFDF7)',
+                                        borderColor: 'var(--color-card-product-border, #EBD9AC)',
+                                    }}
+                                >
                                     <Package className="mx-auto h-12 w-12 text-gray-400" />
                                     <h3 className="text-base sm:text-lg font-bold text-gray-900">
                                         Produk Tidak Ditemukan

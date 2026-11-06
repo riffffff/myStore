@@ -85,7 +85,6 @@ export default function DeleteUserForm({
                                 setData('password', e.target.value)
                             }
                             className="mt-1 block w-3/4"
-                            isFocused
                             placeholder="Password"
                         />
 

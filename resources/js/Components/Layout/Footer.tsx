@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from '@inertiajs/react';
 import { MapPin, Phone, Clock3, Mail } from 'lucide-react';
+import WhatsAppIcon from '@/Components/Icons/WhatsAppIcon';
 
 interface FooterProps {
     shopName: string;
@@ -36,12 +37,12 @@ export default function Footer({
             className="border-t"
             style={{
                 backgroundColor: 'var(--color-footer-bg)',
-                color: '#FFFFFF',
-                borderColor: 'rgba(255,255,255,0.08)',
+                color: 'var(--color-footer-text, #FFFFFF)',
+                borderColor: 'color-mix(in srgb, var(--color-footer-text, #FFFFFF) 15%, transparent)',
             }}
         >
             {/* ═══════ DESKTOP ═══════ */}
-            <div className="hidden md:block max-w-[1440px] mx-auto px-6 lg:px-8 py-16">
+            <div className="hidden md:block max-w-360 mx-auto px-6 lg:px-8 py-16">
                 <div className="grid grid-cols-4 gap-12">
                     {/* Info Toko */}
                     <div className="col-span-2 space-y-5">
@@ -84,7 +85,7 @@ export default function Footer({
                                 </div>
                             )}
                             <div className="flex items-start gap-2">
-                                <Phone className="h-4 w-4 mt-0.5 shrink-0 text-white/50" />
+                                <WhatsAppIcon className="h-4 w-4 mt-0.5 shrink-0 text-whatsapp" />
                                 <a href={`https://wa.me/${waNumber}`} target="_blank" rel="noopener noreferrer"
                                     className="text-white hover:text-white/70 transition">
                                     {formatWaDisplay(waNumber)}
@@ -107,16 +108,16 @@ export default function Footer({
             </div>
 
             {/* ═══════ MOBILE — Compact & Standard ═══════ */}
-            <div className="md:hidden px-5 pt-5 pb-4">
+            <div className="md:hidden px-4 sm:px-6 pt-6 pb-4">
                 {/* Logo + nama + nav — satu baris */}
                 <div className="flex items-center justify-between gap-2 mb-4">
                     {/* Logo + nama */}
-                    <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex items-center gap-2 min-w-0">
                         <div className="h-7 w-7 rounded-md overflow-hidden border border-white/20 bg-white/10 shrink-0">
                             <img src={logoUrl} alt={shopName} className="h-full w-full object-cover"
                                 onError={(e) => { e.currentTarget.style.display = 'none'; }} />
                         </div>
-                        <span className="text-sm font-bold text-white">{shopName}</span>
+                        <span className="text-sm font-bold text-white truncate max-w-37.5 xs:max-w-47.5">{shopName}</span>
                     </div>
 
                     {/* Nav links — sejajar kanan */}

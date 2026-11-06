@@ -36,7 +36,7 @@ export default function Index({ articles, shopSettings }: ArticlesIndexProps) {
                 style={{ backgroundColor: 'var(--color-header-bg)', color: 'var(--color-header-text)' }}
             >
                 <div className="absolute inset-0 bg-linear-to-b from-black/20 to-transparent pointer-events-none" />
-                <div className="relative max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
+                <div className="relative max-w-360 mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
                     <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight">Artikel & Informasi</h1>
                     <p className="text-sm sm:text-base opacity-70 max-w-2xl mx-auto leading-relaxed">
                         Inspirasi, panduan, dan berita seputar produk dan tren menarik untuk Anda.
@@ -44,7 +44,7 @@ export default function Index({ articles, shopSettings }: ArticlesIndexProps) {
                 </div>
             </div>
 
-            <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-16 sm:py-16">
+            <div className="max-w-360 mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-24 sm:pb-16">
                 {articlesData.length > 0 ? (
                     <>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -72,7 +72,7 @@ export default function Index({ articles, shopSettings }: ArticlesIndexProps) {
                                         >
 
                                             {/* Gambar */}
-                                            <Link href={route('articles.show', artSlug)} className="block aspect-[16/10] overflow-hidden bg-gray-100 relative">
+                                            <Link href={route('articles.show', artSlug)} className="block aspect-16/10 overflow-hidden bg-gray-100 relative">
                                                 <img
                                                     src={imageUrl}
                                                     alt={artTitle}
@@ -81,8 +81,11 @@ export default function Index({ articles, shopSettings }: ArticlesIndexProps) {
                                                 />
                                                 {artIsHero && (
                                                     <span
-                                                        className="absolute top-4 left-4 text-white text-[9px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-md shadow-sm"
-                                                        style={{ backgroundColor: 'var(--color-card-article-tag)' }}
+                                                        className="absolute top-4 left-4 text-[9px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-md shadow-sm"
+                                                        style={{
+                                                            backgroundColor: 'var(--color-card-article-tag, var(--card-article-tag, var(--color-primary, #6E4F78)))',
+                                                            color: 'var(--color-card-article-tag-text, #ffffff)',
+                                                        }}
                                                     >
                                                         Unggulan
                                                     </span>
@@ -96,7 +99,7 @@ export default function Index({ articles, shopSettings }: ArticlesIndexProps) {
                                                 {formattedDate && (
                                                     <div
                                                         className="text-xs font-semibold mb-2 flex items-center gap-1.5 opacity-60"
-                                                        style={{ color: 'var(--color-card-article-tag)' }}
+                                                        style={{ color: 'var(--color-card-article-tag, var(--card-article-tag, var(--color-primary, #6E4F78)))' }}
                                                     >
                                                         <Clock3 className="h-3.5 w-3.5" />
                                                         <span>{formattedDate}</span>
@@ -123,7 +126,7 @@ export default function Index({ articles, shopSettings }: ArticlesIndexProps) {
                                                     <Link
                                                         href={route('articles.show', artSlug)}
                                                         className="text-xs font-bold transition flex items-center gap-1 group/btn"
-                                                        style={{ color: 'var(--color-card-article-tag)' }}
+                                                        style={{ color: 'var(--color-card-article-tag, var(--card-article-tag, var(--color-primary, #6E4F78)))' }}
                                                     >
                                                         Baca Selengkapnya
                                                         <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
@@ -139,7 +142,13 @@ export default function Index({ articles, shopSettings }: ArticlesIndexProps) {
                     </>
                 ) : (
                     <ScrollReveal direction="none">
-                        <div className="bg-white p-16 text-center rounded-2xl border border-gray-200 shadow-sm max-w-md mx-auto space-y-4">
+                        <div
+                            className="p-16 text-center rounded-2xl border shadow-sm max-w-md mx-auto space-y-4"
+                            style={{
+                                backgroundColor: 'var(--color-card-article-bg, #FFFDF7)',
+                                borderColor: 'var(--color-card-article-border, #EBD9AC)',
+                            }}
+                        >
                             <Newspaper className="mx-auto h-12 w-12 text-primary-700" />
                             <h3 className="text-lg font-bold text-stone-900">Belum Ada Artikel</h3>
                             <p className="text-stone-500 text-sm leading-relaxed">

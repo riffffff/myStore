@@ -1,5 +1,5 @@
 import React from 'react';
-import { MessageCircle } from 'lucide-react';
+import WhatsAppIcon from '@/Components/Icons/WhatsAppIcon';
 
 interface WhatsAppButtonProps {
     href: string;
@@ -62,7 +62,7 @@ export default function WhatsAppButton({
             `.trim().replace(/\s+/g, ' ')}
             aria-label="WhatsApp"
         >
-            {showIcon && <MessageCircle className={iconSizes[size]} />}
+            {showIcon && <WhatsAppIcon className={`${iconSizes[size]} shrink-0`} />}
             <span>{children}</span>
         </a>
     );

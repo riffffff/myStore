@@ -22,6 +22,24 @@ const DEFAULT_SHOP_SETTINGS: Required<ShopSetting> = {
     qris_image: null,
     qris_image_url: null,
     qris_account_name: null,
+    email: null,
+    store_features: [
+        {
+            title: 'Kualitas Terjamin',
+            description: 'Produk dibuat dengan material pilihan berkualitas tinggi dan standar pengerjaan terbaik.',
+            icon: 'zap',
+        },
+        {
+            title: 'Transaksi Aman',
+            description: 'Pilihan pembayaran mudah dan aman, didukung layanan pemesanan yang responsif.',
+            icon: 'shield',
+        },
+        {
+            title: 'Pengiriman Cepat',
+            description: 'Pesanan Anda dikemas rapi dan dikirim dengan aman langsung ke alamat tujuan.',
+            icon: 'truck',
+        },
+    ],
     created_at: '',
     updated_at: '',
 };

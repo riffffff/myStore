@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\Review;
 use App\Models\ShopSetting;
+use App\Models\ThemeSetting;
 use App\Services\ImageService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -130,7 +131,7 @@ class AdminController extends Controller
                 'created_at'  => $r->created_at->diffForHumans(),
             ]);
 
-        return Inertia::render('MobileAdmin/Dashboard', compact(
+        return Inertia::render('Admin/Dashboard', compact(
             'stats', 'stockChart', 'salesChart', 'topArticles',
             'recentOrders', 'pendingReviews', 'period',
             'startDate', 'endDate',
@@ -215,7 +216,7 @@ class AdminController extends Controller
             ];
         });
 
-        return Inertia::render('MobileAdmin/Orders/Index', [
+        return Inertia::render('Admin/Orders/Index', [
             'orders'        => $orders,
             'filters'       => [
                 'search'         => $search,
@@ -272,7 +273,7 @@ class AdminController extends Controller
             }),
         ];
 
-        return Inertia::render('MobileAdmin/Orders/Show', [
+        return Inertia::render('Admin/Orders/Show', [
             'order' => $formatted,
         ]);
     }
@@ -329,7 +330,7 @@ class AdminController extends Controller
                                 ?? $p->images->first()?->url,
             ]);
 
-        return Inertia::render('MobileAdmin/Products/Index', [
+        return Inertia::render('Admin/Products/Index', [
             'products' => $products,
             'search'   => $search,
         ]);
@@ -338,7 +339,7 @@ class AdminController extends Controller
     // ── Create Product Form ──────────────────────────────────
     public function productCreate(): Response
     {
-        return Inertia::render('MobileAdmin/Products/Form', [
+        return Inertia::render('Admin/Products/Form', [
             'product'    => null,
             'categories' => $this->getProductCategories(),
         ]);
@@ -403,7 +404,7 @@ class AdminController extends Controller
     public function productEdit(Product $product): Response
     {
         $product->load('images');
-        return Inertia::render('MobileAdmin/Products/Form', [
+        return Inertia::render('Admin/Products/Form', [
             'product' => [
                 'id'             => $product->id,
                 'name'           => $product->name,
@@ -533,7 +534,7 @@ class AdminController extends Controller
                 'cover'        => $a->image,
             ]);
 
-        return Inertia::render('MobileAdmin/Articles/Index', [
+        return Inertia::render('Admin/Articles/Index', [
             'articles' => $articles,
             'search'   => $search,
         ]);
@@ -542,7 +543,7 @@ class AdminController extends Controller
     // ── Create Article Form ──────────────────────────────────
     public function articleCreate(): Response
     {
-        return Inertia::render('MobileAdmin/Articles/Form', [
+        return Inertia::render('Admin/Articles/Form', [
             'article' => null,
         ]);
     }
@@ -588,7 +589,7 @@ class AdminController extends Controller
     // ── Edit Article Form ────────────────────────────────────
     public function articleEdit(Article $article): Response
     {
-        return Inertia::render('MobileAdmin/Articles/Form', [
+        return Inertia::render('Admin/Articles/Form', [
             'article' => [
                 'id'           => $article->id,
                 'title'        => $article->title,
@@ -689,7 +690,7 @@ class AdminController extends Controller
 
         $pendingCount = Review::where('is_approved', false)->count();
 
-        return Inertia::render('MobileAdmin/Reviews/Index', [
+        return Inertia::render('Admin/Reviews/Index', [
             'reviews'      => $reviews,
             'filter'       => $filter,
             'pendingCount' => $pendingCount,
@@ -713,21 +714,24 @@ class AdminController extends Controller
     public function settings(): Response
     {
         $settings = ShopSetting::getSettings();
+        $theme = ThemeSetting::getSingleton();
 
-        return Inertia::render('MobileAdmin/Settings', [
+        return Inertia::render('Admin/Settings', [
             'settings' => [
-                'shop_name'    => $settings->shop_name,
-                'shop_tagline' => $settings->hero_banner_text_1 ?? $settings->description,
-                'shop_phone'   => $settings->whatsapp_number,
-                'shop_email'   => $settings->email,
-                'shop_address' => $settings->address,
-                'logo_url'     => $settings->getLogoUrl('light'),
-                'qris_url'     => $settings->getQrisImageUrl(),
+                'shop_name'      => $settings->shop_name,
+                'shop_tagline'   => $settings->hero_banner_text_1 ?? $settings->description,
+                'shop_phone'     => $settings->whatsapp_number,
+                'shop_email'     => $settings->email,
+                'shop_address'   => $settings->address,
+                'logo_url'       => $settings->getLogoUrl('light'),
+                'qris_url'       => $settings->getQrisImageUrl(),
+                'store_features' => $settings->getStoreFeatures(),
             ],
+            'theme' => $theme->getThemeColors(),
         ]);
     }
 
-    // ── Update Shop Settings ─────────────────────────────────
+    // ── Update Shop & Theme Settings ─────────────────────────
     public function settingsUpdate(Request $request): RedirectResponse
     {
         if ($request->has('shop_phone')) {
@@ -737,15 +741,29 @@ class AdminController extends Controller
         }
 
         $data = $request->validate([
-            'shop_name'    => 'required|string|max:255',
-            'shop_tagline' => 'nullable|string|max:500',
-            'shop_phone'   => ['nullable', 'string', 'regex:' . \App\Support\PhoneNumber::REGEX],
-            'shop_email'   => 'nullable|email|max:255',
-            'shop_address' => 'nullable|string|max:1000',
-            'logo'         => 'nullable|image|mimes:jpeg,jpg,png,webp|max:3072',
-            'qris_image'   => 'nullable|image|mimes:jpeg,jpg,png,webp|max:3072',
+            'shop_name'           => 'required|string|max:35',
+            'shop_tagline'        => 'nullable|string|max:500',
+            'shop_phone'          => ['nullable', 'string', 'regex:' . \App\Support\PhoneNumber::REGEX],
+            'shop_email'          => 'nullable|email|max:255',
+            'shop_address'        => 'nullable|string|max:1000',
+            'logo'                => 'nullable|image|mimes:jpeg,jpg,png,webp|max:3072',
+            'qris_image'          => 'nullable|image|mimes:jpeg,jpg,png,webp|max:3072',
+            'store_features'               => 'nullable|array|max:6',
+            'store_features.*.title'       => 'required|string|max:60',
+            'store_features.*.description' => 'required|string|max:255',
+            'store_features.*.icon'        => 'nullable|string|max:30',
+            'primary_color'       => 'nullable|string|max:30',
+            'accent_color'        => 'nullable|string|max:30',
+            'header_bg_color'     => 'nullable|string|max:30',
+            'header_active_color' => 'nullable|string|max:30',
+            'hero_bg_color'       => 'nullable|string|max:30',
+            'hero_btn_color'      => 'nullable|string|max:30',
+            'page_bg_color'       => 'nullable|string|max:30',
+            'font_family'         => 'nullable|string|max:50',
+            'border_radius'       => 'nullable|string|max:20',
         ], [
             'shop_name.required'  => 'Nama toko wajib diisi.',
+            'shop_name.max'       => 'Nama toko maksimal 35 karakter agar tidak merusak tampilan layout.',
             'shop_phone.regex'    => 'Format nomor HP toko tidak valid. Contoh: 081234567890.',
             'logo.image'          => 'Logo harus berupa gambar JPG, PNG, atau WebP.',
             'logo.mimes'          => 'Logo harus berupa gambar JPG, PNG, atau WebP.',
@@ -766,6 +784,9 @@ class AdminController extends Controller
         if (isset($data['shop_address'])) {
             $settings->address = $data['shop_address'];
         }
+        if ($request->has('store_features')) {
+            $settings->store_features = $request->input('store_features');
+        }
         $imageService = app(ImageService::class);
         foreach (['logo', 'qris_image'] as $field) {
             if ($request->hasFile($field)) {
@@ -780,7 +801,28 @@ class AdminController extends Controller
         }
         $settings->save();
 
-        return back()->with('success', 'Pengaturan toko disimpan.');
+        // Update Theme Settings jika ada perubahan warna
+        $themeFields = ['primary_color', 'accent_color', 'header_bg_color', 'header_active_color', 'hero_bg_color', 'hero_btn_color', 'page_bg_color', 'font_family', 'border_radius'];
+        $theme = ThemeSetting::getSingleton();
+        $themeUpdated = false;
+        foreach ($themeFields as $tField) {
+            if ($request->filled($tField)) {
+                $theme->{$tField} = $request->input($tField);
+                if ($tField === 'page_bg_color') {
+                    $theme->background_color = $request->input('page_bg_color');
+                }
+                $themeUpdated = true;
+            }
+        }
+        // Pastikan warna harga e-commerce selalu standar merah (#E63854) demi UI/UX
+        $theme->card_product_price_color = '#E63854';
+        $theme->price_color = '#E63854';
+        if ($themeUpdated) {
+            $theme->save();
+            \Illuminate\Support\Facades\Cache::forget(ThemeSetting::CACHE_KEY);
+        }
+
+        return back()->with('success', 'Pengaturan toko dan tema warna berhasil disimpan.');
     }
 
     // ── Categories List ─────────────────────────────────────

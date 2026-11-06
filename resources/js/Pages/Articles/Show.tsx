@@ -59,7 +59,7 @@ export default function Show({ article, shopSettings }: ArticleShowProps) {
                 <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: articleJsonLd }} />
             </Head>
 
-            <div className="max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-10">
+            <div className="max-w-360 mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-24 sm:pb-12">
                 <nav className="text-xs sm:text-sm text-stone-400 mb-5 sm:mb-8 flex items-center gap-2" aria-label="Breadcrumb">
                     <Link href={route('home')} className="hover:text-stone-900 transition">
                         Beranda
@@ -69,11 +69,17 @@ export default function Show({ article, shopSettings }: ArticleShowProps) {
                         Artikel
                     </Link>
                     <span>/</span>
-                    <span className="text-stone-900 font-bold truncate max-w-[220px] sm:max-w-none">{articleTitle}</span>
+                    <span className="text-stone-900 font-bold truncate max-w-55 sm:max-w-none">{articleTitle}</span>
                 </nav>
 
                 <ScrollReveal direction="up">
-                    <article className="max-w-4xl mx-auto bg-white rounded-3xl border border-stone-200/50 shadow-sm overflow-hidden p-6 sm:p-10 lg:p-12 space-y-8">
+                    <article
+                        className="max-w-4xl mx-auto rounded-3xl border shadow-xs overflow-hidden p-6 sm:p-10 lg:p-12 space-y-8"
+                        style={{
+                            backgroundColor: 'var(--color-card-article-bg, #FFFFFF)',
+                            borderColor: 'var(--color-card-article-border, #E5E7EB)',
+                        }}
+                    >
 
                         <header className="space-y-4 text-center">
                             <div className="flex justify-center items-center gap-2 text-xs text-stone-400 font-semibold uppercase tracking-wider">
@@ -109,7 +115,7 @@ export default function Show({ article, shopSettings }: ArticleShowProps) {
 
                         {articleContent && (
                             <div
-                                className="prose prose-stone prose-amber max-w-none text-stone-700 leading-relaxed text-sm sm:text-base space-y-6 pt-4 border-t border-stone-100 [&_[align='justify']]:text-justify [&_[style*='text-align:_justify']]:text-justify"
+                                className="prose prose-stone prose-amber max-w-none text-stone-700 leading-relaxed text-sm sm:text-base space-y-6 pt-4 border-t border-stone-100 **:[[align='justify']]:text-justify **:[[style*='text-align:_justify']]:text-justify"
                                 dangerouslySetInnerHTML={{ __html: articleContent }}
                             />
                         )}
@@ -127,15 +133,31 @@ export default function Show({ article, shopSettings }: ArticleShowProps) {
                 </ScrollReveal>
 
                 <ScrollReveal delay={200} direction="up">
-                    <div className="mt-12 p-8 bg-stone-950 text-white rounded-3xl border border-stone-900 flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div
+                        className="max-w-4xl mx-auto mt-8 sm:mt-12 p-6 sm:p-8 rounded-3xl border shadow-xs flex flex-col md:flex-row items-center justify-between gap-6"
+                        style={{
+                            backgroundColor: 'var(--color-card-article-bg, #FFFFFF)',
+                            borderColor: 'var(--color-card-article-border, #E5E7EB)',
+                        }}
+                    >
                         <div className="space-y-1.5 text-center md:text-left">
-                            <h3 className="text-lg font-bold text-stone-100">Punya Pertanyaan Seputar Produk?</h3>
-                            <p className="text-xs text-stone-400 max-w-md leading-relaxed">Hubungi tim kami langsung via WhatsApp untuk konsultasi dan pemesanan produk dengan mudah.</p>
+                            <h3
+                                className="text-base sm:text-lg font-bold leading-tight"
+                                style={{ color: 'var(--color-card-article-title, #262626)' }}
+                            >
+                                Punya Pertanyaan Seputar Produk?
+                            </h3>
+                            <p
+                                className="text-xs max-w-md leading-relaxed opacity-75"
+                                style={{ color: 'var(--color-card-article-text, #4B5563)' }}
+                            >
+                                Hubungi tim kami langsung via WhatsApp untuk konsultasi dan pemesanan produk dengan mudah.
+                            </p>
                         </div>
                         <WhatsAppButton
                             href={`https://wa.me/${waNumber}`}
                             fullWidth
-                            className="md:w-auto"
+                            className="md:w-auto shadow-xs"
                         >
                             Chat via WhatsApp
                         </WhatsAppButton>

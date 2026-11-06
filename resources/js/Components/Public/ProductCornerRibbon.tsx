@@ -42,25 +42,12 @@ export default function ProductCornerRibbon({
                 xmlns="http://www.w3.org/2000/svg"
             >
                 <defs>
-                    {/* 1. Gradasi Diskon Elegan #E63854 (Vibrant Crimson Rose) */}
-                    <linearGradient
-                        id="ribbon-discount-grad"
-                        x1="0%"
-                        y1="0%"
-                        x2="100%"
-                        y2="100%"
-                    >
-                        <stop offset="0%" stopColor="#FF5E79" />
-                        <stop offset="45%" stopColor="#E63854" />
-                        <stop offset="100%" stopColor="#B31A33" />
-                    </linearGradient>
-
-                    {/* 2. Bayangan Timbul Mengambang (Clean 3D Drop Shadow) */}
+                    {/* Bayangan Timbul Mengambang (Clean 3D Drop Shadow) */}
                     <filter id="ribbon-discount-shadow" x="-30%" y="-30%" width="160%" height="160%">
                         <feDropShadow dx="1" dy="2.5" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.32" />
                     </filter>
 
-                    {/* 3. Bayangan Teks Elegan & Tajam */}
+                    {/* Bayangan Teks Elegan & Tajam */}
                     <filter id="ribbon-discount-text-shadow" x="-20%" y="-20%" width="140%" height="140%">
                         <feDropShadow dx="0" dy="1.2" stdDeviation="0.6" floodColor="#000000" floodOpacity="0.65" />
                     </filter>
@@ -70,13 +57,13 @@ export default function ProductCornerRibbon({
                 {/* Lipatan Sisi Kiri (Tepi vertikal kartu pada x = 7) */}
                 <polygon
                     points="7,67 7,74 0,67"
-                    fill="#7A0E20"
+                    style={{ fill: 'color-mix(in srgb, var(--price-color, #E63854) 65%, black)' }}
                 />
 
                 {/* Lipatan Sisi Atas (Tepi horizontal kartu pada y = 7) */}
                 <polygon
                     points="67,7 74,7 67,0"
-                    fill="#7A0E20"
+                    style={{ fill: 'color-mix(in srgb, var(--price-color, #E63854) 65%, black)' }}
                 />
 
                 {/* ─── B. PITA DIAGONAL UTAMA ─── */}
@@ -84,7 +71,7 @@ export default function ProductCornerRibbon({
                     {/* Bodi Pita */}
                     <polygon
                         points="0,35 35,0 67,0 0,67"
-                        fill="url(#ribbon-discount-grad)"
+                        style={{ fill: 'var(--price-color, #E63854)' }}
                     />
 
                     {/* Garis Kilau Halus Tepi Atas (Top Rim Light) */}

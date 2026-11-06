@@ -183,6 +183,17 @@ class AdminTest extends TestCase
         );
     }
 
+    public function test_admin_settings_shop_name_cannot_exceed_35_characters(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        $response = $this->actingAs($admin)->post('/admin/pengaturan', [
+            'shop_name' => str_repeat('A', 36),
+        ]);
+
+        $response->assertSessionHasErrors('shop_name');
+    }
+
     public function test_admin_can_mark_article_as_homepage_hero(): void
     {
         $admin = User::factory()->create(['is_admin' => true]);

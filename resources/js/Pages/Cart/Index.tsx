@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { formatRupiah, getSafeShopSettings } from '@/lib/utils';
 import Button from '@/Components/Button';
+import WhatsAppIcon from '@/Components/Icons/WhatsAppIcon';
 import ScrollReveal from '@/Components/Public/ScrollReveal';
 
 interface CartIndexProps {
@@ -53,7 +54,7 @@ export default function Index({ cart, shopSettings }: CartIndexProps) {
             <Head title={`Keranjang Belanja - ${shopName}`} />
 
             {/* ══ WRAPPER: full-screen, no footer ══ */}
-            <div className="bg-[#F5F6F8] min-h-[calc(100vh-56px)] flex flex-col">
+            <div className="min-h-[calc(100vh-56px)] flex flex-col">
 
 
                 {/* ── CONTENT ── */}
@@ -100,7 +101,13 @@ export default function Index({ cart, shopSettings }: CartIndexProps) {
                                 <div className="md:col-span-8 space-y-3">
 
                                     {/* Card Wrapper List Produk - presisi 100% rata kiri-kanan container */}
-                                    <div className="bg-white rounded-2xl border border-gray-200/80 shadow-xs divide-y divide-gray-100 overflow-hidden">
+                                    <div
+                                        className="rounded-2xl border shadow-xs divide-y divide-gray-100 overflow-hidden"
+                                        style={{
+                                            backgroundColor: 'var(--color-card-product-bg, #FFFDF7)',
+                                            borderColor: 'var(--color-card-product-border, #EBD9AC)',
+                                        }}
+                                    >
                                         {items.map((item) => (
                                             <div
                                                 key={item.id}
@@ -203,7 +210,13 @@ export default function Index({ cart, shopSettings }: CartIndexProps) {
 
                             {/* ── Desktop Order Summary ── */}
                             <div className="hidden md:block md:col-span-4">
-                                <div className="bg-white rounded-2xl border border-gray-200/80 shadow-xs p-5 sticky top-28">
+                                <div
+                                    className="rounded-2xl border shadow-xs p-5 sticky top-28"
+                                    style={{
+                                        backgroundColor: 'var(--color-card-product-bg, #FFFDF7)',
+                                        borderColor: 'var(--color-card-product-border, #EBD9AC)',
+                                    }}
+                                >
                                     <h2 className="text-sm sm:text-base font-bold text-gray-900 mb-4">Ringkasan Belanja</h2>
 
                                     <div className="space-y-2.5 text-xs text-gray-600 pb-4 border-b border-gray-100">
@@ -238,6 +251,7 @@ export default function Index({ cart, shopSettings }: CartIndexProps) {
                                             variant="outline"
                                             size="md"
                                             fullWidth
+                                            leftIcon={<WhatsAppIcon className="w-3.5 h-3.5 text-whatsapp" />}
                                             className="h-10 text-xs rounded-xl text-gray-600 border-gray-300"
                                         >
                                             Pesan via WhatsApp
@@ -255,8 +269,13 @@ export default function Index({ cart, shopSettings }: CartIndexProps) {
                 {/* ══ MOBILE FIXED BOTTOM BAR ══ */}
                 {items.length > 0 && (
                     <div
-                        className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white border-t border-gray-200/90 shadow-[0_-4px_24px_rgba(0,0,0,0.09)] px-3 py-2 flex items-center gap-2"
-                        style={{ bottom: '-1px', paddingBottom: 'calc(0.5rem + env(safe-area-inset-bottom, 0px))' }}
+                        className="md:hidden fixed bottom-0 inset-x-0 z-50 border-t shadow-[0_-4px_24px_rgba(0,0,0,0.09)] px-3 py-2 flex items-center gap-2 backdrop-blur-md"
+                        style={{
+                            bottom: '-1px',
+                            paddingBottom: 'calc(0.5rem + env(safe-area-inset-bottom, 0px))',
+                            backgroundColor: 'color-mix(in srgb, var(--color-bg, var(--page-bg, #FCF6E5)) 94%, transparent)',
+                            borderColor: 'var(--color-card-product-border, #EBD9AC)',
+                        }}
                     >
                         {/* 1. Chat — kiri (konsisten dg halaman produk) */}
                         <a
@@ -266,7 +285,7 @@ export default function Index({ cart, shopSettings }: CartIndexProps) {
                             className="flex flex-col items-center justify-center w-12 h-11 rounded-xl text-gray-600 hover:text-emerald-600 hover:bg-gray-50 active:bg-gray-100 transition shrink-0"
                             aria-label="Chat Penjual"
                         >
-                            <MessageCircle className="h-5 w-5" />
+                            <WhatsAppIcon className="h-5 w-5 text-whatsapp" />
                             <span className="text-[10px] font-semibold tracking-tight mt-0.5">Chat</span>
                         </a>
 

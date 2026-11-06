@@ -125,10 +125,47 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     const { theme } = usePage<PageProps>().props;
 
     // Merge server colors with defaults (server always wins)
-    const colors: ThemeColors = useMemo(
-        () => ({ ...DEFAULT_THEME, ...(theme ?? {}) }),
-        [theme],
-    );
+    const colors: ThemeColors = useMemo(() => {
+        const t = (theme ?? {}) as Record<string, any>;
+        return {
+            ...DEFAULT_THEME,
+            ...t,
+            primary:           t.primary           ?? t.primary_color           ?? DEFAULT_THEME.primary,
+            secondary:         t.secondary         ?? t.secondary_color         ?? DEFAULT_THEME.secondary,
+            accent:            t.accent            ?? t.accent_color            ?? DEFAULT_THEME.accent,
+            background:        t.background        ?? t.page_bg_color           ?? t.background_color ?? DEFAULT_THEME.background,
+            backgroundDark:    t.backgroundDark    ?? t.background_dark_color    ?? DEFAULT_THEME.backgroundDark,
+            text:              t.text              ?? t.page_text_color         ?? t.text_color       ?? DEFAULT_THEME.text,
+            textLight:         t.textLight         ?? t.text_light_color        ?? DEFAULT_THEME.textLight,
+            fontFamily:        t.fontFamily        ?? t.font_family             ?? DEFAULT_THEME.fontFamily,
+            borderRadius:      t.borderRadius      ?? t.border_radius           ?? DEFAULT_THEME.borderRadius,
+            headerBg:          t.headerBg          ?? t.header_bg_color         ?? DEFAULT_THEME.headerBg,
+            headerText:        t.headerText        ?? t.header_text_color       ?? DEFAULT_THEME.headerText,
+            headerActive:      t.headerActive      ?? t.header_active_color     ?? DEFAULT_THEME.headerActive,
+            footerBg:          t.footerBg          ?? t.footer_bg_color         ?? DEFAULT_THEME.footerBg,
+            footerText:        t.footerText        ?? t.footer_text_color       ?? DEFAULT_THEME.footerText,
+            footerAccent:      t.footerAccent      ?? t.footer_accent_color     ?? DEFAULT_THEME.footerAccent,
+            heroBg:            t.heroBg            ?? t.hero_bg_color           ?? DEFAULT_THEME.heroBg,
+            heroText:          t.heroText          ?? t.hero_text_color         ?? DEFAULT_THEME.heroText,
+            heroBtn:           t.heroBtn           ?? t.hero_btn_color          ?? DEFAULT_THEME.heroBtn,
+            heroBtnText:       t.heroBtnText       ?? t.hero_btn_text_color     ?? DEFAULT_THEME.heroBtnText,
+            cardProductBg:     t.cardProductBg     ?? t.card_product_bg_color   ?? DEFAULT_THEME.cardProductBg,
+            cardProductBorder: t.cardProductBorder ?? t.card_product_border_color ?? DEFAULT_THEME.cardProductBorder,
+            cardProductText:   t.cardProductText   ?? t.card_product_text_color ?? DEFAULT_THEME.cardProductText,
+            cardProductPrice:  '#E63854',
+            priceColor:        '#E63854',
+            cardProductBtn:    t.cardProductBtn    ?? t.card_product_btn_color  ?? (t.primary ?? t.primary_color ?? DEFAULT_THEME.cardProductBtn),
+            cardArticleBg:     t.cardArticleBg     ?? t.card_article_bg_color   ?? DEFAULT_THEME.cardArticleBg,
+            cardArticleBorder: t.cardArticleBorder ?? t.card_article_border_color ?? DEFAULT_THEME.cardArticleBorder,
+            cardArticleTag:    t.cardArticleTag    ?? t.card_article_tag_color  ?? (t.primary ?? t.primary_color ?? DEFAULT_THEME.cardArticleTag),
+            cardArticleTitle:  t.cardArticleTitle  ?? t.card_article_title_color ?? DEFAULT_THEME.cardArticleTitle,
+            cardArticleText:   t.cardArticleText   ?? t.card_article_text_color ?? DEFAULT_THEME.cardArticleText,
+            pageBg:            t.pageBg            ?? t.page_bg_color           ?? t.background_color ?? DEFAULT_THEME.pageBg,
+            pageText:          t.pageText          ?? t.page_text_color         ?? t.text_color       ?? DEFAULT_THEME.pageText,
+            primaryBtn:        t.primaryBtn        ?? t.primary_btn_color       ?? (t.primary ?? t.primary_color ?? DEFAULT_THEME.primaryBtn),
+            primaryBtnText:    t.primaryBtnText    ?? t.primary_btn_text_color  ?? DEFAULT_THEME.primaryBtnText,
+        };
+    }, [theme]);
 
     // ── Dark mode state ────────────────────────────────────────────────────
     const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {

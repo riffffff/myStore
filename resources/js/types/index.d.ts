@@ -12,6 +12,7 @@ export interface User {
 export interface ShopSettingsShared {
     id?: number;
     shop_name?: string | null;
+    email?: string | null;
     description?: string | null;
     logo?: string | null;
     logo_dark?: string | null;
@@ -26,6 +27,7 @@ export interface ShopSettingsShared {
     whatsapp_number: string;
     whatsapp_template: string;
     operating_hours?: string | null;
+    store_features?: Array<{ title: string; description: string; icon?: string }>;
     hero_banner_text_1?: string | null;
     hero_banner_text_2?: string | null;
     hero_banner_bg?: string | null;

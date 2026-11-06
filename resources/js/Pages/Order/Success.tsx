@@ -6,6 +6,7 @@ import { PageProps } from '@/types';
 import { Order } from '@/types/store';
 import { formatRupiah, getSafeShopSettings, buildWhatsAppUrl } from '@/lib/utils';
 import Button from '@/Components/Button';
+import WhatsAppIcon from '@/Components/Icons/WhatsAppIcon';
 import {
     CheckCircle2,
     Copy,
@@ -59,7 +60,7 @@ export default function Success({ order }: OrderSuccessProps) {
                 style={{ backgroundColor: 'var(--color-header-bg)', color: 'var(--color-header-text)' }}
             >
                 <div className="absolute inset-0 bg-linear-to-b from-black/20 to-transparent pointer-events-none" />
-                <div className="relative max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-2">
+                <div className="relative max-w-360 mx-auto px-4 sm:px-6 lg:px-8 space-y-2">
                     <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight">
                         Detail Pesanan
                     </h1>
@@ -69,11 +70,17 @@ export default function Success({ order }: OrderSuccessProps) {
                 </div>
             </div>
 
-            <div className="min-h-screen bg-stone-50/60 pb-16 pt-10">
-                <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="min-h-screen transition-colors">
+                <div className="max-w-360 mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-24 sm:pb-16">
                     <ScrollReveal direction="up">
                         {/* === SINGLE CARD === */}
-                        <div className="bg-white rounded-2xl border border-stone-200/80 shadow-xs overflow-hidden">
+                        <div
+                            className="rounded-2xl border shadow-xs overflow-hidden"
+                            style={{
+                                backgroundColor: 'var(--color-card-product-bg, #FFFDF7)',
+                                borderColor: 'var(--color-card-product-border, #EBD9AC)',
+                            }}
+                        >
 
                             {/* Header: Nomor + Status + Salin */}
                             <div className="flex items-center justify-between gap-4 px-6 py-5 border-b border-stone-100">
@@ -195,7 +202,7 @@ export default function Success({ order }: OrderSuccessProps) {
                                     variant="secondary"
                                     size="sm"
                                     className="flex-1"
-                                    leftIcon={<MessageCircle className="w-3.5 h-3.5 text-accent-600" />}
+                                    leftIcon={<WhatsAppIcon className="w-3.5 h-3.5 text-whatsapp" />}
                                 >
                                     Hubungi Admin
                                 </Button>
