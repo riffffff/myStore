@@ -69,7 +69,7 @@ class CartService
             }
 
             $lockedCart->recalculateTotals();
-        });
+        }, 5);
 
         return $cart->fresh();
     }
@@ -83,7 +83,7 @@ class CartService
             CartItem::lockForUpdate()->find($cartItem->id);
             $cartItem->quantity = $quantity;
             $cartItem->save();
-        });
+        }, 5);
     }
 
     /**

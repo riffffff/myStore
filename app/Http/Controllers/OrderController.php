@@ -184,7 +184,7 @@ class OrderController extends Controller
             }
 
             return $order;
-        });
+        }, 5);
 
         return redirect()->route('orders.success', ['orderNumber' => $order->order_number])
             ->with('success', 'Pesanan Anda berhasil dibuat!');
