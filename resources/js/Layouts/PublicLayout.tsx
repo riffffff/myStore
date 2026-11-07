@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { usePage } from '@inertiajs/react';
+import { usePage, Link } from '@inertiajs/react';
+import { LayoutDashboard } from 'lucide-react';
 import { PageProps } from '@/types';
 import { ThemeProvider } from '@/Contexts/ThemeContext';
 import AuthModal from '@/Components/Public/AuthModal';
@@ -66,6 +67,35 @@ export default function PublicLayout({
                     color: 'var(--color-text, var(--page-text, #1F2937))',
                 }}
             >
+                {Boolean(user?.is_admin) && (
+                    <div
+                        className="w-full py-1.5 px-4 text-xs font-semibold flex items-center justify-between border-b transition-colors z-50 sticky top-0 shadow-xs"
+                        style={{
+                            backgroundColor: 'var(--color-primary-dark, #241A29)',
+                            borderColor: 'color-mix(in srgb, var(--color-primary-contrast, #ffffff) 15%, transparent)',
+                            color: 'var(--color-primary-contrast, #ffffff)',
+                        }}
+                    >
+                        <div className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span className="text-[11px] sm:text-xs font-medium text-white/90">
+                                Mode Pratinjau Toko (Administrator)
+                            </span>
+                        </div>
+                        <Link
+                            href="/admin"
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition shadow-xs hover:opacity-90 active:scale-95 cursor-pointer"
+                            style={{
+                                backgroundColor: 'var(--color-accent, #F5E8AA)',
+                                color: 'var(--color-primary-dark, #241A29)',
+                            }}
+                        >
+                            <LayoutDashboard className="w-3.5 h-3.5" />
+                            <span>Kembali ke Admin</span>
+                        </Link>
+                    </div>
+                )}
+
                 {customHeader ? (
                     customHeader
                 ) : !hideHeader ? (

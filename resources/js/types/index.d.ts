@@ -7,6 +7,7 @@ export interface User {
     email: string;
     phone?: string | null;
     email_verified_at?: string;
+    is_admin?: boolean;
 }
 
 export interface ShopSettingsShared {
