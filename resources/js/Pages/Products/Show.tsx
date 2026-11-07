@@ -15,8 +15,6 @@ import {
     ShoppingBag,
     MessageCircle,
     Star,
-    ShieldCheck,
-    Truck,
     Minus,
     Plus,
     Check
@@ -281,17 +279,7 @@ export default function Show({ product, shopSettings }: ProductShowProps) {
                                 </div>
                             )}
 
-                            {/* Desktop Additional Badges */}
-                            <div className="hidden sm:flex items-center justify-between pt-3 border-t border-gray-100 text-xs text-gray-500">
-                                <div className="flex items-center gap-1.5">
-                                    <ShieldCheck className="h-4 w-4 text-emerald-600" />
-                                    <span>100% Produk Asli & Berkualitas</span>
-                                </div>
-                                <div className="flex items-center gap-1.5">
-                                    <Truck className="h-4 w-4 text-blue-600" />
-                                    <span>Estimasi Pengiriman Cepat</span>
-                                </div>
-                            </div>
+
                         </div>
 
                         {/* ─── KOLOM KANAN: Detail & Transaksi Tokopedia ─── */}
