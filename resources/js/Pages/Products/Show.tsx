@@ -278,8 +278,6 @@ export default function Show({ product, shopSettings }: ProductShowProps) {
                                     })}
                                 </div>
                             )}
-
-
                         </div>
 
                         {/* ─── KOLOM KANAN: Detail & Transaksi Tokopedia ─── */}
