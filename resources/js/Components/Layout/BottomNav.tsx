@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { Home, Newspaper, Package, ShoppingBag, LayoutDashboard } from 'lucide-react';
+import { Home, Newspaper, Package, ShoppingBag } from 'lucide-react';
 
 interface BottomNavProps {
     user?: any;
@@ -12,9 +12,6 @@ export default function BottomNav({ user, onAuthModalOpen }: BottomNavProps) {
         { href: route('products.index'), label: 'Produk', active: route().current('products.*'), icon: ShoppingBag },
         { href: route('articles.index'), label: 'Artikel', active: route().current('articles.*'), icon: Newspaper },
         { href: route('orders.track'), label: 'Pesanan', active: route().current('orders.*'), icon: Package },
-        ...(Boolean(user?.is_admin) ? [
-            { href: '/admin', label: 'Admin', active: false, icon: LayoutDashboard }
-        ] : []),
     ];
 
     return (

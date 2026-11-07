@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, usePage } from '@inertiajs/react';
-import { X, UserPlus, LogIn, LogOut, ShoppingCart, LayoutDashboard } from 'lucide-react';
+import { X, UserPlus, LogIn, LogOut, ShoppingCart } from 'lucide-react';
 import WhatsAppButton from '@/Components/Public/WhatsAppButton';
 import { PageProps } from '@/types';
 
@@ -52,20 +52,7 @@ export default function MobileMenu({ isOpen, onClose, user, waNumber, onAuthModa
                         <p className="text-xs text-gray-500 mb-1">Masuk sebagai</p>
                         <p className="text-white font-semibold">{user.name}</p>
                         <p className="text-xs text-gray-500 mt-1">{user.email}</p>
-                        {Boolean(user.is_admin) && (
-                            <Link
-                                href="/admin"
-                                onClick={onClose}
-                                className="mt-3 flex items-center justify-center gap-2 w-full py-2.5 px-3 rounded-xl font-bold text-xs shadow-sm transition active:scale-95"
-                                style={{
-                                    backgroundColor: 'var(--header-active, #F5E8AA)',
-                                    color: 'var(--header-active-contrast, #2A1F30)',
-                                }}
-                            >
-                                <LayoutDashboard className="w-4 h-4" />
-                                <span>Kembali ke Panel Admin</span>
-                            </Link>
-                        )}
+
                     </div>
                 )}
 

@@ -67,39 +67,43 @@ export default function PublicLayout({
                     color: 'var(--color-text, var(--page-text, #1F2937))',
                 }}
             >
-                {Boolean(user?.is_admin) && (
-                    <div
-                        className="w-full py-1.5 px-4 text-xs font-semibold flex items-center justify-between border-b transition-colors z-50 sticky top-0 shadow-xs"
-                        style={{
-                            backgroundColor: 'var(--color-primary-dark, #241A29)',
-                            borderColor: 'color-mix(in srgb, var(--color-primary-contrast, #ffffff) 15%, transparent)',
-                            color: 'var(--color-primary-contrast, #ffffff)',
-                        }}
-                    >
-                        <div className="flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                            <span className="text-[11px] sm:text-xs font-medium text-white/90">
-                                Mode Pratinjau Toko (Administrator)
-                            </span>
-                        </div>
-                        <Link
-                            href="/admin"
-                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition shadow-xs hover:opacity-90 active:scale-95 cursor-pointer"
+                <div className="sticky top-0 z-40 w-full">
+                    {Boolean(user?.is_admin) && (
+                        <aside
+                            aria-label="Mode Pratinjau Administrator"
+                            className="w-full border-b transition-colors"
                             style={{
-                                backgroundColor: 'var(--color-accent, #F5E8AA)',
-                                color: 'var(--color-primary-dark, #241A29)',
+                                backgroundColor: 'var(--color-primary-dark, #241A29)',
+                                borderColor: 'color-mix(in srgb, var(--color-primary-contrast, #ffffff) 15%, transparent)',
+                                color: 'var(--color-primary-contrast, #ffffff)',
                             }}
                         >
-                            <LayoutDashboard className="w-3.5 h-3.5" />
-                            <span>Kembali ke Admin</span>
-                        </Link>
-                    </div>
-                )}
+                            <div className="max-w-360 mx-auto px-3 sm:px-6 lg:px-8 h-8 sm:h-9 flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-1.5 min-w-0">
+                                    <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0 animate-pulse" />
+                                    <span className="text-[11px] sm:text-xs font-medium text-white/90 truncate">
+                                        <span className="sm:hidden font-semibold">Mode Admin</span>
+                                        <span className="hidden sm:inline">Mode Pratinjau Toko (Administrator)</span>
+                                    </span>
+                                </div>
+                                <Link
+                                    href="/admin"
+                                    className="shrink-0 inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-md sm:rounded-lg text-[11px] sm:text-xs font-bold transition shadow-xs hover:opacity-90 active:scale-95 cursor-pointer whitespace-nowrap"
+                                    style={{
+                                        backgroundColor: 'var(--color-accent, #F5E8AA)',
+                                        color: 'var(--color-primary-dark, #241A29)',
+                                    }}
+                                >
+                                    <LayoutDashboard className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
+                                    <span>Kembali ke Admin</span>
+                                </Link>
+                            </div>
+                        </aside>
+                    )}
 
-                {customHeader ? (
-                    customHeader
-                ) : !hideHeader ? (
-                    <>
+                    {customHeader ? (
+                        customHeader
+                    ) : !hideHeader ? (
                         <Header
                             shopName={shopName}
                             logoUrl={logoUrl}
@@ -107,16 +111,18 @@ export default function PublicLayout({
                             onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
                             onAuthModalOpen={openAuthModal}
                         />
+                    ) : null}
+                </div>
 
-                        <MobileMenu
-                            isOpen={isMenuOpen}
-                            onClose={() => setIsMenuOpen(false)}
-                            user={user}
-                            waNumber={waNumber}
-                            onAuthModalOpen={openAuthModal}
-                        />
-                    </>
-                ) : null}
+                {!customHeader && !hideHeader && (
+                    <MobileMenu
+                        isOpen={isMenuOpen}
+                        onClose={() => setIsMenuOpen(false)}
+                        user={user}
+                        waNumber={waNumber}
+                        onAuthModalOpen={openAuthModal}
+                    />
+                )}
 
                 <main className="grow">{children}</main>
 

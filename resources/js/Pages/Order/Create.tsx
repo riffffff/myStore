@@ -222,7 +222,7 @@ export default function Create({ initialItems, allProducts, customer }: OrderCre
     // Navbar Atas Simpel, Rapi & Presisi (Centered)
     const checkoutNavbar = (
         <header
-            className="sticky top-0 z-40 backdrop-blur-md border-b transition-colors"
+            className="w-full backdrop-blur-md border-b transition-colors"
             style={{
                 backgroundColor: 'color-mix(in srgb, var(--color-bg, var(--page-bg, #FCF6E5)) 94%, transparent)',
                 borderColor: 'var(--color-card-product-border, #EBD9AC)',

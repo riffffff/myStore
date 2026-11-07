@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, usePage, router } from '@inertiajs/react';
-import { ShoppingCart, LogIn, UserPlus, LogOut, UserRound, Search, X, LayoutDashboard } from 'lucide-react';
+import { ShoppingCart, LogIn, UserPlus, LogOut, UserRound, Search, X } from 'lucide-react';
 import { PageProps } from '@/types';
 
 interface HeaderProps {
@@ -91,7 +91,7 @@ export default function Header({ shopName, logoUrl, user, onMenuToggle, onAuthMo
 
     return (
         <header
-            className="sticky top-0 z-40"
+            className="w-full"
             style={{
                 background: 'var(--header-bg, #333333)',
                 borderBottom: '1px solid color-mix(in srgb, var(--header-text, #FFFFFF) 10%, transparent)',
@@ -222,19 +222,7 @@ export default function Header({ shopName, logoUrl, user, onMenuToggle, onAuthMo
 
                             {user ? (
                                 <>
-                                    {Boolean(user.is_admin) && (
-                                        <Link
-                                            href="/admin"
-                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition shadow-xs hover:opacity-90 active:scale-95 shrink-0"
-                                            style={{
-                                                background: 'var(--header-active)',
-                                                color: 'var(--header-active-contrast)',
-                                            }}
-                                        >
-                                            <LayoutDashboard className="w-3.5 h-3.5" />
-                                            <span>Kembali ke Admin</span>
-                                        </Link>
-                                    )}
+
 
                                     <Link
                                         href={route('cart.index')}
@@ -350,20 +338,7 @@ export default function Header({ shopName, logoUrl, user, onMenuToggle, onAuthMo
                                     <ShoppingCart className="h-5 w-5" />
                                 </button>
                             )}
-                            {Boolean(user?.is_admin) && (
-                                <Link
-                                    href="/admin"
-                                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold transition shadow-xs shrink-0"
-                                    style={{
-                                        background: 'var(--header-active)',
-                                        color: 'var(--header-active-contrast)',
-                                    }}
-                                    aria-label="Kembali ke Admin"
-                                >
-                                    <LayoutDashboard className="w-3.5 h-3.5" />
-                                    <span>Admin</span>
-                                </Link>
-                            )}
+
 
                             {user ? (
                                 <Link
