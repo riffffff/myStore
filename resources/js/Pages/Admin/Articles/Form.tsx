@@ -200,39 +200,43 @@ export default function ArticleForm({ article }: Props) {
                             Pengaturan Terbit
                         </h3>
 
+                        {/* Toggle 1: Publikasi */}
                         <div className="flex items-center justify-between pt-1">
                             <div>
                                 <div className="text-xs font-bold text-slate-800">Publikasikan Artikel</div>
                                 <div className="text-[11px] text-slate-400">Dapat dibaca langsung di blog toko</div>
                             </div>
-
-                            <div className="flex items-center justify-between pt-1">
-                                <div>
-                                    <div className="text-xs font-bold text-slate-800">Tampilkan sebagai Hero</div>
-                                    <div className="text-[11px] text-slate-400">Artikel tampil di banner utama halaman depan</div>
-                                </div>
-                                <button
-                                    type="button"
-                                    onClick={() => setIsHero(!isHero)}
-                                    className={`w-11 h-6 rounded-full relative transition-colors cursor-pointer ${
-                                        isHero ? 'bg-brand' : 'bg-slate-300'
-                                    }`}
-                                >
-                                    <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-xs transition-transform ${
-                                        isHero ? 'left-5.5' : 'left-0.5'
-                                    }`} />
-                                </button>
-                            </div>
                             <button
                                 type="button"
                                 onClick={() => setIsPublished(!isPublished)}
-                                className={`w-11 h-6 rounded-full relative transition-colors cursor-pointer ${
+                                className={`w-11 h-6 rounded-full relative transition-colors cursor-pointer shrink-0 ${
                                     isPublished ? 'bg-brand' : 'bg-slate-300'
                                 }`}
                             >
                                 <span
                                     className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-xs transition-transform ${
                                         isPublished ? 'left-5.5' : 'left-0.5'
+                                    }`}
+                                />
+                            </button>
+                        </div>
+
+                        {/* Toggle 2: Hero Banner */}
+                        <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+                            <div>
+                                <div className="text-xs font-bold text-slate-800">Tampilkan sebagai Hero</div>
+                                <div className="text-[11px] text-slate-400">Tampil di banner slider halaman depan</div>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setIsHero(!isHero)}
+                                className={`w-11 h-6 rounded-full relative transition-colors cursor-pointer shrink-0 ${
+                                    isHero ? 'bg-brand' : 'bg-slate-300'
+                                }`}
+                            >
+                                <span
+                                    className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-xs transition-transform ${
+                                        isHero ? 'left-5.5' : 'left-0.5'
                                     }`}
                                 />
                             </button>
