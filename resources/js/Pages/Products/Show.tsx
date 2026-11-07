@@ -14,7 +14,6 @@ import {
     ShoppingCart,
     ShoppingBag,
     MessageCircle,
-    Star,
     Minus,
     Plus,
     Check
@@ -325,22 +324,6 @@ export default function Show({ product, shopSettings }: ProductShowProps) {
                                 <h1 className="text-base sm:text-lg font-bold text-gray-900 leading-snug">
                                     {productData.name}
                                 </h1>
-
-                                {/* Rating, Terjual & Diskusi ala Tokopedia */}
-                                <div className="flex items-center gap-3 text-xs text-gray-500 pt-1 border-t border-gray-100">
-                                    <div className="flex items-center gap-1 font-bold text-gray-800">
-                                        <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                                        <span>4.9</span>
-                                    </div>
-                                    <span className="text-gray-300">•</span>
-                                    <div>
-                                        <span className="font-semibold text-gray-800">Terjual 30+</span>
-                                    </div>
-                                    <span className="text-gray-300">•</span>
-                                    <div className="text-emerald-600 font-semibold">
-                                        Real Pict
-                                    </div>
-                                </div>
                             </div>
 
                             {/* Card 2: Atur Jumlah & Subtotal (Desktop & Mobile) */}
