@@ -727,7 +727,17 @@ class AdminController extends Controller
                 'qris_url'       => $settings->getQrisImageUrl(),
                 'store_features' => $settings->getStoreFeatures(),
             ],
-            'theme' => $theme->getThemeColors(),
+            'theme' => [
+                'primary_color'       => $theme->primary_color,
+                'accent_color'        => $theme->accent_color,
+                'header_bg_color'     => $theme->header_bg_color,
+                'header_active_color' => $theme->header_active_color,
+                'hero_bg_color'       => $theme->hero_bg_color,
+                'hero_btn_color'      => $theme->hero_btn_color,
+                'page_bg_color'       => $theme->page_bg_color,
+                'font_family'         => $theme->font_family,
+                'border_radius'       => $theme->border_radius,
+            ],
         ]);
     }
 
@@ -801,28 +811,38 @@ class AdminController extends Controller
         }
         $settings->save();
 
-        // Update Theme Settings jika ada perubahan warna
+        // Hanya update Theme Settings jika field tema secara eksplisit dikirim dalam request
         $themeFields = ['primary_color', 'accent_color', 'header_bg_color', 'header_active_color', 'hero_bg_color', 'hero_btn_color', 'page_bg_color', 'font_family', 'border_radius'];
-        $theme = ThemeSetting::getSingleton();
-        $themeUpdated = false;
+        $hasThemeInput = false;
         foreach ($themeFields as $tField) {
-            if ($request->filled($tField)) {
-                $theme->{$tField} = $request->input($tField);
-                if ($tField === 'page_bg_color') {
-                    $theme->background_color = $request->input('page_bg_color');
-                }
-                $themeUpdated = true;
+            if ($request->has($tField)) {
+                $hasThemeInput = true;
+                break;
             }
         }
-        // Pastikan warna harga e-commerce selalu standar merah (#E63854) demi UI/UX
-        $theme->card_product_price_color = '#E63854';
-        $theme->price_color = '#E63854';
-        if ($themeUpdated) {
-            $theme->save();
-            \Illuminate\Support\Facades\Cache::forget(ThemeSetting::CACHE_KEY);
+
+        if ($hasThemeInput) {
+            $theme = ThemeSetting::getSingleton();
+            $themeUpdated = false;
+            foreach ($themeFields as $tField) {
+                if ($request->filled($tField)) {
+                    $theme->{$tField} = $request->input($tField);
+                    if ($tField === 'page_bg_color') {
+                        $theme->background_color = $request->input('page_bg_color');
+                    }
+                    $themeUpdated = true;
+                }
+            }
+            // Pastikan warna harga e-commerce selalu standar merah (#E63854) demi UI/UX
+            $theme->card_product_price_color = '#E63854';
+            $theme->price_color = '#E63854';
+            if ($themeUpdated) {
+                $theme->save();
+                \Illuminate\Support\Facades\Cache::forget(ThemeSetting::CACHE_KEY);
+            }
         }
 
-        return back()->with('success', 'Pengaturan toko dan tema warna berhasil disimpan.');
+        return back()->with('success', 'Pengaturan toko berhasil disimpan.');
     }
 
     // ── Categories List ─────────────────────────────────────

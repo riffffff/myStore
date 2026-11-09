@@ -81,17 +81,6 @@ export default function SettingsPage({ settings, theme }: Props) {
         logo:                null as File | null,
         qris_image:          null as File | null,
         store_features:      initialFeatures,
-
-        // Theme & colors
-        primary_color:       theme?.primary_color       ?? '#6E4F78',
-        accent_color:        theme?.accent_color        ?? '#A985B1',
-        header_bg_color:     theme?.header_bg_color     ?? '#6E4F78',
-        header_active_color: theme?.header_active_color ?? '#F5E8AA',
-        hero_bg_color:       theme?.hero_bg_color       ?? '#A985B1',
-        hero_btn_color:      theme?.hero_btn_color      ?? '#F5E8AA',
-        page_bg_color:       theme?.page_bg_color       ?? '#EFE5F2',
-        font_family:         theme?.font_family         ?? 'poppins',
-        border_radius:       theme?.border_radius       ?? '1rem',
     });
 
     const updateFeature = (index: number, field: 'title' | 'description' | 'icon', value: string) => {
