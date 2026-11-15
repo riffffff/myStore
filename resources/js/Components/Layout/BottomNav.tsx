@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { Home, Newspaper, Package, ShoppingBag } from 'lucide-react';
+import { Home, Newspaper, Package, ShoppingBag, UserRound } from 'lucide-react';
 
 interface BottomNavProps {
     user?: any;
@@ -56,6 +56,58 @@ export default function BottomNav({ user, onAuthModalOpen }: BottomNavProps) {
                         </span>
                     </Link>
                 ))}
+
+                {/* Tab Profil / Masuk */}
+                {user ? (
+                    <Link
+                        href={route('profile.edit')}
+                        className="flex flex-col items-center justify-center flex-1 py-1.5 px-0.5 rounded-xl text-[10px] font-bold transition"
+                        aria-current={route().current('profile.*') ? 'page' : undefined}
+                    >
+                        <div
+                            className={`p-1.5 rounded-lg transition mb-0.5 ${
+                                route().current('profile.*') ? 'shadow-xs' : ''
+                            }`}
+                            style={route().current('profile.*') ? {
+                                backgroundColor: 'var(--color-primary, #6E4F78)',
+                                color: 'var(--color-primary-contrast, #FFFFFF)',
+                            } : {
+                                color: 'var(--color-neutral-subtle, #8C7A92)',
+                            }}
+                        >
+                            <UserRound
+                                className="w-4.5 h-4.5 transition-transform duration-200"
+                                strokeWidth={route().current('profile.*') ? 2.4 : 1.8}
+                                aria-hidden="true"
+                            />
+                        </div>
+                        <span
+                            className="truncate max-w-14 text-[10px] font-bold transition-colors duration-200"
+                            style={route().current('profile.*') ? { color: 'var(--color-primary, #6E4F78)' } : { color: 'var(--color-neutral-subtle, #8C7A92)' }}
+                        >
+                            Profil
+                        </span>
+                    </Link>
+                ) : (
+                    <button
+                        type="button"
+                        onClick={() => onAuthModalOpen?.('login')}
+                        className="flex flex-col items-center justify-center flex-1 py-1.5 px-0.5 rounded-xl text-[10px] font-bold transition cursor-pointer"
+                    >
+                        <div
+                            className="p-1.5 rounded-lg transition mb-0.5"
+                            style={{ color: 'var(--color-neutral-subtle, #8C7A92)' }}
+                        >
+                            <UserRound className="w-4.5 h-4.5 transition-transform duration-200" strokeWidth={1.8} aria-hidden="true" />
+                        </div>
+                        <span
+                            className="truncate max-w-14 text-[10px] font-bold transition-colors duration-200"
+                            style={{ color: 'var(--color-neutral-subtle, #8C7A92)' }}
+                        >
+                            Profil
+                        </span>
+                    </button>
+                )}
             </div>
         </nav>
     );

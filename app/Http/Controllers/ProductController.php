@@ -40,8 +40,21 @@ class ProductController extends Controller
         // Track view count
         $this->productService->incrementProductView($product);
 
+        $reviews = $product->reviews()
+            ->latest()
+            ->get(['id', 'product_id', 'name', 'city', 'rating', 'review', 'created_at'])
+            ->map(fn ($r) => [
+                'id'         => $r->id,
+                'name'       => $r->name ?: 'Pelanggan',
+                'city'       => $r->city,
+                'rating'     => (int) $r->rating,
+                'review'     => $r->review,
+                'created_at' => $r->created_at?->format('d M Y'),
+            ]);
+
         return Inertia::render('Products/Show', [
             'product' => $product,
+            'reviews' => $reviews,
         ]);
     }
 }

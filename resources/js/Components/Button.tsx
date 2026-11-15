@@ -158,7 +158,7 @@ export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPr
 
         // Render as external <a> if external={true}
         if (props.href && props.external) {
-            const { href, target, rel, ...anchorProps } = rest as React.AnchorHTMLAttributes<HTMLAnchorElement>;
+            const { href, target, rel, external: _external, ...anchorProps } = rest as React.AnchorHTMLAttributes<HTMLAnchorElement> & { external?: boolean };
             return (
                 <a
                     ref={ref as React.Ref<HTMLAnchorElement>}
@@ -176,7 +176,7 @@ export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPr
 
         // Render as Inertia <Link> if href is provided
         if (props.href) {
-            const linkProps = rest as InertiaLinkProps;
+            const { external: _external, ...linkProps } = rest as InertiaLinkProps & { external?: boolean };
             return (
                 <Link
                     ref={ref as any}

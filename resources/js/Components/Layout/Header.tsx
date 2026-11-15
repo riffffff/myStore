@@ -340,6 +340,8 @@ export default function Header({ shopName, logoUrl, user, onMenuToggle, onAuthMo
                             )}
 
 
+                            {/* Ikon Profil/Masuk dipindahkan ke BottomNav pada tampilan mobile */}
+                            {/*
                             {user ? (
                                 <Link
                                     href={route('profile.edit')}
@@ -366,6 +368,7 @@ export default function Header({ shopName, logoUrl, user, onMenuToggle, onAuthMo
                                     <UserRound className="h-5 w-5" />
                                 </button>
                             )}
+                            */}
                         </div>
 
                     </div>

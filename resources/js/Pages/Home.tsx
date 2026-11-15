@@ -3,9 +3,10 @@ import { useState, useEffect } from 'react';
 import PublicLayout from '@/Layouts/PublicLayout';
 // import HeroSection from '@/Components/Public/HeroSection';
 import ProductCard from '@/Components/Public/ProductCard';
+import ReviewForm from '@/Components/Public/ReviewForm';
 import ScrollReveal from '@/Components/Public/ScrollReveal';
 import { Article, Product, Review, ShopSetting } from '@/types/store';
-import { ArrowRight, Shield, Zap, Cloud, Star, Package, Truck, ChevronDown, ChevronUp, ChevronRight } from 'lucide-react';
+import { ArrowRight, Shield, Zap, Cloud, Star, Package, Truck, ChevronDown, ChevronUp, ChevronRight, X } from 'lucide-react';
 import { safeArray, getSafeShopSettings } from '@/lib/utils';
 import Button from '@/Components/Button';
 import WhatsAppIcon from '@/Components/Icons/WhatsAppIcon';
@@ -31,10 +32,11 @@ interface HomeProps {
     // heroArticles?: Article[];
     topProducts: Product[];
     reviews: Review[];
+    reviewProducts?: Array<{ id: number; name: string }>;
     shopSettings?: ShopSetting;
 }
 
-export default function Home({ topProducts, reviews, shopSettings }: HomeProps) {
+export default function Home({ topProducts, reviews, reviewProducts, shopSettings }: HomeProps) {
     const safeSettings = getSafeShopSettings(shopSettings);
     const defaultFeatures = [
         {
@@ -68,9 +70,15 @@ export default function Home({ topProducts, reviews, shopSettings }: HomeProps) 
     // const safeHeroArticles = safeArray(heroArticles);
     const safeTopProducts = safeArray(topProducts);
     const safeReviews = safeArray(reviews).slice(0, 9);
+    const productOptions = safeArray(reviewProducts).length > 0
+        ? safeArray(reviewProducts)
+        : safeTopProducts.map((p) => ({ id: p.id, name: p.name }));
 
     const [showAllReviews, setShowAllReviews] = useState(false);
     const hasMoreReviews = safeReviews.length > 3;
+    const [reviewModalOpen, setReviewModalOpen] = useState(false);
+    const [homeReviewSubmitted, setHomeReviewSubmitted] = useState(false);
+    const [selectedReviewProductId, setSelectedReviewProductId] = useState<number>(productOptions[0]?.id ?? 0);
 
     return (
         <PublicLayout>
@@ -346,7 +354,7 @@ export default function Home({ topProducts, reviews, shopSettings }: HomeProps) 
             </section>
 
             {/* Testimoni (Mobile Swipeable Snap Carousel / Desktop Grid) */}
-            {safeReviews.length > 0 && (
+            {(safeReviews.length > 0 || productOptions.length > 0) && (
                 <section
                     className="pt-5 pb-6 sm:py-16 transition-colors"
                     style={{
@@ -360,8 +368,25 @@ export default function Home({ topProducts, reviews, shopSettings }: HomeProps) 
                     */}
                     <div className="max-w-360 mx-auto px-4 sm:px-6 lg:px-8">
                         <ScrollReveal direction="up">
-                            <div className="text-center max-w-2xl mx-auto space-y-1 sm:space-y-2 mb-4 sm:mb-12">
+                            <div className="text-center max-w-2xl mx-auto space-y-2.5 sm:space-y-3 mb-4 sm:mb-12">
                                 <h2 className="text-xl sm:text-3xl font-extrabold text-primary-900">Apa Kata Pelanggan Kami</h2>
+                                {productOptions.length > 0 && (
+                                    <div>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                if (!selectedReviewProductId && productOptions[0]?.id) {
+                                                    setSelectedReviewProductId(productOptions[0].id);
+                                                }
+                                                setReviewModalOpen(true);
+                                            }}
+                                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-bold shadow-xs transition cursor-pointer"
+                                        >
+                                            <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
+                                            <span>Beri Ulasan</span>
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         </ScrollReveal>
 
@@ -451,6 +476,56 @@ export default function Home({ topProducts, reviews, shopSettings }: HomeProps) 
                         )}
                     </div>
                 </section>
+            )}
+
+            {/* Modal Beri Ulasan dari Beranda */}
+            {reviewModalOpen && productOptions.length > 0 && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
+                    <div className="bg-white rounded-2xl border border-gray-200 shadow-2xl w-full max-w-md overflow-hidden">
+                        <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100">
+                            <h3 className="text-sm font-bold text-gray-900">Tulis Ulasan Pelanggan</h3>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setReviewModalOpen(false);
+                                    setHomeReviewSubmitted(false);
+                                }}
+                                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition cursor-pointer"
+                            >
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
+                        <div className="p-5 space-y-3.5">
+                            {!homeReviewSubmitted && (
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-700 mb-1">
+                                        Pilih Produk <span className="text-rose-500">*</span>
+                                    </label>
+                                    <select
+                                        value={selectedReviewProductId}
+                                        onChange={(e) => setSelectedReviewProductId(Number(e.target.value))}
+                                        className="w-full h-10 px-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent-500/40 focus:border-accent-500"
+                                    >
+                                        {productOptions.map((p) => (
+                                            <option key={p.id} value={p.id}>{p.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+                            <ReviewForm
+                                key={selectedReviewProductId}
+                                compact
+                                productId={selectedReviewProductId}
+                                autoCloseSeconds={3}
+                                onSubmittedChange={setHomeReviewSubmitted}
+                                onAutoClose={() => {
+                                    setReviewModalOpen(false);
+                                    setHomeReviewSubmitted(false);
+                                }}
+                            />
+                        </div>
+                    </div>
+                </div>
             )}
 
         </PublicLayout>

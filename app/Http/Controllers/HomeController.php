@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 // use App\Services\ArticleService;
+use App\Models\Product;
 use App\Services\ProductService;
 use App\Services\ReviewService;
 use Inertia\Inertia;
@@ -21,11 +22,15 @@ class HomeController extends Controller
         // $heroArticles = $this->articleService->getHeroArticles();
         $topProducts = $this->productService->getTopProducts(8);
         $reviews = $this->reviewService->getApprovedReviews(9);
+        $reviewProducts = Product::where('is_published', true)
+            ->orderBy('name')
+            ->get(['id', 'name']);
 
         return Inertia::render('Home', [
             // 'heroArticles' => $heroArticles,
             'topProducts' => $topProducts,
             'reviews' => $reviews,
+            'reviewProducts' => $reviewProducts,
         ]);
     }
 }

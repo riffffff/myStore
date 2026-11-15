@@ -6,6 +6,7 @@ import { PageProps } from '@/types';
 import { Order, OrderStatus } from '@/types/store';
 import { formatRupiah, getSafeShopSettings, buildWhatsAppUrl } from '@/lib/utils';
 import WhatsAppIcon from '@/Components/Icons/WhatsAppIcon';
+import ReviewForm from '@/Components/Public/ReviewForm';
 import {
     Package,
     CheckCircle2,
@@ -18,6 +19,8 @@ import {
     Copy,
     Check,
     XCircle,
+    Star,
+    X,
 } from 'lucide-react';
 
 interface OrderTrackProps {
@@ -48,6 +51,13 @@ const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; b
 };
 
 export default function Track({ orders = [] }: OrderTrackProps) {
+    const [reviewTarget, setReviewTarget] = useState<{
+        orderId: number;
+        productId: number;
+        productName: string;
+        defaultName: string;
+    } | null>(null);
+    const [reviewedKeys, setReviewedKeys] = useState<Record<string, boolean>>({});
     const { shopSettings } = usePage<PageProps>().props;
     const safeSettings = getSafeShopSettings(shopSettings);
     const shopName = safeSettings.shop_name ?? 'Toko';
@@ -312,6 +322,27 @@ export default function Track({ orders = [] }: OrderTrackProps) {
                                                                 : `${order.items[0]?.product_name ?? 'Pesanan'} (+${order.items.length - 1} item lainnya)`}
                                                         </div>
                                                         <div className="flex items-center gap-2 shrink-0">
+                                                            {order.status === 'completed' && order.items[0]?.product_id && (
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        const firstItem = order.items.find((it) => it.product_id);
+                                                                        if (firstItem?.product_id) {
+                                                                            setReviewTarget({
+                                                                                orderId: order.id,
+                                                                                productId: firstItem.product_id,
+                                                                                productName: firstItem.product_name,
+                                                                                defaultName: order.customer_name,
+                                                                            });
+                                                                        }
+                                                                    }}
+                                                                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-[11px] font-bold transition cursor-pointer"
+                                                                >
+                                                                    <Star className="w-3 h-3 fill-amber-400 text-amber-500" />
+                                                                    <span>Beri Ulasan</span>
+                                                                </button>
+                                                            )}
                                                             <span className="text-xs text-gray-500">Total:</span>
                                                             <span className="text-xs sm:text-sm font-extrabold" style={{ color: 'var(--price-color, #E63854)' }}>
                                                                 {formatRupiah(order.total_price)}
@@ -340,19 +371,43 @@ export default function Track({ orders = [] }: OrderTrackProps) {
                                                                     borderColor: 'var(--color-card-product-border, #EBD9AC)',
                                                                 }}
                                                             >
-                                                                {order.items.map((item) => (
-                                                                    <div key={item.id} className="p-3 flex items-start justify-between gap-3">
-                                                                        <div className="min-w-0 flex-1">
-                                                                            <p className="font-semibold text-gray-900 leading-snug">{item.product_name}</p>
-                                                                            <p className="text-[11px] text-gray-500 mt-0.5">
-                                                                                {item.quantity} × {formatRupiah(item.unit_price)}
-                                                                            </p>
+                                                                {order.items.map((item) => {
+                                                                    const revKey = `${order.id}-${item.product_id}`;
+                                                                    const alreadyReviewed = !!reviewedKeys[revKey];
+                                                                    return (
+                                                                        <div key={item.id} className="p-3 flex items-start justify-between gap-3">
+                                                                            <div className="min-w-0 flex-1">
+                                                                                <p className="font-semibold text-gray-900 leading-snug">{item.product_name}</p>
+                                                                                <p className="text-[11px] text-gray-500 mt-0.5">
+                                                                                    {item.quantity} × {formatRupiah(item.unit_price)}
+                                                                                </p>
+                                                                                {order.status === 'completed' && item.product_id && (
+                                                                                    <button
+                                                                                        type="button"
+                                                                                        disabled={alreadyReviewed}
+                                                                                        onClick={() => setReviewTarget({
+                                                                                            orderId: order.id,
+                                                                                            productId: item.product_id!,
+                                                                                            productName: item.product_name,
+                                                                                            defaultName: order.customer_name,
+                                                                                        })}
+                                                                                        className={`mt-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold border transition ${
+                                                                                            alreadyReviewed
+                                                                                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200 cursor-default'
+                                                                                                : 'bg-amber-50 hover:bg-amber-100 text-amber-700 border-amber-200 cursor-pointer'
+                                                                                        }`}
+                                                                                    >
+                                                                                        <Star className={`w-3 h-3 ${alreadyReviewed ? 'fill-emerald-500 text-emerald-500' : 'fill-amber-400 text-amber-500'}`} />
+                                                                                        <span>{alreadyReviewed ? 'Ulasan Terkirim' : 'Beri Ulasan'}</span>
+                                                                                    </button>
+                                                                                )}
+                                                                            </div>
+                                                                            <div className="text-right shrink-0 font-bold text-gray-900">
+                                                                                {formatRupiah(item.subtotal_price)}
+                                                                            </div>
                                                                         </div>
-                                                                        <div className="text-right shrink-0 font-bold text-gray-900">
-                                                                            {formatRupiah(item.subtotal_price)}
-                                                                        </div>
-                                                                    </div>
-                                                                ))}
+                                                                    );
+                                                                })}
                                                             </div>
                                                         </div>
 
@@ -418,6 +473,40 @@ export default function Track({ orders = [] }: OrderTrackProps) {
                 )}
                 </div>
             </div>
+
+            {/* Modal Beri Ulasan ala Shopee untuk Pesanan Selesai */}
+            {reviewTarget && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
+                    <div className="bg-white rounded-2xl border border-gray-200 shadow-2xl w-full max-w-md overflow-hidden">
+                        <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100">
+                            <h3 className="text-sm font-bold text-gray-900">Nilai Produk</h3>
+                            <button
+                                type="button"
+                                onClick={() => setReviewTarget(null)}
+                                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition cursor-pointer"
+                            >
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
+                        <div className="p-5">
+                            <ReviewForm
+                                compact
+                                productId={reviewTarget.productId}
+                                productName={reviewTarget.productName}
+                                defaultName={reviewTarget.defaultName}
+                                autoCloseSeconds={3}
+                                onAutoClose={() => setReviewTarget(null)}
+                                onSuccess={() => {
+                                    setReviewedKeys((prev) => ({
+                                        ...prev,
+                                        [`${reviewTarget.orderId}-${reviewTarget.productId}`]: true,
+                                    }));
+                                }}
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
         </PublicLayout>
     );
 }

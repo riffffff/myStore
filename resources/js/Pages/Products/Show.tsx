@@ -10,23 +10,35 @@ import AuthModal from '@/Components/Public/AuthModal';
 import Button from '@/Components/Button';
 import WhatsAppIcon from '@/Components/Icons/WhatsAppIcon';
 import ProductCornerRibbon from '@/Components/Public/ProductCornerRibbon';
+import ReviewForm from '@/Components/Public/ReviewForm';
 import {
     ShoppingCart,
     ShoppingBag,
     MessageCircle,
     Minus,
     Plus,
-    Check
+    Check,
+    Star
 } from 'lucide-react';
 
 const DEFAULT_PRODUCT_IMG = 'https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&q=80&w=800';
 
+interface ProductReviewItem {
+    id: number;
+    name: string;
+    city?: string | null;
+    rating: number;
+    review: string;
+    created_at?: string;
+}
+
 interface ProductShowProps {
     product: Product;
+    reviews?: ProductReviewItem[];
     shopSettings?: ShopSetting;
 }
 
-export default function Show({ product, shopSettings }: ProductShowProps) {
+export default function Show({ product, reviews = [], shopSettings }: ProductShowProps) {
     const safeSettings = getSafeShopSettings(shopSettings);
     const { auth, cart } = usePage<PageProps>().props as any;
     const user = auth?.user;
@@ -436,6 +448,90 @@ export default function Show({ product, shopSettings }: ProductShowProps) {
                                 )}
                             </div>
 
+                        </div>
+                    </div>
+
+                    {/* ══════════ ULASAN PEMBELI & FORM ULASAN (SHOPEE-STYLE) ══════════ */}
+                    <div className="mt-4 sm:mt-6 grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
+                        {/* Daftar Ulasan */}
+                        <div
+                            className="lg:col-span-7 p-4 sm:p-6 sm:rounded-2xl border-y sm:border sm:shadow-xs space-y-4"
+                            style={{
+                                backgroundColor: 'var(--color-card-product-bg, #FFFDF7)',
+                                borderColor: 'var(--color-card-product-border, #EBD9AC)',
+                            }}
+                        >
+                            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                                <div>
+                                    <h2 className="text-sm sm:text-base font-bold text-gray-900">
+                                        Ulasan Pembeli ({reviews.length})
+                                    </h2>
+                                    {reviews.length > 0 && (
+                                        <div className="flex items-center gap-1.5 mt-1">
+                                            <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                                            <span className="text-xs font-extrabold text-gray-900">
+                                                {(reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)}
+                                            </span>
+                                            <span className="text-xs text-gray-400">/ 5.0</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {reviews.length === 0 ? (
+                                <p className="text-xs sm:text-sm text-gray-500 py-4 text-center">
+                                    Belum ada ulasan untuk produk ini. Jadilah yang pertama memberikan ulasan!
+                                </p>
+                            ) : (
+                                <div className="space-y-3 divide-y divide-gray-100">
+                                    {reviews.map((rev) => (
+                                        <div key={rev.id} className="pt-3 first:pt-0 space-y-1.5">
+                                            <div className="flex items-center justify-between gap-2">
+                                                <div className="flex items-center gap-2 min-w-0">
+                                                    <span className="text-xs sm:text-sm font-bold text-gray-900 truncate">
+                                                        {rev.name}
+                                                    </span>
+                                                    {rev.city && (
+                                                        <span className="text-[11px] text-gray-400">• {rev.city}</span>
+                                                    )}
+                                                </div>
+                                                {rev.created_at && (
+                                                    <span className="text-[11px] text-gray-400 shrink-0">{rev.created_at}</span>
+                                                )}
+                                            </div>
+                                            <div className="flex items-center gap-0.5">
+                                                {[1, 2, 3, 4, 5].map((s) => (
+                                                    <Star
+                                                        key={s}
+                                                        className={`w-3.5 h-3.5 ${
+                                                            s <= rev.rating
+                                                                ? 'fill-amber-400 text-amber-400'
+                                                                : 'fill-gray-100 text-gray-300'
+                                                        }`}
+                                                    />
+                                                ))}
+                                            </div>
+                                            <p className="text-xs sm:text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+                                                {rev.review}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Form Tulis Ulasan */}
+                        <div
+                            className="lg:col-span-5 p-4 sm:p-6 sm:rounded-2xl border-y sm:border sm:shadow-xs space-y-3"
+                            style={{
+                                backgroundColor: 'var(--color-card-product-bg, #FFFDF7)',
+                                borderColor: 'var(--color-card-product-border, #EBD9AC)',
+                            }}
+                        >
+                            <h2 className="text-sm sm:text-base font-bold text-gray-900 border-b border-gray-100 pb-3">
+                                Tulis Ulasan Produk
+                            </h2>
+                            <ReviewForm productId={productData.id} />
                         </div>
                     </div>
                 </div>
