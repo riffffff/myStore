@@ -32,6 +32,7 @@ export interface ShopSettingsShared {
     hero_banner_text_1?: string | null;
     hero_banner_text_2?: string | null;
     hero_banner_bg?: string | null;
+    hero_banner_bg_mobile?: string | null;
     shipping_areas?: string[] | null;
     shipping_estimate_days?: string | null;
 }

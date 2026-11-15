@@ -25,13 +25,13 @@ ChartJS.register(
 /* ─────────────────────────── TYPES ─────────────────────────── */
 interface Stats {
     products: number; published: number; out_of_stock: number;
-    articles: number; published_articles: number;
+    // articles: number; published_articles: number;
     reviews: number; pending_reviews: number;
     orders_total: number; orders_pending: number; revenue_total: number;
 }
 interface SalesPoint { date: string; orders: number; revenue: number; }
 interface StockChart  { available?: number; preorder?: number; out_of_stock?: number; sold?: number; }
-interface TopArticle  { id: number; title: string; views_count: number; }
+// interface TopArticle  { id: number; title: string; views_count: number; }
 interface RecentOrder {
     id: number; order_number: string; customer_name: string;
     total_price: number; status: string; created_at: string;
@@ -41,7 +41,8 @@ interface PendingReview {
 }
 interface Props {
     stats: Stats; stockChart: StockChart; salesChart: SalesPoint[];
-    topArticles: TopArticle[]; recentOrders: RecentOrder[];
+    // topArticles: TopArticle[];
+    recentOrders: RecentOrder[];
     pendingReviews: PendingReview[]; period: string;
     startDate?: string; endDate?: string;
 }
@@ -492,7 +493,7 @@ function SalesLine({
     );
 }
 
-/* ─────────── 3. MODERN HORIZONTAL BAR (TOP ARTICLES) ───────── */
+/* ─────────── 3. MODERN HORIZONTAL BAR (TOP ARTICLES) (Dinonaktifkan sementara) ─────────
 function ArticlesBar({ articles, brandColor = DEFAULT_BRAND }: { articles: TopArticle[]; brandColor?: string }) {
     if (articles.length === 0) {
         return (
@@ -560,12 +561,12 @@ function ArticlesBar({ articles, brandColor = DEFAULT_BRAND }: { articles: TopAr
 
     return (
         <div>
-            {/* Chart */}
+            // Chart
             <div style={{ height: Math.max(articles.length * 48 + 24, 150) }} className="relative mb-4">
                 <Bar data={chartData} options={options} />
             </div>
 
-            {/* Ranked List Leaderboard */}
+            // Ranked List Leaderboard
             <div className="space-y-2 pt-3 border-t border-slate-100">
                 {articles.map((art, idx) => {
                     const pct = Math.round((art.views_count / maxViews) * 100);
@@ -605,6 +606,7 @@ function ArticlesBar({ articles, brandColor = DEFAULT_BRAND }: { articles: TopAr
         </div>
     );
 }
+*/
 
 /* ─────────── ORDER STATUS BADGE ────────────────────────────── */
 const ORDER_STATUS: Record<string, { label: string; cls: string; dot: string }> = {
@@ -617,7 +619,7 @@ const ORDER_STATUS: Record<string, { label: string; cls: string; dot: string }> 
 
 /* ─────────────────────── MAIN DASHBOARD ────────────────────── */
 export default function Dashboard({
-    stats, stockChart, salesChart, topArticles,
+    stats, stockChart, salesChart, // topArticles,
     recentOrders, pendingReviews, period,
     startDate, endDate,
 }: Props) {
@@ -687,15 +689,15 @@ export default function Dashboard({
             bg: 'bg-brand-50',
             border: 'border-brand-200/80',
         },
-        {
-            title: 'Artikel',
-            desc: `${stats.published_articles} Terbit`,
-            href: '/admin/artikel',
-            icon: FileText,
-            color: 'text-brand-700',
-            bg: 'bg-brand-50',
-            border: 'border-brand-200/80',
-        },
+        // {
+        //     title: 'Artikel',
+        //     desc: `${stats.published_articles} Terbit`,
+        //     href: '/admin/artikel',
+        //     icon: FileText,
+        //     color: 'text-brand-700',
+        //     bg: 'bg-brand-50',
+        //     border: 'border-brand-200/80',
+        // },
         {
             title: 'Ulasan',
             desc: stats.pending_reviews > 0 ? `${stats.pending_reviews} Pending` : `${stats.reviews} Total`,
@@ -903,7 +905,8 @@ export default function Dashboard({
                     </FadeIn>
                 </div>
 
-                {/* ─── Top Articles Chart Row ─── */}
+                {/* ─── Top Articles Chart Row (Dinonaktifkan sementara) ─── */}
+                {/*
                 <FadeIn delay={460}>
                     <section className="relative overflow-hidden bg-white/90 backdrop-blur-xl rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.04)] mb-7">
                         <div className="flex items-center justify-between gap-2 mb-4">
@@ -925,6 +928,7 @@ export default function Dashboard({
                         <ArticlesBar articles={topArticles} brandColor={brandColor} />
                     </section>
                 </FadeIn>
+                */}
 
                 {/* ─── Bottom Feeds (Recent Orders & Pending Reviews) ─── */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

@@ -11,6 +11,7 @@ const DEFAULT_SHOP_SETTINGS: Required<ShopSetting> = {
     hero_banner_text_1: 'Produk Berkualitas Terbaik',
     hero_banner_text_2: 'Pilihan lezat dan fresh untuk melengkapi momen istimewa Anda',
     hero_banner_bg: null,
+    hero_banner_bg_mobile: null,
     shipping_areas: [],
     shipping_estimate_days: '',
     logo_url: '',

@@ -42,12 +42,12 @@ const NAV_ITEMS = [
         match: (p: string) => p.startsWith('/admin/produk'),
         icon: Package,
     },
-    {
-        href: '/admin/artikel',
-        label: 'Artikel',
-        match: (p: string) => p.startsWith('/admin/artikel'),
-        icon: FileText,
-    },
+    // {
+    //     href: '/admin/artikel',
+    //     label: 'Artikel',
+    //     match: (p: string) => p.startsWith('/admin/artikel'),
+    //     icon: FileText,
+    // },
     {
         href: '/admin/ulasan',
         label: 'Ulasan',

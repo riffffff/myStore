@@ -144,7 +144,7 @@ export default function Edit({
                                             iconBg="bg-accent-50"
                                             iconColor="text-accent-600"
                                             title="Admin Panel"
-                                            subtitle="Kelola produk, artikel, & toko"
+                                            subtitle="Kelola produk, ulasan, & toko"
                                         />
                                     </Link>
                                 </div>
@@ -235,7 +235,7 @@ export default function Edit({
                                                 iconBg="bg-accent-50"
                                                 iconColor="text-accent-600"
                                                 title="Admin Panel"
-                                                subtitle="Kelola produk, artikel, & toko"
+                                                subtitle="Kelola produk, ulasan, & toko"
                                             />
                                         </Link>
                                     </div>

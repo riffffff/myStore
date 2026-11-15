@@ -1,11 +1,11 @@
 import { Head, Link } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import PublicLayout from '@/Layouts/PublicLayout';
-import HeroSection from '@/Components/Public/HeroSection';
+// import HeroSection from '@/Components/Public/HeroSection';
 import ProductCard from '@/Components/Public/ProductCard';
 import ScrollReveal from '@/Components/Public/ScrollReveal';
 import { Article, Product, Review, ShopSetting } from '@/types/store';
-import { ArrowRight, Shield, Zap, Cloud, Star, Package, Truck, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowRight, Shield, Zap, Cloud, Star, Package, Truck, ChevronDown, ChevronUp, ChevronRight } from 'lucide-react';
 import { safeArray, getSafeShopSettings } from '@/lib/utils';
 import Button from '@/Components/Button';
 import WhatsAppIcon from '@/Components/Icons/WhatsAppIcon';
@@ -28,16 +28,15 @@ function renderFeatureIcon(iconName?: string) {
 }
 
 interface HomeProps {
-    heroArticles: Article[];
+    // heroArticles?: Article[];
     topProducts: Product[];
     reviews: Review[];
     shopSettings?: ShopSetting;
 }
 
-export default function Home({ heroArticles, topProducts, reviews, shopSettings }: HomeProps) {
+export default function Home({ topProducts, reviews, shopSettings }: HomeProps) {
     const safeSettings = getSafeShopSettings(shopSettings);
-    const storeFeatures = safeArray(safeSettings.store_features);
-    const features = storeFeatures.length > 0 ? storeFeatures : [
+    const defaultFeatures = [
         {
             title: 'Kualitas Terjamin',
             description: 'Produk dibuat dengan material pilihan berkualitas tinggi dan standar pengerjaan terbaik.',
@@ -54,16 +53,19 @@ export default function Home({ heroArticles, topProducts, reviews, shopSettings 
             icon: 'truck',
         },
     ];
+    const storeFeatures = safeArray(safeSettings.store_features);
+    const features = [0, 1, 2].map((i) => storeFeatures[i] ?? defaultFeatures[i]);
     const waNumber = safeSettings.whatsapp_number;
     const waTemplate = safeSettings.whatsapp_template;
     const heroTitle = safeSettings.hero_banner_text_1 ?? '';
     const heroSubtitle = safeSettings.hero_banner_text_2 ?? '';
     const heroBg = safeSettings.hero_banner_bg;
+    const heroBgMobile = safeSettings.hero_banner_bg_mobile || heroBg;
     const shopName = safeSettings.shop_name ?? '';
     const shopDescription = safeSettings.description ?? '';
     const metaDescription = shopDescription;
 
-    const safeHeroArticles = safeArray(heroArticles);
+    // const safeHeroArticles = safeArray(heroArticles);
     const safeTopProducts = safeArray(topProducts);
     const safeReviews = safeArray(reviews).slice(0, 9);
 
@@ -77,62 +79,126 @@ export default function Home({ heroArticles, topProducts, reviews, shopSettings 
             </Head>
 
             {/* Section Hero Banner */}
+            {/*
             {safeHeroArticles.length > 0 ? (
                 <ScrollReveal direction="up">
                     <HeroSection articles={safeHeroArticles} />
                 </ScrollReveal>
             ) : (
+            */}
                 <ScrollReveal direction="up">
-                <div
-                    className="relative overflow-hidden py-16 sm:py-24 border-y"
-                    style={{
-                        backgroundColor: 'var(--color-card-article-bg, #FFFFFF)',
-                        borderColor: 'var(--color-card-article-border, #E5E7EB)',
-                    }}
-                >
-                    <div className="relative z-10 max-w-360 mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-                            <div className="lg:col-span-6 space-y-4 text-primary-900">
-                                <span className="bg-accent-500 text-(--color-primary-contrast,#ffffff) text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full inline-block">
-                                    Tech Solution
-                                </span>
-                                <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">
-                                    {heroTitle}
-                                </h1>
-                                <p className="text-sm sm:text-base text-primary-700 leading-relaxed font-light">
-                                    {heroSubtitle}
-                                </p>
-                                <div className="flex gap-3 pt-2">
-                                    <Button href={route('products.index')} variant="primary" size="md">
-                                        Jelajahi Produk
-                                    </Button>
-                                    <Button
-                                        href={`https://wa.me/${waNumber}`}
-                                        external
-                                        variant="outline"
-                                        size="md"
-                                        leftIcon={<WhatsAppIcon className="w-4 h-4 text-whatsapp" />}
-                                    >
-                                        Konsultasi Custom
-                                    </Button>
-                                </div>
-                            </div>
-                            <div className="lg:col-span-6 h-75 sm:h-95 rounded-2xl overflow-hidden shadow-xl">
+                <section className="w-full max-w-360 mx-auto">
+                    {/* ══════════ MOBILE — Gambar Menyatu dengan Judul & Deskripsi ══════════ */}
+                    <div className="md:hidden px-4 sm:px-6 pt-3 pb-3 w-full">
+                        <div
+                            className="relative w-full overflow-hidden rounded-[28px] border border-white/10 shadow-2xl select-none h-102.5 sm:h-110 flex flex-col justify-between"
+                            style={{
+                                background: 'color-mix(in srgb, var(--color-header-bg, #0B132B) 90%, black)',
+                            }}
+                        >
+                            <div className="absolute inset-0 z-0">
                                 <img
                                     src={
-                                        heroBg
-                                            ? (heroBg.startsWith('http') || heroBg.startsWith('/') ? heroBg : `/storage/${heroBg}`)
-                                            : 'https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&q=80&w=1800'
+                                        heroBgMobile
+                                            ? (heroBgMobile.startsWith('http') || heroBgMobile.startsWith('/') ? heroBgMobile : `/storage/${heroBgMobile}`)
+                                            : 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80&w=1600'
                                     }
-                                    className="w-full h-full object-cover"
-                                    alt="Hero Banner"
+                                    alt={heroTitle || shopName || 'Hero Banner'}
+                                    className="w-full h-full object-cover object-center"
                                 />
+                                <div className="absolute inset-0 bg-linear-to-t from-black/95 via-black/60 to-black/40" />
+                            </div>
+
+                            <div className="relative z-20 flex flex-col items-center text-center px-4 pt-4 pb-5 mt-auto">
+                                <h1 className="text-white text-xl sm:text-2xl font-serif font-bold uppercase tracking-[0.16em] leading-snug drop-shadow-md line-clamp-2">
+                                    {heroTitle || shopName}
+                                </h1>
+                                <div
+                                    className="w-10 h-1 rounded-full my-2.5 shadow-sm"
+                                    style={{ background: 'var(--header-active, var(--color-accent, #F5E8AA))' }}
+                                />
+                                {(heroSubtitle || shopDescription) && (
+                                    <p className="text-white/80 text-xs leading-relaxed max-w-xs line-clamp-2 mb-4 drop-shadow">
+                                        {heroSubtitle || shopDescription}
+                                    </p>
+                                )}
+                                <div className="flex items-center justify-center w-full max-w-xs">
+                                    <Link
+                                        href={route('products.index')}
+                                        className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-6 rounded-full bg-white/20 hover:bg-white/30 active:bg-white/35 text-white font-bold text-xs uppercase tracking-[0.16em] backdrop-blur-md border border-white/35 shadow-[0_4px_20px_rgba(0,0,0,0.25)] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] group"
+                                    >
+                                        <span>Jelajahi Produk</span>
+                                        <ChevronRight className="h-3.5 w-3.5 stroke-[2.5] transition-transform duration-200 group-hover:translate-x-0.5" />
+                                    </Link>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+
+                    {/* ══════════ DESKTOP ══════════ */}
+                    <div className="hidden md:block pt-4 sm:pt-6 pb-2 sm:pb-3 px-4 sm:px-6 lg:px-8">
+                        <div
+                            className="relative overflow-hidden rounded-3xl border shadow-xl p-8 lg:p-10"
+                            style={{
+                                backgroundColor: 'var(--color-card-article-bg, #FFFFFF)',
+                                borderColor: 'var(--color-card-article-border, #E5E7EB)',
+                            }}
+                        >
+                            <div className="pointer-events-none absolute -top-24 -left-24 w-96 h-96 rounded-full bg-accent-500/10 blur-3xl" />
+                            <div className="pointer-events-none absolute -bottom-24 -right-24 w-96 h-96 rounded-full bg-primary-800/5 blur-3xl" />
+
+                            <div className="relative z-10 grid grid-cols-12 gap-8 lg:gap-10 items-center">
+                                <div className="col-span-5 flex flex-col justify-between space-y-6 text-primary-900">
+                                    <div className="space-y-4">
+                                        {shopName && (
+                                            <span className="bg-accent-500 text-(--color-primary-contrast,#ffffff) text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full inline-block">
+                                                {shopName}
+                                            </span>
+                                        )}
+                                        <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight leading-snug">
+                                            {heroTitle || shopName}
+                                        </h1>
+                                        {(heroSubtitle || shopDescription) && (
+                                            <p className="text-primary-700 text-sm leading-relaxed line-clamp-3">
+                                                {heroSubtitle || shopDescription}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    <div className="flex items-center gap-3">
+                                        <Button href={route('products.index')} variant="primary" size="md">
+                                            Jelajahi Produk
+                                        </Button>
+                                        <Button
+                                            href={`https://wa.me/${waNumber}`}
+                                            external
+                                            variant="outline"
+                                            size="md"
+                                            leftIcon={<WhatsAppIcon className="w-4 h-4 text-whatsapp" />}
+                                        >
+                                            Konsultasi Custom
+                                        </Button>
+                                    </div>
+                                </div>
+
+                                <div className="col-span-7 relative h-80 lg:h-110 rounded-3xl overflow-hidden shadow-2xl border border-white/60 select-none">
+                                    <img
+                                        src={
+                                            heroBg
+                                                ? (heroBg.startsWith('http') || heroBg.startsWith('/') ? heroBg : `/storage/${heroBg}`)
+                                                : 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80&w=1600'
+                                        }
+                                        className="w-full h-full object-cover"
+                                        alt={heroTitle || shopName || 'Hero Banner'}
+                                    />
+                                    <div className="absolute inset-0 bg-linear-to-t from-black/50 via-black/10 to-transparent" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
                 </ScrollReveal>
-            )}
+            {/* )} */}
 
             {/* Keunggulan Toko - Mobile: marquee auto-scroll tulisan berjalan, Desktop: grid 3 col */}
             <style>{`

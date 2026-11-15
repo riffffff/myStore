@@ -26,6 +26,8 @@ interface Settings {
     shop_address: string | null;
     logo_url: string | null;
     qris_url: string | null;
+    hero_banner_url: string | null;
+    hero_banner_mobile_url: string | null;
     store_features?: StoreFeatureItem[];
 }
 
@@ -67,9 +69,8 @@ const DEFAULT_FEATURES: StoreFeatureItem[] = [
 export default function SettingsPage({ settings, theme }: Props) {
     const flash = (usePage().props as any).flash ?? {};
 
-    const initialFeatures = (settings.store_features && settings.store_features.length > 0)
-        ? settings.store_features
-        : DEFAULT_FEATURES;
+    const savedFeatures = settings.store_features ?? [];
+    const initialFeatures = [0, 1, 2].map((i) => savedFeatures[i] ?? DEFAULT_FEATURES[i]);
 
     const { data, setData, post, processing, errors, clearErrors } = useForm({
         // Shop info
@@ -80,7 +81,9 @@ export default function SettingsPage({ settings, theme }: Props) {
         shop_address:        settings.shop_address        ?? '',
         logo:                null as File | null,
         qris_image:          null as File | null,
-        store_features:      initialFeatures,
+        hero_banner_bg:        null as File | null,
+        hero_banner_bg_mobile: null as File | null,
+        store_features:        initialFeatures,
     });
 
     const updateFeature = (index: number, field: 'title' | 'description' | 'icon', value: string) => {
@@ -91,15 +94,21 @@ export default function SettingsPage({ settings, theme }: Props) {
 
     const [logoError, setLogoError] = useState<string | null>(null);
     const [qrisError, setQrisError] = useState<string | null>(null);
+    const [heroBannerError, setHeroBannerError] = useState<string | null>(null);
+    const [heroBannerMobileError, setHeroBannerMobileError] = useState<string | null>(null);
     const [logoPreview, setLogoPreview] = useState<string | null>(null);
     const [qrisPreview, setQrisPreview] = useState<string | null>(null);
+    const [heroBannerPreview, setHeroBannerPreview] = useState<string | null>(null);
+    const [heroBannerMobilePreview, setHeroBannerMobilePreview] = useState<string | null>(null);
 
     useEffect(() => {
         return () => {
             if (logoPreview) URL.revokeObjectURL(logoPreview);
             if (qrisPreview) URL.revokeObjectURL(qrisPreview);
+            if (heroBannerPreview) URL.revokeObjectURL(heroBannerPreview);
+            if (heroBannerMobilePreview) URL.revokeObjectURL(heroBannerMobilePreview);
         };
-    }, [logoPreview, qrisPreview]);
+    }, [logoPreview, qrisPreview, heroBannerPreview, heroBannerMobilePreview]);
 
     const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -136,6 +145,44 @@ export default function SettingsPage({ settings, theme }: Props) {
             setData('qris_image', file);
             if (qrisPreview) URL.revokeObjectURL(qrisPreview);
             setQrisPreview(URL.createObjectURL(file));
+        }
+    };
+
+    const handleHeroBannerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const error = validateImageFile(file);
+            if (error) {
+                setHeroBannerError(error);
+                setData('hero_banner_bg', null);
+                setHeroBannerPreview(null);
+                e.target.value = '';
+                return;
+            }
+            setHeroBannerError(null);
+            clearErrors('hero_banner_bg');
+            setData('hero_banner_bg', file);
+            if (heroBannerPreview) URL.revokeObjectURL(heroBannerPreview);
+            setHeroBannerPreview(URL.createObjectURL(file));
+        }
+    };
+
+    const handleHeroBannerMobileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const error = validateImageFile(file);
+            if (error) {
+                setHeroBannerMobileError(error);
+                setData('hero_banner_bg_mobile', null);
+                setHeroBannerMobilePreview(null);
+                e.target.value = '';
+                return;
+            }
+            setHeroBannerMobileError(null);
+            clearErrors('hero_banner_bg_mobile');
+            setData('hero_banner_bg_mobile', file);
+            if (heroBannerMobilePreview) URL.revokeObjectURL(heroBannerMobilePreview);
+            setHeroBannerMobilePreview(URL.createObjectURL(file));
         }
     };
 
@@ -254,6 +301,96 @@ export default function SettingsPage({ settings, theme }: Props) {
                             <p className="text-[11px] text-slate-400 text-center">Format JPG, PNG, atau WebP (Maks. 3 MB)</p>
                             {(qrisError || errors.qris_image) && (
                                 <p className="text-rose-500 text-xs mt-1">{qrisError || errors.qris_image}</p>
+                            )}
+                        </div>
+
+                        {/* Gambar Banner Desktop */}
+                        <div className="space-y-2 pt-4 border-t border-slate-100">
+                            <label className="block text-xs font-bold text-slate-700">
+                                Gambar Banner Desktop
+                            </label>
+                            <div className="relative border-2 border-dashed border-slate-200 hover:border-brand rounded-2xl p-2 bg-slate-50/70 hover:bg-brand-50/20 transition flex flex-col items-center justify-center min-h-35 overflow-hidden">
+                                {(heroBannerPreview || settings.hero_banner_url) ? (
+                                    <>
+                                        <img
+                                            src={heroBannerPreview || settings.hero_banner_url || ''}
+                                            alt="Banner Desktop"
+                                            className="w-full h-32 object-cover rounded-xl"
+                                        />
+                                        {heroBannerPreview && (
+                                            <span className="absolute top-3 right-3 text-[10px] font-bold bg-white/90 text-brand-700 px-2 py-0.5 rounded-md shadow-xs">
+                                                Baru
+                                            </span>
+                                        )}
+                                    </>
+                                ) : (
+                                    <div className="flex flex-col items-center text-center p-2 text-slate-400">
+                                        <div className="w-10 h-10 rounded-xl bg-brand-50 text-brand flex items-center justify-center mb-1.5">
+                                            <ImageIcon className="w-5 h-5" />
+                                        </div>
+                                        <span className="text-xs font-bold text-slate-700">Pakai gambar bawaan</span>
+                                        <span className="text-[11px] text-slate-400 mt-0.5">Disarankan rasio landscape 16:10</span>
+                                    </div>
+                                )}
+                            </div>
+                            <label className="w-full h-10 rounded-xl bg-brand hover:bg-brand-600 text-brand-contrast text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer">
+                                <UploadCloud className="w-4 h-4" />
+                                Ganti Banner Desktop
+                                <input
+                                    type="file"
+                                    accept="image/jpeg,image/png,image/webp"
+                                    className="hidden"
+                                    onChange={handleHeroBannerChange}
+                                />
+                            </label>
+                            <p className="text-[11px] text-slate-400 text-center">Rasio 16:10 (landscape) • JPG, PNG, WebP (Maks. 3 MB)</p>
+                            {(heroBannerError || errors.hero_banner_bg) && (
+                                <p className="text-rose-500 text-xs mt-1">{heroBannerError || errors.hero_banner_bg}</p>
+                            )}
+                        </div>
+
+                        {/* Gambar Banner Mobile */}
+                        <div className="space-y-2 pt-4 border-t border-slate-100">
+                            <label className="block text-xs font-bold text-slate-700">
+                                Gambar Banner Mobile
+                            </label>
+                            <div className="relative border-2 border-dashed border-slate-200 hover:border-brand rounded-2xl p-2 bg-slate-50/70 hover:bg-brand-50/20 transition flex flex-col items-center justify-center min-h-35 overflow-hidden">
+                                {(heroBannerMobilePreview || settings.hero_banner_mobile_url) ? (
+                                    <>
+                                        <img
+                                            src={heroBannerMobilePreview || settings.hero_banner_mobile_url || ''}
+                                            alt="Banner Mobile"
+                                            className="w-full h-40 object-cover rounded-xl"
+                                        />
+                                        {heroBannerMobilePreview && (
+                                            <span className="absolute top-3 right-3 text-[10px] font-bold bg-white/90 text-brand-700 px-2 py-0.5 rounded-md shadow-xs">
+                                                Baru
+                                            </span>
+                                        )}
+                                    </>
+                                ) : (
+                                    <div className="flex flex-col items-center text-center p-2 text-slate-400">
+                                        <div className="w-10 h-10 rounded-xl bg-brand-50 text-brand flex items-center justify-center mb-1.5">
+                                            <ImageIcon className="w-5 h-5" />
+                                        </div>
+                                        <span className="text-xs font-bold text-slate-700">Ikut gambar desktop</span>
+                                        <span className="text-[11px] text-slate-400 mt-0.5">Opsional • Disarankan rasio portrait 4:5</span>
+                                    </div>
+                                )}
+                            </div>
+                            <label className="w-full h-10 rounded-xl bg-brand hover:bg-brand-600 text-brand-contrast text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer">
+                                <UploadCloud className="w-4 h-4" />
+                                Ganti Banner Mobile
+                                <input
+                                    type="file"
+                                    accept="image/jpeg,image/png,image/webp"
+                                    className="hidden"
+                                    onChange={handleHeroBannerMobileChange}
+                                />
+                            </label>
+                            <p className="text-[11px] text-slate-400 text-center">Rasio 4:5 (portrait) • Jika kosong, pakai banner desktop</p>
+                            {(heroBannerMobileError || errors.hero_banner_bg_mobile) && (
+                                <p className="text-rose-500 text-xs mt-1">{heroBannerMobileError || errors.hero_banner_bg_mobile}</p>
                             )}
                         </div>
                     </div>

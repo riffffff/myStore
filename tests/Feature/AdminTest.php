@@ -133,13 +133,13 @@ class AdminTest extends TestCase
         $this->assertDatabaseHas('product_images', ['id' => $image->id]);
     }
 
-    public function test_admin_can_access_articles_page(): void
-    {
-        $admin = User::factory()->create(['is_admin' => true]);
-
-        $response = $this->actingAs($admin)->get('/admin/artikel');
-        $response->assertOk();
-    }
+    // public function test_admin_can_access_articles_page(): void
+    // {
+    //     $admin = User::factory()->create(['is_admin' => true]);
+    //
+    //     $response = $this->actingAs($admin)->get('/admin/artikel');
+    //     $response->assertOk();
+    // }
 
     public function test_admin_can_access_reviews_page(): void
     {
@@ -147,6 +147,70 @@ class AdminTest extends TestCase
 
         $response = $this->actingAs($admin)->get('/admin/ulasan');
         $response->assertOk();
+    }
+
+    public function test_admin_can_create_update_approve_and_delete_review(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $product = Product::create([
+            'name' => 'Produk Ulasan Test',
+            'price' => 100000,
+            'stock_status' => 'available',
+            'category' => 'lainnya',
+            'short_description' => 'Ringkasan produk uji ulasan',
+            'description' => 'Deskripsi produk uji ulasan',
+            'is_published' => true,
+        ]);
+
+        // Create
+        $createRes = $this->actingAs($admin)->post('/admin/ulasan', [
+            'product_id'  => $product->id,
+            'name'        => 'Budi Santoso',
+            'city'        => 'Bandung',
+            'rating'      => 5,
+            'review'      => 'Produk sangat bagus dan pengiriman cepat sekali.',
+            'is_approved' => false,
+        ]);
+        $createRes->assertSessionHas('success');
+        $this->assertDatabaseHas('reviews', [
+            'product_id'  => $product->id,
+            'name'        => 'Budi Santoso',
+            'city'        => 'Bandung',
+            'rating'      => 5,
+            'is_approved' => false,
+        ]);
+
+        $review = \App\Models\Review::firstOrFail();
+
+        // Update
+        $updateRes = $this->actingAs($admin)->post("/admin/ulasan/{$review->id}", [
+            'product_id'  => $product->id,
+            'name'        => 'Budi Updated',
+            'city'        => 'Jakarta',
+            'rating'      => 4,
+            'review'      => 'Kualitas mantap setelah pemakaian beberapa hari.',
+            'is_approved' => false,
+        ]);
+        $updateRes->assertSessionHas('success');
+        $this->assertDatabaseHas('reviews', [
+            'id'     => $review->id,
+            'name'   => 'Budi Updated',
+            'city'   => 'Jakarta',
+            'rating' => 4,
+        ]);
+
+        // Approve
+        $approveRes = $this->actingAs($admin)->post("/admin/ulasan/{$review->id}/approve");
+        $approveRes->assertSessionHas('success');
+        $this->assertDatabaseHas('reviews', [
+            'id'          => $review->id,
+            'is_approved' => true,
+        ]);
+
+        // Delete
+        $deleteRes = $this->actingAs($admin)->delete("/admin/ulasan/{$review->id}");
+        $deleteRes->assertSessionHas('success');
+        $this->assertDatabaseMissing('reviews', ['id' => $review->id]);
     }
 
     public function test_admin_can_access_settings_page(): void
@@ -194,27 +258,27 @@ class AdminTest extends TestCase
         $response->assertSessionHasErrors('shop_name');
     }
 
-    public function test_admin_can_mark_article_as_homepage_hero(): void
-    {
-        $admin = User::factory()->create(['is_admin' => true]);
-
-        $response = $this->actingAs($admin)->post('/admin/artikel', [
-            'title' => 'Artikel Hero',
-            'excerpt' => 'Ringkasan',
-            'content' => 'Konten artikel hero',
-            'is_published' => '1',
-            'is_hero' => '1',
-        ]);
-
-        $response->assertSessionHas('success');
-        $article = Article::firstOrFail();
-        $this->assertTrue($article->is_hero);
-
-        $public = $this->get('/');
-        $public->assertInertia(fn ($page) => $page
-            ->where('heroArticles.0.title', 'Artikel Hero')
-        );
-    }
+    // public function test_admin_can_mark_article_as_homepage_hero(): void
+    // {
+    //     $admin = User::factory()->create(['is_admin' => true]);
+    //
+    //     $response = $this->actingAs($admin)->post('/admin/artikel', [
+    //         'title' => 'Artikel Hero',
+    //         'excerpt' => 'Ringkasan',
+    //         'content' => 'Konten artikel hero',
+    //         'is_published' => '1',
+    //         'is_hero' => '1',
+    //     ]);
+    //
+    //     $response->assertSessionHas('success');
+    //     $article = Article::firstOrFail();
+    //     $this->assertTrue($article->is_hero);
+    //
+    //     $public = $this->get('/');
+    //     $public->assertInertia(fn ($page) => $page
+    //         ->where('heroArticles.0.title', 'Artikel Hero')
+    //     );
+    // }
 
     public function test_admin_can_access_orders_page(): void
     {

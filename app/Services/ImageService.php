@@ -14,6 +14,7 @@ class ImageService
     public const ARTICLE_DIRECTORY = 'artikel';
     public const LOGO_DIRECTORY = 'logo';
     public const QRIS_DIRECTORY = 'qris';
+    public const HERO_DIRECTORY = 'hero';
 
     public function handleUpload(UploadedFile $file, string $dir = 'products'): array
     {

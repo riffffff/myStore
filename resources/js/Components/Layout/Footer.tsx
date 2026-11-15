@@ -28,7 +28,7 @@ export default function Footer({
     const navLinks = [
         { href: route('home'), label: 'Beranda' },
         { href: route('products.index'), label: 'Katalog' },
-        { href: route('articles.index'), label: 'Artikel' },
+        // { href: route('articles.index'), label: 'Artikel' },
         { href: route('orders.track'), label: 'Pesanan' },
     ];
 

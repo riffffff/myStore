@@ -11,7 +11,7 @@ use App\Http\Controllers\{
     OrderController
 };
 use App\Http\Controllers\Admin\AdminController;
-use App\Models\Article;
+// use App\Models\Article;
 use App\Models\Product;
 
 // ===== SEO ROUTES =====
@@ -36,12 +36,12 @@ Route::get('/sitemap.xml', function () {
             'lastmod' => $product->updated_at,
         ]));
 
-    Article::published()
-        ->get(['slug', 'updated_at'])
-        ->each(fn (Article $article) => $urls->push([
-            'loc' => route('articles.show', $article->slug),
-            'lastmod' => $article->updated_at,
-        ]));
+    // Article::published()
+    //     ->get(['slug', 'updated_at'])
+    //     ->each(fn (Article $article) => $urls->push([
+    //         'loc' => route('articles.show', $article->slug),
+    //         'lastmod' => $article->updated_at,
+    //     ]));
 
     $xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
@@ -117,10 +117,10 @@ Route::middleware('throttle:public')->group(function () {
         Route::get('/{slug}', [ProductController::class, 'show'])->name('show');
     });
     
-    Route::prefix('artikel')->name('articles.')->group(function () {
-        Route::get('/', [ArticleController::class, 'index'])->name('index');
-        Route::get('/{slug}', [ArticleController::class, 'show'])->name('show');
-    });
+    // Route::prefix('artikel')->name('articles.')->group(function () {
+    //     Route::get('/', [ArticleController::class, 'index'])->name('index');
+    //     Route::get('/{slug}', [ArticleController::class, 'show'])->name('show');
+    // });
 });
 
 // Submit review publik — tidak perlu login, rate limited 3/hari per IP
@@ -191,17 +191,19 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/produk/{product}/publish', [AdminController::class, 'productTogglePublish'])->name('products.toggle-publish');
     Route::post('/produk/{product}/stok',    [AdminController::class, 'productUpdateStock'])->name('products.update-stock');
 
-    // Artikel
-    Route::get('/artikel',            [AdminController::class, 'articles'])->name('articles');
-    Route::get('/artikel/tambah',     [AdminController::class, 'articleCreate'])->name('articles.create');
-    Route::post('/artikel',           [AdminController::class, 'articleStore'])->name('articles.store');
-    Route::get('/artikel/{article}/edit', [AdminController::class, 'articleEdit'])->name('articles.edit');
-    Route::post('/artikel/{article}', [AdminController::class, 'articleUpdate'])->name('articles.update');
-    Route::delete('/artikel/{article}', [AdminController::class, 'articleDestroy'])->name('articles.destroy');
-    Route::post('/artikel/{article}/publish', [AdminController::class, 'articleTogglePublish'])->name('articles.toggle-publish');
+    // Artikel (Dinonaktifkan sementara)
+    // Route::get('/artikel',            [AdminController::class, 'articles'])->name('articles');
+    // Route::get('/artikel/tambah',     [AdminController::class, 'articleCreate'])->name('articles.create');
+    // Route::post('/artikel',           [AdminController::class, 'articleStore'])->name('articles.store');
+    // Route::get('/artikel/{article}/edit', [AdminController::class, 'articleEdit'])->name('articles.edit');
+    // Route::post('/artikel/{article}', [AdminController::class, 'articleUpdate'])->name('articles.update');
+    // Route::delete('/artikel/{article}', [AdminController::class, 'articleDestroy'])->name('articles.destroy');
+    // Route::post('/artikel/{article}/publish', [AdminController::class, 'articleTogglePublish'])->name('articles.toggle-publish');
 
     // Ulasan
-    Route::get('/ulasan',             [AdminController::class, 'reviews'])->name('reviews');
+    Route::get('/ulasan',                    [AdminController::class, 'reviews'])->name('reviews');
+    Route::post('/ulasan',                   [AdminController::class, 'reviewStore'])->name('reviews.store');
+    Route::post('/ulasan/{review}',          [AdminController::class, 'reviewUpdate'])->name('reviews.update');
     Route::post('/ulasan/{review}/approve',  [AdminController::class, 'reviewApprove'])->name('reviews.approve');
     Route::delete('/ulasan/{review}',        [AdminController::class, 'reviewReject'])->name('reviews.reject');
 

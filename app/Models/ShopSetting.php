@@ -149,6 +149,7 @@ class ShopSetting extends Model
         'hero_banner_text_1',
         'hero_banner_text_2',
         'hero_banner_bg',
+        'hero_banner_bg_mobile',
         'shipping_areas',
         'shipping_estimate_days',
     ];
@@ -182,11 +183,13 @@ class ShopSetting extends Model
 
     public function getStoreFeatures(): array
     {
-        if (is_array($this->store_features) && count($this->store_features) > 0) {
-            return $this->store_features;
-        }
+        $saved = is_array($this->store_features) ? array_values($this->store_features) : [];
+        $defaults = self::DEFAULT_STORE_FEATURES;
 
-        return self::DEFAULT_STORE_FEATURES;
+        return array_map(
+            fn (int $i) => $saved[$i] ?? $defaults[$i],
+            [0, 1, 2]
+        );
     }
 
     // ─── Mutators ─────────────────────────────────────────────────────────────

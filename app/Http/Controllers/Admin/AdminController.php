@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Article;
+// use App\Models\Article;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
@@ -79,24 +79,24 @@ class AdminController extends Controller
             ])
             ->values();
 
-        // ── 3. Top Articles by views ─────────────────────────
-        $topArticles = Article::where('is_published', true)
-            ->orderByDesc('views_count')
-            ->take(5)
-            ->get(['id', 'title', 'views_count', 'published_at'])
-            ->map(fn ($a) => [
-                'id'          => $a->id,
-                'title'       => $a->title,
-                'views_count' => (int) $a->views_count,
-            ]);
+        // ── 3. Top Articles by views (Dinonaktifkan sementara) ───
+        // $topArticles = Article::where('is_published', true)
+        //     ->orderByDesc('views_count')
+        //     ->take(5)
+        //     ->get(['id', 'title', 'views_count', 'published_at'])
+        //     ->map(fn ($a) => [
+        //         'id'          => $a->id,
+        //         'title'       => $a->title,
+        //         'views_count' => (int) $a->views_count,
+        //     ]);
 
         // ── 4. Summary Stats ─────────────────────────────────
         $stats = [
             'products'           => Product::count(),
             'published'          => Product::where('is_published', true)->count(),
             'out_of_stock'       => Product::where('stock_status', 'out_of_stock')->count(),
-            'articles'           => Article::count(),
-            'published_articles' => Article::where('is_published', true)->count(),
+            // 'articles'           => Article::count(),
+            // 'published_articles' => Article::where('is_published', true)->count(),
             'reviews'            => Review::count(),
             'pending_reviews'    => Review::where('is_approved', false)->count(),
             'orders_total'       => DB::table('orders')->count(),
@@ -132,7 +132,7 @@ class AdminController extends Controller
             ]);
 
         return Inertia::render('Admin/Dashboard', compact(
-            'stats', 'stockChart', 'salesChart', 'topArticles',
+            'stats', 'stockChart', 'salesChart', // 'topArticles',
             'recentOrders', 'pendingReviews', 'period',
             'startDate', 'endDate',
         ));
@@ -517,7 +517,8 @@ class AdminController extends Controller
         return back()->with('success', 'Status stok diperbarui.');
     }
 
-    // ── Articles List ────────────────────────────────────────
+    /*
+    // ── Articles List (Dinonaktifkan sementara) ──────────────
     public function articles(Request $request): Response
     {
         $search = $request->input('search', '');
@@ -664,6 +665,7 @@ class AdminController extends Controller
         $article->update(['is_published' => ! $article->is_published]);
         return back()->with('success', $article->is_published ? 'Artikel dipublikasikan.' : 'Artikel disembunyikan.');
     }
+    */
 
     // ── Reviews List ─────────────────────────────────────────
     public function reviews(Request $request): Response
@@ -677,6 +679,7 @@ class AdminController extends Controller
             ->paginate(20)
             ->through(fn ($r) => [
                 'id'           => $r->id,
+                'product_id'   => $r->product_id,
                 'author_name'  => $r->name ?: 'Pelanggan',
                 'name'         => $r->name ?: 'Pelanggan',
                 'city'         => $r->city,
@@ -689,12 +692,48 @@ class AdminController extends Controller
             ]);
 
         $pendingCount = Review::where('is_approved', false)->count();
+        $products = Product::orderBy('name')->get(['id', 'name']);
 
         return Inertia::render('Admin/Reviews/Index', [
             'reviews'      => $reviews,
             'filter'       => $filter,
             'pendingCount' => $pendingCount,
+            'products'     => $products,
         ]);
+    }
+
+    // ── Store New Review ─────────────────────────────────────
+    public function reviewStore(Request $request): RedirectResponse
+    {
+        $validated = $request->validate(Review::validationRules());
+
+        Review::create([
+            'product_id'  => $validated['product_id'],
+            'name'        => $validated['name'],
+            'city'        => $validated['city'] ?? 'Indonesia',
+            'rating'      => $validated['rating'],
+            'review'      => $validated['review'],
+            'is_approved' => $request->boolean('is_approved', true),
+        ]);
+
+        return back()->with('success', 'Ulasan berhasil ditambahkan.');
+    }
+
+    // ── Update Review ────────────────────────────────────────
+    public function reviewUpdate(Request $request, Review $review): RedirectResponse
+    {
+        $validated = $request->validate(Review::validationRules());
+
+        $review->update([
+            'product_id'  => $validated['product_id'],
+            'name'        => $validated['name'],
+            'city'        => $validated['city'] ?? 'Indonesia',
+            'rating'      => $validated['rating'],
+            'review'      => $validated['review'],
+            'is_approved' => $request->boolean('is_approved', (bool) $review->is_approved),
+        ]);
+
+        return back()->with('success', 'Ulasan berhasil diperbarui.');
     }
 
     // ── Approve / Reject Review ──────────────────────────────
@@ -723,9 +762,19 @@ class AdminController extends Controller
                 'shop_phone'     => $settings->whatsapp_number,
                 'shop_email'     => $settings->email,
                 'shop_address'   => $settings->address,
-                'logo_url'       => $settings->getLogoUrl('light'),
-                'qris_url'       => $settings->getQrisImageUrl(),
-                'store_features' => $settings->getStoreFeatures(),
+                'logo_url'        => $settings->getLogoUrl('light'),
+                'qris_url'        => $settings->getQrisImageUrl(),
+                'hero_banner_url' => $settings->hero_banner_bg
+                    ? (str_starts_with($settings->hero_banner_bg, 'http') || str_starts_with($settings->hero_banner_bg, '/')
+                        ? $settings->hero_banner_bg
+                        : '/storage/' . $settings->hero_banner_bg)
+                    : null,
+                'hero_banner_mobile_url' => $settings->hero_banner_bg_mobile
+                    ? (str_starts_with($settings->hero_banner_bg_mobile, 'http') || str_starts_with($settings->hero_banner_bg_mobile, '/')
+                        ? $settings->hero_banner_bg_mobile
+                        : '/storage/' . $settings->hero_banner_bg_mobile)
+                    : null,
+                'store_features'  => $settings->getStoreFeatures(),
             ],
             'theme' => [
                 'primary_color'       => $theme->primary_color,
@@ -758,6 +807,8 @@ class AdminController extends Controller
             'shop_address'        => 'nullable|string|max:1000',
             'logo'                => 'nullable|image|mimes:jpeg,jpg,png,webp|max:3072',
             'qris_image'          => 'nullable|image|mimes:jpeg,jpg,png,webp|max:3072',
+            'hero_banner_bg'        => 'nullable|image|mimes:jpeg,jpg,png,webp|max:3072',
+            'hero_banner_bg_mobile' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:3072',
             'store_features'               => 'nullable|array|max:6',
             'store_features.*.title'       => 'required|string|max:60',
             'store_features.*.description' => 'required|string|max:255',
@@ -779,10 +830,18 @@ class AdminController extends Controller
             'logo.mimes'          => 'Logo harus berupa gambar JPG, PNG, atau WebP.',
             'logo.uploaded'       => 'Ukuran logo maksimal 3 MB.',
             'logo.max'            => 'Ukuran logo maksimal 3 MB.',
-            'qris_image.image'    => 'Gambar QRIS harus berupa gambar JPG, PNG, atau WebP.',
-            'qris_image.mimes'    => 'Gambar QRIS harus berupa gambar JPG, PNG, atau WebP.',
-            'qris_image.uploaded' => 'Ukuran gambar QRIS maksimal 3 MB.',
-            'qris_image.max'      => 'Ukuran gambar QRIS maksimal 3 MB.',
+            'qris_image.image'        => 'Gambar QRIS harus berupa gambar JPG, PNG, atau WebP.',
+            'qris_image.mimes'        => 'Gambar QRIS harus berupa gambar JPG, PNG, atau WebP.',
+            'qris_image.uploaded'     => 'Ukuran gambar QRIS maksimal 3 MB.',
+            'qris_image.max'          => 'Ukuran gambar QRIS maksimal 3 MB.',
+            'hero_banner_bg.image'    => 'Gambar banner harus berupa gambar JPG, PNG, atau WebP.',
+            'hero_banner_bg.mimes'    => 'Gambar banner harus berupa gambar JPG, PNG, atau WebP.',
+            'hero_banner_bg.uploaded' => 'Ukuran gambar banner maksimal 3 MB.',
+            'hero_banner_bg.max'             => 'Ukuran gambar banner maksimal 3 MB.',
+            'hero_banner_bg_mobile.image'    => 'Gambar banner mobile harus berupa gambar JPG, PNG, atau WebP.',
+            'hero_banner_bg_mobile.mimes'    => 'Gambar banner mobile harus berupa gambar JPG, PNG, atau WebP.',
+            'hero_banner_bg_mobile.uploaded' => 'Ukuran gambar banner mobile maksimal 3 MB.',
+            'hero_banner_bg_mobile.max'      => 'Ukuran gambar banner mobile maksimal 3 MB.',
         ]);
 
         $settings = ShopSetting::getSettings();
@@ -798,12 +857,15 @@ class AdminController extends Controller
             $settings->store_features = $request->input('store_features');
         }
         $imageService = app(ImageService::class);
-        foreach (['logo', 'qris_image'] as $field) {
+        $directoryMap = [
+            'logo'                  => ImageService::LOGO_DIRECTORY,
+            'qris_image'            => ImageService::QRIS_DIRECTORY,
+            'hero_banner_bg'        => ImageService::HERO_DIRECTORY,
+            'hero_banner_bg_mobile' => ImageService::HERO_DIRECTORY,
+        ];
+        foreach ($directoryMap as $field => $dir) {
             if ($request->hasFile($field)) {
-                $path = $imageService->handleUpload(
-                    $request->file($field),
-                    $field === 'logo' ? ImageService::LOGO_DIRECTORY : ImageService::QRIS_DIRECTORY
-                )['url'] ?? null;
+                $path = $imageService->handleUpload($request->file($field), $dir)['url'] ?? null;
                 if ($path) {
                     $settings->{$field} = $path;
                 }

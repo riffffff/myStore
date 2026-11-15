@@ -10,7 +10,7 @@ export default function BottomNav({ user, onAuthModalOpen }: BottomNavProps) {
     const navItems = [
         { href: route('home'), label: 'Beranda', active: route().current('home'), icon: Home },
         { href: route('products.index'), label: 'Produk', active: route().current('products.*'), icon: ShoppingBag },
-        { href: route('articles.index'), label: 'Artikel', active: route().current('articles.*'), icon: Newspaper },
+        // { href: route('articles.index'), label: 'Artikel', active: route().current('articles.*'), icon: Newspaper },
         { href: route('orders.track'), label: 'Pesanan', active: route().current('orders.*'), icon: Package },
     ];
 

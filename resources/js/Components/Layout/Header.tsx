@@ -85,7 +85,7 @@ export default function Header({ shopName, logoUrl, user, onMenuToggle, onAuthMo
     const navItems = [
         { href: route('home'), label: 'Beranda', active: route().current('home') },
         { href: route('products.index'), label: 'Katalog', active: route().current('products.*') },
-        { href: route('articles.index'), label: 'Artikel', active: route().current('articles.*') },
+        // { href: route('articles.index'), label: 'Artikel', active: route().current('articles.*') },
         { href: route('orders.track'), label: 'Pesanan', active: route().current('orders.track') },
     ];
 

@@ -53,6 +53,7 @@ class HandleInertiaRequests extends Middleware
             'hero_banner_text_1'    => $settings?->hero_banner_text_1 ?? 'Teknologi & Produk Berkualitas',
             'hero_banner_text_2'    => $settings?->hero_banner_text_2 ?? 'Solusi digital untuk transformasi bisnis Anda',
             'hero_banner_bg'        => $settings?->hero_banner_bg ?? null,
+            'hero_banner_bg_mobile' => $settings?->hero_banner_bg_mobile ?? null,
             'shipping_areas'        => $settings?->shipping_areas ?? [],
             'shipping_estimate_days' => $settings?->shipping_estimate_days ?? '',
             'logo_url'              => $this->shopSettingService->getLogoUrl('light'),
