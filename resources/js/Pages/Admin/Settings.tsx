@@ -21,6 +21,7 @@ interface StoreFeatureItem {
 interface Settings {
     shop_name: string;
     shop_tagline: string | null;
+    hero_subtitle: string | null;
     shop_phone: string | null;
     shop_email: string | null;
     shop_address: string | null;
@@ -76,6 +77,7 @@ export default function SettingsPage({ settings, theme }: Props) {
         // Shop info
         shop_name:           settings.shop_name           ?? '',
         shop_tagline:        settings.shop_tagline        ?? '',
+        hero_subtitle:       settings.hero_subtitle       ?? '',
         shop_phone:          settings.shop_phone          ?? '',
         shop_email:          settings.shop_email          ?? '',
         shop_address:        settings.shop_address        ?? '',
@@ -437,18 +439,37 @@ export default function SettingsPage({ settings, theme }: Props) {
                                     {errors.shop_name && <p className="text-rose-500 text-xs mt-1">{errors.shop_name}</p>}
                                 </div>
 
-                                {/* Slogan */}
+                                {/* Slogan / Judul Hero */}
                                 <div>
                                     <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                                        Slogan / Tagline Toko
+                                        Slogan / Judul Banner Hero
                                     </label>
                                     <input
                                         type="text"
                                         value={data.shop_tagline}
                                         onChange={e => setData('shop_tagline', e.target.value)}
-                                        placeholder="Contoh: Pilihan Terbaik Untuk Anda"
+                                        placeholder="Contoh: Bite, Smile, Repeat!"
                                         className="w-full h-11 px-3.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand transition"
                                     />
+                                    <p className="text-[11px] text-slate-400 mt-1">Ditampilkan sebagai judul utama di banner halaman depan.</p>
+                                    {errors.shop_tagline && <p className="text-rose-500 text-xs mt-1">{errors.shop_tagline}</p>}
+                                </div>
+
+                                {/* Subjudul Banner Hero */}
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                                        Deskripsi / Subjudul Banner Hero
+                                    </label>
+                                    <textarea
+                                        rows={2}
+                                        maxLength={500}
+                                        value={data.hero_subtitle}
+                                        onChange={e => setData('hero_subtitle', e.target.value)}
+                                        placeholder="Contoh: Dibuat dengan butter premium dan cinta, siap menemani momen manis keluarga Anda."
+                                        className="w-full p-3.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand transition resize-none"
+                                    />
+                                    <p className="text-[11px] text-slate-400 mt-1">Ditampilkan tepat di bawah judul banner pada halaman utama.</p>
+                                    {errors.hero_subtitle && <p className="text-rose-500 text-xs mt-1">{errors.hero_subtitle}</p>}
                                 </div>
 
                                 {/* WhatsApp & Email Grid */}

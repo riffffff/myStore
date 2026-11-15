@@ -759,6 +759,7 @@ class AdminController extends Controller
             'settings' => [
                 'shop_name'      => $settings->shop_name,
                 'shop_tagline'   => $settings->hero_banner_text_1 ?? $settings->description,
+                'hero_subtitle'  => $settings->hero_banner_text_2,
                 'shop_phone'     => $settings->whatsapp_number,
                 'shop_email'     => $settings->email,
                 'shop_address'   => $settings->address,
@@ -802,6 +803,7 @@ class AdminController extends Controller
         $data = $request->validate([
             'shop_name'           => 'required|string|max:35',
             'shop_tagline'        => 'nullable|string|max:500',
+            'hero_subtitle'       => 'nullable|string|max:500',
             'shop_phone'          => ['nullable', 'string', 'regex:' . \App\Support\PhoneNumber::REGEX],
             'shop_email'          => 'nullable|email|max:255',
             'shop_address'        => 'nullable|string|max:1000',
@@ -848,6 +850,7 @@ class AdminController extends Controller
         $settings->shop_name = $data['shop_name'];
         $settings->email = $data['shop_email'] ?? null;
         $settings->hero_banner_text_1 = $data['shop_tagline'] ?? null;
+        $settings->hero_banner_text_2 = $data['hero_subtitle'] ?? null;
         $settings->description = $data['shop_tagline'] ?? null;
         $settings->whatsapp_number = $data['shop_phone'] ?? '';
         if (isset($data['shop_address'])) {
