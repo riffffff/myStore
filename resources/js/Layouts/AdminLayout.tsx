@@ -319,7 +319,7 @@ export default function AdminLayout({ children, title, backHref }: Props) {
                     {(() => {
                         const isSecondaryActive =
                             isMenuOpen ||
-                            pathname.startsWith('/admin/artikel') ||
+                            // pathname.startsWith('/admin/artikel') ||
                             pathname.startsWith('/admin/ulasan');
                         return (
                             <button
@@ -372,6 +372,7 @@ export default function AdminLayout({ children, title, backHref }: Props) {
                         </div>
 
                         <div className="space-y-1">
+                            {/*
                             <Link
                                 href="/admin/artikel"
                                 onClick={() => setIsMenuOpen(false)}
@@ -384,6 +385,7 @@ export default function AdminLayout({ children, title, backHref }: Props) {
                                 <FileText className="w-4 h-4 text-slate-400" />
                                 <span>Artikel</span>
                             </Link>
+                            */}
 
                             <Link
                                 href="/admin/ulasan"
