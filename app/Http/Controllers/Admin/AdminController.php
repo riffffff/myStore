@@ -376,7 +376,7 @@ class AdminController extends Controller
             'price'          => $data['price'],
             'original_price' => !empty($data['original_price']) ? $data['original_price'] : null,
             'stock_status'   => $data['stock_status'],
-            'category'       => $data['category'] ?? 'lainnya',
+            'category'       => $data['category'] ?? 'makanan',
             'description'    => $data['description'] ?? null,
             'short_description' => $data['description'] ?? '',
             'is_published'   => $request->boolean('is_published', true),
@@ -455,7 +455,7 @@ class AdminController extends Controller
             'price'          => $data['price'],
             'original_price' => !empty($data['original_price']) ? $data['original_price'] : null,
             'stock_status'   => $data['stock_status'],
-            'category'       => $data['category'] ?? 'lainnya',
+            'category'       => $data['category'] ?? 'makanan',
             'description'    => $data['description'] ?? null,
             'short_description' => $data['description'] ?? '',
             'is_published'   => $request->boolean('is_published', true),
@@ -914,15 +914,9 @@ class AdminController extends Controller
     private function getProductCategories(): array
     {
         return [
-            ['id' => 'kursi_tamu',   'name' => 'Kursi Tamu / Sofa'],
-            ['id' => 'meja_makan',   'name' => 'Set Meja Makan'],
-            ['id' => 'tempat_tidur', 'name' => 'Tempat Tidur / Dipan'],
-            ['id' => 'lemari',       'name' => 'Lemari Pakaian'],
-            ['id' => 'meja_kerja',   'name' => 'Meja Kerja / Belajar'],
-            ['id' => 'bufet',        'name' => 'Bufet / Hiasan Dinding'],
-            ['id' => 'rak',          'name' => 'Rak Buku / Display'],
-            ['id' => 'aksesoris',    'name' => 'Aksesoris & Pajangan'],
-            ['id' => 'lainnya',      'name' => 'Lainnya'],
+            ['id' => 'makanan',             'name' => 'Makanan'],
+            ['id' => 'minuman',             'name' => 'Minuman'],
+            ['id' => 'spesial_ulang_tahun', 'name' => 'Spesial Ulang Tahun'],
         ];
     }
 }

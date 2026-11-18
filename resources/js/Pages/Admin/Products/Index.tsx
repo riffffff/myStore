@@ -115,7 +115,7 @@ export default function ProductsIndex({ products, search: initialSearch }: Props
                                         </td>
                                         <td className="py-3 px-4">
                                             <div className="font-bold text-slate-900 line-clamp-1">{p.name}</div>
-                                            <div className="text-xs text-slate-400 capitalize mt-0.5">{p.category ? p.category.replace('_', ' ') : 'Lainnya'}</div>
+                                            <div className="text-xs text-slate-400 capitalize mt-0.5">{p.category ? p.category.replace(/_/g, ' ') : '-'}</div>
                                         </td>
                                         <td className="py-3 px-4 font-bold text-slate-800">
                                             {fmt(p.price)}

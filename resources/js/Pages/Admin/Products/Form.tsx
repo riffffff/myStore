@@ -77,8 +77,13 @@ export default function ProductForm({ product, categories }: Props) {
     const [name, setName] = useState(product?.name ?? '');
     const [price, setPrice] = useState(product?.price ? String(product.price) : '');
     const [originalPrice, setOriginalPrice] = useState(product?.original_price ? String(product.original_price) : '');
+    const defaultCategory = categories[0]?.id ?? 'makanan';
     const [stockStatus, setStockStatus] = useState(product?.stock_status ?? 'available');
-    const [category, setCategory] = useState(product?.category ?? 'lainnya');
+    const [category, setCategory] = useState(
+        product?.category && categories.some(c => c.id === product.category)
+            ? product.category
+            : defaultCategory
+    );
     const [description, setDescription] = useState(product?.description ?? '');
     const [isPublished, setIsPublished] = useState(product?.is_published ?? true);
     const [imageFiles, setImageFiles] = useState<File[]>([]);
